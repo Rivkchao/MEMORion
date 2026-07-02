@@ -1,0 +1,92 @@
+[gd_scene format=3 uid="uid://b508smaiacdnq"]
+
+[ext_resource type="Script" uid="uid://b5mli0iqm3d3r" path="res://scenes/player/Player.gd" id="1_gfjak"]
+[ext_resource type="PackedScene" uid="uid://duarfv3tgqyh2" path="res://assets/models/T-Pose.fbx" id="2_tpg5x"]
+[ext_resource type="AnimationLibrary" uid="uid://djsuytscf28u6" path="res://assets/anim/Breathing Idle.fbx" id="3_tpg5x"]
+[ext_resource type="AnimationLibrary" uid="uid://c7e6ovnu1jj8o" path="res://assets/anim/Jump(1).fbx" id="4_c3xxp"]
+[ext_resource type="AnimationLibrary" uid="uid://dhu6fina1a0ie" path="res://assets/anim/Walking(1).fbx" id="5_npwbq"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_aflni"]
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_tpg5x"]
+animation = &"Breathing Idle/mixamo_com"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_c3xxp"]
+animation = &"Jump(1)/mixamo_com"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_npwbq"]
+animation = &"Walking(1)/mixamo_com"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_v42im"]
+xfade_time = 0.2
+switch_mode = 1
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_pn6s4"]
+xfade_time = 0.1
+switch_mode = 1
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_7oing"]
+xfade_time = 0.3
+switch_mode = 1
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_5stf6"]
+xfade_time = 0.2
+switch_mode = 1
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_180ig"]
+xfade_time = 0.2
+switch_mode = 1
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_tpg5x"]
+
+[sub_resource type="AnimationNodeStateMachine" id="AnimationNodeStateMachine_c0jhv"]
+states/Idle/node = SubResource("AnimationNodeAnimation_tpg5x")
+states/Idle/position = Vector2(456.89212, 23)
+states/Jump/node = SubResource("AnimationNodeAnimation_c3xxp")
+states/Jump/position = Vector2(721.89215, 150)
+states/Start/position = Vector2(226, 69)
+states/Walk/node = SubResource("AnimationNodeAnimation_npwbq")
+states/Walk/position = Vector2(400.89212, 168)
+transitions = ["Idle", "Walk", SubResource("AnimationNodeStateMachineTransition_v42im"), "Walk", "Jump", SubResource("AnimationNodeStateMachineTransition_pn6s4"), "Jump", "Idle", SubResource("AnimationNodeStateMachineTransition_7oing"), "Jump", "Walk", SubResource("AnimationNodeStateMachineTransition_5stf6"), "Walk", "Idle", SubResource("AnimationNodeStateMachineTransition_180ig"), "Start", "Idle", SubResource("AnimationNodeStateMachineTransition_tpg5x")]
+graph_offset = Vector2(86.89213, 0)
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_472ct"]
+radius = 1.5
+
+[node name="Player" type="CharacterBody3D" unique_id=869527826]
+collision_layer = 2
+collision_mask = 13
+script = ExtResource("1_gfjak")
+
+[node name="CameraTarget" type="Marker3D" parent="." unique_id=1541365361]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.5, 0)
+
+[node name="Hand" type="Marker3D" parent="." unique_id=521684873]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4316163, 0.4242866)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=309182946]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+shape = SubResource("CapsuleShape3D_aflni")
+
+[node name="AudioStreamPlayer3D" type="AudioStreamPlayer3D" parent="." unique_id=1907389134]
+
+[node name="RionMesh" parent="." unique_id=1626202606 instance=ExtResource("2_tpg5x")]
+transform = Transform3D(200, 0, 0, 0, 200, 0, 0, 0, 200, 0, 0, 0)
+
+[node name="AnimationPlayer2" type="AnimationPlayer" parent="RionMesh" unique_id=1110345993]
+"libraries/Breathing Idle" = ExtResource("3_tpg5x")
+libraries/Jump(1) = ExtResource("4_c3xxp")
+libraries/Walking(1) = ExtResource("5_npwbq")
+
+[node name="AnimationTree" type="AnimationTree" parent="." unique_id=2021914115]
+root_node = NodePath("../RionMesh")
+tree_root = SubResource("AnimationNodeStateMachine_c0jhv")
+anim_player = NodePath("../RionMesh/AnimationPlayer2")
+
+[node name="InteractArea" type="Area3D" parent="." unique_id=2065836590]
+collision_layer = 2
+collision_mask = 12
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="InteractArea" unique_id=1764372860]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.6831757, 0)
+shape = SubResource("SphereShape3D_472ct")

@@ -1,0 +1,50 @@
+[gd_scene format=3 uid="uid://v3p8jx3n2dlw"]
+
+[ext_resource type="Script" uid="uid://b4l34w5spfgth" path="res://scenes/main/Main.gd" id="1_dc040"]
+[ext_resource type="PackedScene" uid="uid://b508smaiacdnq" path="res://scenes/player/Player.tscn" id="1_nha0i"]
+[ext_resource type="PackedScene" uid="uid://dpj8grnlkea4p" path="res://scenes/camera/CameraRig.tscn" id="2_q24mn"]
+[ext_resource type="PackedScene" uid="uid://brjwd8h3yb3wt" path="res://scenes/ui/HUD.tscn" id="3_q24mn"]
+[ext_resource type="PackedScene" uid="uid://dw8j4gpk7m5sg" path="res://scenes/world/PrototypeMap.tscn" id="4_gyg6b"]
+
+[sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_npwbq"]
+sky_top_color = Color(0.05882353, 0.105882354, 0.27058825, 1)
+sky_horizon_color = Color(0.23137255, 0.12156863, 0.43137255, 1)
+ground_bottom_color = Color(0.039215688, 0.039215688, 0.101960786, 1)
+ground_horizon_color = Color(0.101960786, 0.039215688, 0.18039216, 1)
+
+[sub_resource type="Sky" id="Sky_c3xxp"]
+sky_material = SubResource("ProceduralSkyMaterial_npwbq")
+
+[sub_resource type="Environment" id="Environment_tpg5x"]
+background_mode = 2
+sky = SubResource("Sky_c3xxp")
+
+[node name="Main" type="Node3D" unique_id=2040794603]
+script = ExtResource("1_dc040")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=517276716]
+transform = Transform3D(0.8660254, 0.35355338, -0.35355338, 0, 0.70710677, 0.70710677, 0.5, -0.6123724, 0.6123724, 0, 0, 0)
+light_color = Color(0.9411765, 0.8509804, 1, 1)
+light_energy = 0.8
+directional_shadow_max_distance = 235.0
+sky_mode = 1
+
+[node name="Player" parent="." unique_id=869527826 instance=ExtResource("1_nha0i")]
+transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 1, 0)
+speed = 2.0
+jump_force = 6.0
+
+[node name="CameraRig" parent="." unique_id=1539430050 node_paths=PackedStringArray("target") instance=ExtResource("2_q24mn")]
+target = NodePath("../Player")
+offset = Vector3(0, 2, 3)
+fov_walking = 65.0
+
+[node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1783396718]
+environment = SubResource("Environment_tpg5x")
+
+[node name="HUD" parent="." unique_id=759827376 instance=ExtResource("3_q24mn")]
+
+[node name="LevelRoot" type="Node3D" parent="." unique_id=1811306290]
+
+[node name="PrototypeMap" parent="LevelRoot" unique_id=415599474 instance=ExtResource("4_gyg6b")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.483, 0, 0.713)

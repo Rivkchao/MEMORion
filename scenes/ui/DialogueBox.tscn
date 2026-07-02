@@ -1,0 +1,31 @@
+[gd_scene format=3 uid="uid://cw5rnrg6cp2r8"]
+
+[ext_resource type="Script" uid="uid://d04gimk3dx4jd" path="res://DialogueBox.gd" id="1_2c88n"]
+
+[node name="DialogueBox" type="CanvasLayer" unique_id=1728587512]
+script = ExtResource("1_2c88n")
+
+[node name="PanelContainer" type="PanelContainer" parent="." unique_id=512774573]
+custom_minimum_size = Vector2(0, 150)
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -50.0
+grow_horizontal = 2
+grow_vertical = 0
+
+[node name="MarginContainer" type="MarginContainer" parent="PanelContainer" unique_id=549163087]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PanelContainer/MarginContainer" unique_id=1767532419]
+layout_mode = 2
+
+[node name="NameLabel" type="Label" parent="PanelContainer/MarginContainer/VBoxContainer" unique_id=966657854]
+layout_mode = 2
+
+[node name="DialogueLabel" type="Label" parent="PanelContainer/MarginContainer/VBoxContainer" unique_id=977157484]
+layout_mode = 2
+
+[node name="ContinueLabel" type="Label" parent="PanelContainer" unique_id=1803768271]
+layout_mode = 2

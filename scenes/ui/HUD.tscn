@@ -1,0 +1,39 @@
+[gd_scene format=3 uid="uid://brjwd8h3yb3wt"]
+
+[ext_resource type="PackedScene" uid="uid://cw5rnrg6cp2r8" path="res://scenes/ui/DialogueBox.tscn" id="1_kw0id"]
+
+[node name="HUD" type="Node3D" unique_id=759827376]
+
+[node name="Prompt" type="Label" parent="." unique_id=330866874]
+offset_right = 40.0
+offset_bottom = 23.0
+
+[node name="Objective" type="Label" parent="." unique_id=1751714841]
+offset_right = 40.0
+offset_bottom = 23.0
+
+[node name="DialogueUI" type="Control" parent="." unique_id=518772473]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="PuzzleUI" type="Control" parent="." unique_id=685276896]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="InventoryUI" type="Control" parent="." unique_id=1629384628]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="PuzzleMenu" type="Control" parent="." unique_id=54079786]
+layout_mode = 3
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="DialogueBox" parent="." unique_id=1728587512 instance=ExtResource("1_kw0id")]
