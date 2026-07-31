@@ -4,6 +4,7 @@
 [ext_resource type="PackedScene" uid="uid://cw5rnrg6cp2r8" path="res://scenes/ui/DialogueBox.tscn" id="1_kw0id"]
 [ext_resource type="PackedScene" uid="uid://ds78msy3d3u6l" path="res://scenes/ui/PuzzleUI.tscn" id="2_6ll6g"]
 [ext_resource type="PackedScene" uid="uid://co6qtf6b6hrdm" path="res://wire_puzzle.tscn" id="4_ig75s"]
+[ext_resource type="PackedScene" uid="uid://chcb0n1sv6kvt" path="res://unpacking_puzzle.tscn" id="5_4ed8p"]
 
 [node name="HUD" type="CanvasLayer" unique_id=818947581]
 script = ExtResource("1_atyv1")
@@ -56,3 +57,5 @@ layout_mode = 2
 layout_mode = 2
 
 [node name="WirePuzzle" parent="." unique_id=746694349 instance=ExtResource("4_ig75s")]
+
+[node name="UnpackingPuzzle" parent="." unique_id=1751902816 instance=ExtResource("5_4ed8p")]

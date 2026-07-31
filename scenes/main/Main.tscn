@@ -19,17 +19,14 @@ sky_material = SubResource("ProceduralSkyMaterial_npwbq")
 
 [sub_resource type="Environment" id="Environment_tpg5x"]
 background_mode = 2
+background_energy_multiplier = 1.05
 sky = SubResource("Sky_c3xxp")
 
 [node name="Main" type="Node3D" unique_id=2040794603]
 script = ExtResource("1_dc040")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=517276716]
-transform = Transform3D(0.8660254, 0.35355338, -0.35355338, 0, 0.70710677, 0.70710677, 0.5, -0.6123724, 0.6123724, 0, 0, 0)
-light_color = Color(0.9411765, 0.8509804, 1, 1)
-light_energy = 0.8
-directional_shadow_max_distance = 235.0
-sky_mode = 1
+transform = Transform3D(-0.36543003, 0.9079588, -0.20511413, -0.10921061, 0.17701206, 0.9781308, 0.9244101, 0.37983894, 0.034473255, 0, 3.4142792, 0)
 
 [node name="Player" parent="." unique_id=869527826 instance=ExtResource("1_nha0i")]
 transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 1, 0)

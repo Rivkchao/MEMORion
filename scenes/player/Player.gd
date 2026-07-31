@@ -122,4 +122,6 @@ func _is_any_ui_active() -> bool:
 		return true
 	if StoryManager.wire_puzzle != null and StoryManager.wire_puzzle.visible:
 		return true
+	if StoryManager.unpacking_puzzle != null and StoryManager.unpacking_puzzle.visible:
+		return true
 	return false
