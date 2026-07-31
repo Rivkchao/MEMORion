@@ -1,14 +1,14 @@
 [gd_scene format=3 uid="uid://brjwd8h3yb3wt"]
 
+[ext_resource type="Script" uid="uid://pi42ohs0vvma" path="res://scenes/ui/hud.gd" id="1_atyv1"]
 [ext_resource type="PackedScene" uid="uid://cw5rnrg6cp2r8" path="res://scenes/ui/DialogueBox.tscn" id="1_kw0id"]
+[ext_resource type="PackedScene" uid="uid://ds78msy3d3u6l" path="res://scenes/ui/PuzzleUI.tscn" id="2_6ll6g"]
+[ext_resource type="PackedScene" uid="uid://co6qtf6b6hrdm" path="res://wire_puzzle.tscn" id="4_ig75s"]
 
-[node name="HUD" type="Node3D" unique_id=759827376]
+[node name="HUD" type="CanvasLayer" unique_id=818947581]
+script = ExtResource("1_atyv1")
 
 [node name="Prompt" type="Label" parent="." unique_id=330866874]
-offset_right = 40.0
-offset_bottom = 23.0
-
-[node name="Objective" type="Label" parent="." unique_id=1751714841]
 offset_right = 40.0
 offset_bottom = 23.0
 
@@ -18,11 +18,9 @@ anchors_preset = 0
 offset_right = 40.0
 offset_bottom = 40.0
 
-[node name="PuzzleUI" type="Control" parent="." unique_id=685276896]
-layout_mode = 3
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
+[node name="PuzzleUI" parent="." unique_id=1160088906 instance=ExtResource("2_6ll6g")]
+offset = Vector2(-100, -200)
+transform = Transform2D(1, 0, 0, 1, -100, -200)
 
 [node name="InventoryUI" type="Control" parent="." unique_id=1629384628]
 layout_mode = 3
@@ -37,3 +35,24 @@ offset_right = 40.0
 offset_bottom = 40.0
 
 [node name="DialogueBox" parent="." unique_id=1728587512 instance=ExtResource("1_kw0id")]
+
+[node name="ObjectivePanel" type="PanelContainer" parent="." unique_id=790155509]
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="MarginContainer" type="MarginContainer" parent="ObjectivePanel" unique_id=573775591]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="ObjectivePanel/MarginContainer" unique_id=1463966619]
+layout_mode = 2
+
+[node name="ObjectiveTitle" type="Label" parent="ObjectivePanel/MarginContainer/VBoxContainer" unique_id=92186205]
+layout_mode = 2
+
+[node name="ObjectiveText" type="Label" parent="ObjectivePanel/MarginContainer/VBoxContainer" unique_id=970181909]
+layout_mode = 2
+
+[node name="ProgressLabel" type="Label" parent="ObjectivePanel/MarginContainer/VBoxContainer" unique_id=261245446]
+layout_mode = 2
+
+[node name="WirePuzzle" parent="." unique_id=746694349 instance=ExtResource("4_ig75s")]

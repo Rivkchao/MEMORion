@@ -11,11 +11,25 @@ var displayed_text: String = ""
 @export var type_speed: float = 0.05
 @export var auto_hide_duration: float = 5.0
 
+var magic_time: float = 0.0
+
 func start(dialogue_lines: Array[String]) -> void:
 	lines = dialogue_lines
 	current_line = 0
 	show()
 	_show_line()
+
+func _process(delta: float) -> void:
+	if visible:
+		magic_time += delta
+		# Magical shimmer effect for the 3D label
+		var shimmer = (sin(magic_time * 3.0) + 1.0) / 2.0
+		var base_color = Color(0.8, 0.6, 1, 1)
+		var shimmer_color = Color(1.0, 0.8, 1.0, 1)
+		label.modulate = base_color.lerp(shimmer_color, shimmer * 0.3)
+		
+		# Subtle floating animation
+		label.position.y = sin(magic_time * 2.0) * 0.05
 
 func _show_line() -> void:
 	full_text = lines[current_line]

@@ -7,4 +7,6 @@ extends Node3D
 
 func _ready() -> void:
 	camera_rig.target = player.get_node("CameraTarget")
-	StoryManager.init(dialogue_box)
+	StoryManager.init($HUD/DialogueBox, $HUD/PuzzleUI, null, $HUD/WirePuzzle)
+	GameManager.init($HUD)
+	GameManager.set_objective("Cari bintang tersembunyi!", 3, "bintang")

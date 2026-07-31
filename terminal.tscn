@@ -1,0 +1,21 @@
+[gd_scene format=3 uid="uid://drg0l5vpp6m8r"]
+
+[ext_resource type="Script" uid="uid://4enkxq1m3b7s" path="res://terminal.gd" id="1_sxuvd"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_472ct"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_472ct"]
+
+[node name="Terminal" type="StaticBody3D" unique_id=219874606]
+collision_layer = 4
+script = ExtResource("1_sxuvd")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1415298420]
+shape = SubResource("BoxShape3D_472ct")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1136357057]
+mesh = SubResource("BoxMesh_472ct")
+
+[node name="Label3D" type="Label3D" parent="." unique_id=1120508274]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+text = "Gunakan Terminal"

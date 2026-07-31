@@ -5,6 +5,8 @@
 [ext_resource type="PackedScene" uid="uid://dpj8grnlkea4p" path="res://scenes/camera/CameraRig.tscn" id="2_q24mn"]
 [ext_resource type="PackedScene" uid="uid://brjwd8h3yb3wt" path="res://scenes/ui/HUD.tscn" id="3_q24mn"]
 [ext_resource type="PackedScene" uid="uid://dw8j4gpk7m5sg" path="res://scenes/world/PrototypeMap.tscn" id="4_gyg6b"]
+[ext_resource type="PackedScene" uid="uid://bmnvb7kx2ynu8" path="res://scenes/interactables/Star.tscn" id="6_1rhdn"]
+[ext_resource type="PackedScene" uid="uid://drg0l5vpp6m8r" path="res://terminal.tscn" id="7_sjxhf"]
 
 [sub_resource type="ProceduralSkyMaterial" id="ProceduralSkyMaterial_npwbq"]
 sky_top_color = Color(0.05882353, 0.105882354, 0.27058825, 1)
@@ -33,10 +35,10 @@ sky_mode = 1
 transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 1, 0)
 speed = 2.0
 jump_force = 6.0
+camera_rig = NodePath("../CameraRig")
 
 [node name="CameraRig" parent="." unique_id=1539430050 node_paths=PackedStringArray("target") instance=ExtResource("2_q24mn")]
 target = NodePath("../Player")
-offset = Vector3(0, 2, 3)
 fov_walking = 65.0
 
 [node name="WorldEnvironment" type="WorldEnvironment" parent="." unique_id=1783396718]
@@ -48,3 +50,17 @@ environment = SubResource("Environment_tpg5x")
 
 [node name="PrototypeMap" parent="LevelRoot" unique_id=415599474 instance=ExtResource("4_gyg6b")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.483, 0, 0.713)
+
+[node name="Star" parent="." unique_id=1110207497 instance=ExtResource("6_1rhdn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.193815, 1.2834136, 4.457374)
+
+[node name="Star2" parent="." unique_id=113006480 instance=ExtResource("6_1rhdn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -4.7326, 1.1648619, 0)
+star_id = "star_02"
+
+[node name="Star3" parent="." unique_id=940604616 instance=ExtResource("6_1rhdn")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.4159174, 1.300165, 0)
+star_id = "star_03"
+
+[node name="Terminal" parent="." unique_id=219874606 instance=ExtResource("7_sjxhf")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.251166, 1.2768307, 0)

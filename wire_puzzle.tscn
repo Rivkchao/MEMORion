@@ -1,0 +1,22 @@
+[gd_scene format=3 uid="uid://co6qtf6b6hrdm"]
+
+[ext_resource type="Script" uid="uid://o2dpsadv8iv5" path="res://wire_puzzle.gd" id="1_4g1ir"]
+[ext_resource type="Script" uid="uid://cq66nnv548xq" path="res://wire_panel.gd" id="2_hgfos"]
+
+[node name="WirePuzzle" type="CanvasLayer" unique_id=746694349]
+layer = 10
+script = ExtResource("1_4g1ir")
+
+[node name="WirePanel" type="Control" parent="." unique_id=1732102325]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("2_hgfos")
+
+[node name="Label" type="Label" parent="WirePanel" unique_id=757683847]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0

@@ -1,0 +1,3 @@
+; Template contoh — copy sebagai api_config.cfg dan isi dengan key kamu
+[api]
+openrouter_key="ISI_API_KEY_KAMU_DISINI"
