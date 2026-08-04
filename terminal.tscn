@@ -14,6 +14,7 @@ shape = SubResource("BoxShape3D_472ct")
 
 [node name="Label3D" type="Label3D" parent="." unique_id=1120508274]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6614761, 0)
+billboard = 1
 text = "Gunakan Terminal"
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1412177031]
