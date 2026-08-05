@@ -1,6 +1,7 @@
 extends CharacterBody3D
 
-@export var speed: float = 5.0
+@export var walk_speed: float = 5.0
+@export var sprint_speed: float = 10.0
 @export var jump_force: float = 8.0
 @export var gravity: float = 20.0
 @export var camera_rig: NodePath
@@ -13,6 +14,7 @@ extends CharacterBody3D
 
 var joystick_input: Vector2 = Vector2.ZERO
 var current_interactable: Interactable = null
+var current_speed: float = walk_speed
 
 func _physics_process(delta: float) -> void:
 	_apply_gravity(delta)
@@ -27,9 +29,15 @@ func _apply_gravity(delta: float) -> void:
 	if not is_on_floor():
 		velocity.y -= gravity * delta
 	else:
-		velocity.y = 0.0
+		velocity.y = -0.5
 
 func _handle_movement() -> void:
+	# 1. Tentukan kecepatan aktif (Sprint / Walk)
+	if Input.is_action_pressed("sprint"):
+		current_speed = sprint_speed
+	else:
+		current_speed = walk_speed
+
 	var input_dir = Vector2.ZERO
 
 	input_dir.x = Input.get_axis("move_left", "move_right")
@@ -38,26 +46,22 @@ func _handle_movement() -> void:
 	if joystick_input.length() > 0.1:
 		input_dir = joystick_input
 
-	if input_dir == Vector2.ZERO:
-		velocity.x = 0
-		velocity.z = 0
-		return
-		
-	if _is_any_ui_active():
-		velocity.x = 0
-		velocity.z = 0
+	# Jika tidak ada input arah atau UI sedang terbuka, hentikan pergerakan
+	if input_dir == Vector2.ZERO or _is_any_ui_active():
+		velocity.x = move_toward(velocity.x, 0, current_speed)
+		velocity.z = move_toward(velocity.z, 0, current_speed)
 		return
 
-	# Ambil arah kamera (horizontal saja)
 	var cam_basis = camera_node.global_transform.basis
 	var forward = -Vector3(cam_basis.z.x, 0, cam_basis.z.z).normalized()
 	var right = Vector3(cam_basis.x.x, 0, cam_basis.x.z).normalized()
 
 	var move_dir = (forward * -input_dir.y + right * input_dir.x).normalized()
 
-	velocity.x = move_dir.x * speed
-	velocity.z = move_dir.z * speed
-
+	# Gunakan current_speed
+	velocity.x = move_dir.x * current_speed
+	velocity.z = move_dir.z * current_speed
+	
 func _handle_jump() -> void:
 	if is_on_floor() and Input.is_action_just_pressed("jump"):
 		velocity.y = jump_force

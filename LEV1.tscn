@@ -49,20 +49,10 @@ _shader_parameters = {
 &"projection_threshold": null
 }
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_llh03"]
-transparency = 4
-cull_mode = 2
-vertex_color_use_as_albedo = true
-backlight_enabled = true
-backlight = Color(0.5, 0.5, 0.5, 1)
-distance_fade_mode = 1
-distance_fade_min_distance = 128.0
-distance_fade_max_distance = 96.0
-
 [sub_resource type="Terrain3DMeshAsset" id="Terrain3DMeshAsset_ncm2w"]
-generated_type = 1
-height_offset = 0.5
-material_override = SubResource("StandardMaterial3D_llh03")
+name = "common_tree_1"
+scene_file = ExtResource("1_e4bas")
+density = 0.06974417
 last_lod = 0
 last_shadow_lod = 0
 lod0_range = 128.0
@@ -72,44 +62,6 @@ name = "common_tree_1"
 id = 1
 scene_file = ExtResource("1_e4bas")
 density = 0.06974417
-last_lod = 0
-last_shadow_lod = 0
-lod0_range = 128.0
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ss0lk"]
-transparency = 4
-cull_mode = 2
-vertex_color_use_as_albedo = true
-backlight_enabled = true
-backlight = Color(0.5, 0.5, 0.5, 1)
-distance_fade_mode = 1
-distance_fade_min_distance = 128.0
-distance_fade_max_distance = 96.0
-
-[sub_resource type="Terrain3DMeshAsset" id="Terrain3DMeshAsset_5io8w"]
-id = 2
-generated_type = 1
-height_offset = 0.5
-material_override = SubResource("StandardMaterial3D_ss0lk")
-last_lod = 0
-last_shadow_lod = 0
-lod0_range = 128.0
-
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ibxew"]
-transparency = 4
-cull_mode = 2
-vertex_color_use_as_albedo = true
-backlight_enabled = true
-backlight = Color(0.5, 0.5, 0.5, 1)
-distance_fade_mode = 1
-distance_fade_min_distance = 128.0
-distance_fade_max_distance = 96.0
-
-[sub_resource type="Terrain3DMeshAsset" id="Terrain3DMeshAsset_bqa60"]
-id = 3
-generated_type = 1
-height_offset = 0.5
-material_override = SubResource("StandardMaterial3D_ibxew")
 last_lod = 0
 last_shadow_lod = 0
 lod0_range = 128.0
@@ -132,7 +84,7 @@ albedo_texture = ExtResource("2_e4bas")
 normal_texture = SubResource("ImageTexture_ss0lk")
 
 [sub_resource type="Terrain3DAssets" id="Terrain3DAssets_llh03"]
-mesh_list = Array[Terrain3DMeshAsset]([SubResource("Terrain3DMeshAsset_ncm2w"), SubResource("Terrain3DMeshAsset_y2k2k"), SubResource("Terrain3DMeshAsset_5io8w"), SubResource("Terrain3DMeshAsset_bqa60")])
+mesh_list = Array[Terrain3DMeshAsset]([SubResource("Terrain3DMeshAsset_ncm2w"), SubResource("Terrain3DMeshAsset_y2k2k")])
 texture_list = Array[Terrain3DTextureAsset]([SubResource("Terrain3DTextureAsset_ibxew")])
 
 [node name="Node3D" type="Terrain3D" unique_id=448340603]
@@ -140,7 +92,7 @@ data_directory = "res://"
 material = SubResource("Terrain3DMaterial_eftan")
 assets = SubResource("Terrain3DAssets_llh03")
 collision_mode = 4
-collision_mask = 3
+collision_mask = 2
 top_level = true
 script = ExtResource("8_bcpnl")
 metadata/_edit_lock_ = true
@@ -151,9 +103,7 @@ shadow_enabled = true
 shadow_opacity = 0.8
 
 [node name="Player" parent="." unique_id=869527826 instance=ExtResource("8_rybkg")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
-speed = 2.0
-jump_force = 6.0
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 10, 0)
 camera_rig = NodePath("../CameraRig")
 
 [node name="CameraRig" parent="." unique_id=1539430050 instance=ExtResource("9_jjykw")]
@@ -163,20 +113,27 @@ fov_walking = 65.0
 [node name="Terminal" parent="." unique_id=219874606 instance=ExtResource("6_llh03")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.251166, 1.2768307, 0)
 
-[node name="StaticBody3D" type="StaticBody3D" parent="." unique_id=1464175439]
-top_level = true
-collision_mask = 3
-
 [node name="HUD" parent="." unique_id=818947581 instance=ExtResource("7_ss0lk")]
 
-[node name="StaticBody3D2" type="StaticBody3D" parent="." unique_id=1280511981]
+[node name="StaticBody3D" type="StaticBody3D" parent="." unique_id=868560301]
 top_level = true
-collision_mask = 3
+collision_mask = 2
 
-[node name="StaticBody3D3" type="StaticBody3D" parent="." unique_id=1899157636]
-top_level = true
-collision_mask = 3
+[node name="CommonTree_12" parent="." unique_id=1862022111 instance=ExtResource("1_e4bas")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.3662156, 7.4110336)
 
-[node name="StaticBody3D4" type="StaticBody3D" parent="." unique_id=976686152]
+[node name="StaticBody3D2" type="StaticBody3D" parent="." unique_id=577278800]
 top_level = true
-collision_mask = 3
+collision_mask = 2
+
+[node name="StaticBody3D3" type="StaticBody3D" parent="." unique_id=1394234340]
+top_level = true
+collision_mask = 2
+
+[node name="StaticBody3D4" type="StaticBody3D" parent="." unique_id=992082221]
+top_level = true
+collision_mask = 2
+
+[node name="StaticBody3D5" type="StaticBody3D" parent="." unique_id=1536270076]
+top_level = true
+collision_mask = 2
