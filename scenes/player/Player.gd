@@ -32,6 +32,14 @@ func _apply_gravity(delta: float) -> void:
 		velocity.y = -0.5
 
 func _handle_movement() -> void:
+	if _is_any_ui_active():
+		velocity.x = 0
+		velocity.z = 0
+		return
+	if RockPuzzleManager.is_puzzle_active:
+		velocity.x = 0
+		velocity.z = 0
+		return
 	# 1. Tentukan kecepatan aktif (Sprint / Walk)
 	if Input.is_action_pressed("sprint"):
 		current_speed = sprint_speed
@@ -118,6 +126,8 @@ func _input(event: InputEvent) -> void:
 		_try_interact()
 
 func _is_any_ui_active() -> bool:
+	if RockPuzzleManager.is_puzzle_active and RockPuzzleManager.dragging_rock != null:
+		return true
 	if StoryManager.dialogue_box != null and StoryManager.dialogue_box.is_active():
 		return true
 	if StoryManager.puzzle_ui != null and StoryManager.puzzle_ui.visible:
