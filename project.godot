@@ -20,7 +20,6 @@ StoryManager="*uid://b1lvycihehau3"
 GameManager="*uid://dcc8udvj0vqi8"
 NLPManager="*uid://cnbvt12ms3ovq"
 AIManager="*uid://cg561dukvvvws"
-_mcp_game_helper="*res://addons/godot_ai/runtime/game_helper.gd"
 RockPuzzleManager="*uid://5b2qoi6ui3q3"
 
 [display]
@@ -36,7 +35,7 @@ version_control/autoload_on_startup=true
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/godot_ai/plugin.cfg", "res://addons/terrain_3d/plugin.cfg")
+enabled=PackedStringArray("res://addons/terrain_3d/plugin.cfg")
 
 [input]
 
@@ -98,3 +97,8 @@ sprint={
 rendering_device/driver.windows="d3d12"
 renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
+
+[terraBrush]
+
+brushes/decal_color=Color(1, 1, 1, 0.68235296)
+brushes/sculpting_multiplier=20

@@ -38,6 +38,7 @@ const CliStrategy := preload("res://addons/godot_ai/clients/_cli_strategy.gd")
 const ToolCatalog := preload("res://addons/godot_ai/tool_catalog.gd")
 const LogViewerScript := preload("res://addons/godot_ai/dock_panels/log_viewer.gd")
 const PortPickerPanelScript := preload("res://addons/godot_ai/dock_panels/port_picker_panel.gd")
+const VisionRoutingScript := preload("res://addons/godot_ai/vision_routing.gd")
 
 const DEV_MODE_SETTING := "godot_ai/dev_mode"
 ## "Change the port + reconfigure your clients" guide. Surfaced from the crash
@@ -97,14 +98,15 @@ var _telemetry_toggle: CheckButton
 var _telemetry_pending_enabled: bool = true
 var _telemetry_saved_enabled: bool = true
 
-# Settings tab (secondary window, Tab 3) — LAN opt-in (#507). Developer-
-# mode-gated "Allow remote hosts (CIDR)" field whose value feeds
-# `--allow-host` at server spawn (see plugin.gd::_build_server_flags).
-# The LineEdit's live text is the pending state; `_allow_hosts_saved`
-# mirrors the persisted EditorSetting, same pending/saved shape as the
-# Tools tab above.
+# Settings tab (secondary window, Tab 3) — Vision Routing section plus the
+# LAN opt-in (#507): "Allow remote hosts (CIDR)" behind a collapsed
+# "Remote access (advanced)" disclosure (auto-expands when a non-empty
+# allowlist is configured). The value feeds `--allow-host` at server spawn
+# (see plugin.gd::_build_server_flags). The LineEdit's live text is the
+# pending state; `_allow_hosts_saved` mirrors the persisted EditorSetting,
+# same pending/saved shape as the Tools tab above.
 var _allow_hosts_section: VBoxContainer
-var _allow_hosts_dev_gate_label: Label
+var _allow_hosts_fold: FoldableContainer
 var _allow_hosts_edit: LineEdit
 var _allow_hosts_hint: Label
 var _allow_hosts_apply_btn: Button
@@ -217,9 +219,13 @@ var _dev_primary_btn: Button
 ## spawning a replacement. Disabled when no dev server is running.
 var _dev_stop_btn: Button
 var _log_viewer: LogViewerScript
+## Vision Routing (optional) - set by plugin.gd; builds the "Vision Routing"
+## tab in Clients & Tools and the quick toggle under Developer mode.
+var vision_routing: VisionRoutingScript = null
 
 var _last_connected := false
 var _last_status_text := ""
+var _last_status_tooltip := ""
 var _startup_grace_until_msec: int = 0
 
 # Spawn-failure panel — rendered when `get_server_status` reports a
@@ -859,6 +865,16 @@ func _build_client_row(client_id: String) -> void:
 	var name_label := Label.new()
 	name_label.text = ClientConfigurator.client_display_name(client_id)
 	name_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
+	## #838/#816 step 11: say which transport Configure will write — the
+	## client-owned attach bridge or the client's native URL mode.
+	var transport_tag := Label.new()
+	transport_tag.text = _client_transport_tag(client_id)
+	transport_tag.add_theme_color_override("font_color", COLOR_MUTED)
+	transport_tag.tooltip_text = (
+		"Configure writes a local `godot-ai attach` launch command for this client."
+		if transport_tag.text == "attach"
+		else "Configure writes this client's native URL entry."
+	)
 	## Long error messages from `_verify_post_state` (e.g. "reported remove ok
 	## but verification still reads configured…") used to push the Retry /
 	## Configure button off-screen — the row's Label wanted its full text
@@ -869,6 +885,7 @@ func _build_client_row(client_id: String) -> void:
 	name_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	name_label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
 	row.add_child(name_label)
+	row.add_child(transport_tag)
 
 	var configure_btn := Button.new()
 	configure_btn.text = "Configure"
@@ -946,6 +963,14 @@ func _apply_editor_icon(button: Button, icon_name: String, fallback_text: String
 
 func _update_status() -> void:
 	var connected: bool = _connection != null and _connection.is_connected
+	## Pull the connection's transport snapshot on this existing refresh tick.
+	## `has_method` preserves the plugin self-update seam while an older
+	## Connection instance is still alive under a hot-reloaded dock script.
+	var transport_status: Dictionary = (
+		_connection.get_transport_status()
+		if _connection != null and _connection.has_method("get_transport_status")
+		else {}
+	)
 	## During plugin self-update there's a brief window where this dock
 	## script is already the new version (Godot hot-reloads scripts on
 	## file change) but `_plugin` is still the old `EditorPlugin` instance
@@ -966,8 +991,12 @@ func _update_status() -> void:
 	## One `match`/`elif` chain, one source of truth. Adding a new
 	## spawn outcome = one `ServerStateScript` constant + one arm here +
 	## one body string in `_crash_body_for_state`.
-	var status_text: String
-	var status_color: Color
+	## Default covers both a missing/old Connection instance and an unknown
+	## future transport phase. Every recognized state below overrides it, so
+	## startup grace and settled disconnect have one rendering path.
+	var inside_startup_grace := Time.get_ticks_msec() < _startup_grace_until_msec
+	var status_text := "Starting server…" if inside_startup_grace else "Disconnected"
+	var status_color := COLOR_AMBER if inside_startup_grace else Color.RED
 	if _server_restart_in_progress:
 		status_text = "Restarting server..."
 		status_color = COLOR_AMBER
@@ -995,14 +1024,22 @@ func _update_status() -> void:
 	elif state == ServerStateScript.NO_COMMAND:
 		status_text = "No server command found"
 		status_color = Color.RED
-	elif Time.get_ticks_msec() < _startup_grace_until_msec:
-		## Inside startup grace — distinguish from real disconnect so
-		## first-run users don't assume it's broken while uvx downloads.
-		status_text = "Starting server…"
-		status_color = COLOR_AMBER
-	else:
-		status_text = "Disconnected"
-		status_color = Color.RED
+	elif not transport_status.is_empty():
+		var transport_phase := str(transport_status.get("phase", ""))
+		if transport_phase == "connecting":
+			status_text = _transport_status_text(transport_status)
+			status_color = COLOR_AMBER
+		elif transport_phase == "retrying":
+			status_text = _transport_status_text(transport_status)
+			status_color = COLOR_AMBER
+		elif transport_phase == "closing":
+			status_text = _transport_status_text(transport_status)
+			status_color = COLOR_AMBER
+		elif transport_phase == "blocked":
+			## Exact terminal labels come from lifecycle state above. This is a
+			## generic fallback for a blocked connection without a diagnosis.
+			status_text = _transport_status_text(transport_status)
+			status_color = Color.RED
 
 	## keep_server_on_exit (#800): the reaper env opt-outs are staged at
 	## spawn, so a mid-session toggle only lands on the next server start —
@@ -1012,15 +1049,26 @@ func _update_status() -> void:
 
 	_update_crash_panel(server_status)
 	_refresh_server_version_label(server_status)
+	_refresh_server_label(server_status)
 
-	var changed: bool = connected != _last_connected or status_text != _last_status_text
+	## A transient disconnect reason remains in the transport snapshot until
+	## handshake_ack. Once the dock renders the connection as OPEN, do not pair
+	## its green label with the previous peer's recovery diagnostic.
+	var status_tooltip := "" if connected else str(transport_status.get("reason", ""))
+	var changed: bool = (
+		connected != _last_connected
+		or status_text != _last_status_text
+		or status_tooltip != _last_status_tooltip
+	)
 	if not changed:
 		return
 	var just_connected: bool = connected and not _last_connected
 	_last_connected = connected
 	_last_status_text = status_text
+	_last_status_tooltip = status_tooltip
 	_status_icon.color = status_color
 	_status_label.text = status_text
+	_status_label.tooltip_text = status_tooltip
 	if just_connected:
 		## #739: the server just came up. If the startup uv probe failed
 		## (the reporter's screenshot: green "Server connected" beside a
@@ -1300,13 +1348,42 @@ func _on_port_apply_requested(new_port: int) -> void:
 	_on_reload_plugin()
 
 
-func _refresh_server_label() -> void:
+func _refresh_server_label(server_status: Dictionary = {}) -> void:
 	if _server_label == null:
 		return
 	var ws_port := ClientConfigurator.ws_port()
 	if _plugin != null and _plugin.has_method("get_resolved_ws_port"):
 		ws_port = int(_plugin.get_resolved_ws_port())
-	_server_label.text = "WS: %d  HTTP: %d" % [ws_port, ClientConfigurator.http_port()]
+	var text := "WS: %d  HTTP: %d" % [ws_port, ClientConfigurator.http_port()]
+	if server_status.is_empty() and _plugin != null and _plugin.has_method("get_server_status"):
+		server_status = _plugin.get_server_status()
+	if _plugin != null and _plugin.has_method("get_server_pid"):
+		var ownership := _server_ownership_tag(
+			int(server_status.get("state", ServerStateScript.UNINITIALIZED)),
+			int(_plugin.get_server_pid()),
+		)
+		if not ownership.is_empty():
+			text += "  ·  %s" % ownership
+	_server_label.text = text
+
+
+## #838/#816 step 11: name which backend flavor the editor is riding.
+## Diagnostic display only — never kill proof (external adoption clears PID
+## authority, see server_lifecycle.gd::adopt_compatible_server / #669).
+static func _server_ownership_tag(state: int, server_pid: int) -> String:
+	if state != ServerStateScript.READY:
+		return ""
+	return "plugin-managed backend" if server_pid > 0 else "externally adopted backend"
+
+
+## "attach" when Configure writes a client-owned launch command for this
+## client, "URL" when it writes the client's native URL entry. Derived from
+## descriptor data so the tag can never disagree with what Configure does.
+static func _client_transport_tag(client_id: String) -> String:
+	var client := ClientRegistry.get_by_id(client_id)
+	if client == null:
+		return ""
+	return "URL" if client.command_shape == Client.CommandShape.NONE else "attach"
 
 
 # --- Telemetry setting persistence ---
@@ -1399,10 +1476,6 @@ func _apply_dev_mode_visibility() -> void:
 	_dev_section.visible = dev
 	if _log_viewer != null:
 		_log_viewer.visible = dev
-	## Settings tab's allow-host controls are dev-gated too (#507) — same
-	## single source of truth as the sections above.
-	_apply_allow_hosts_dev_gate(dev)
-
 	# Setup section: visible in dev mode, OR in user mode when uv is missing
 	# (so users can install uv from the dock) — but not while the server
 	# launch is still settling (#744): mid-launch a red "uv: not found" row
@@ -1877,6 +1950,26 @@ func _connected_status_text() -> String:
 	return "Server connected"
 
 
+static func _transport_status_text(snapshot: Dictionary) -> String:
+	## Total over the transport enum for isolated consumers/tests. The dock's
+	## connected fast path renders `_connected_status_text()` before calling it.
+	var phase := str(snapshot.get("phase", ""))
+	var attempt := maxi(1, int(snapshot.get("attempt", 0)))
+	match phase:
+		"connected":
+			return "Server connected"
+		"connecting":
+			return "Connecting — attempt %d" % attempt
+		"retrying":
+			var retry_in_sec := ceili(maxf(0.0, float(snapshot.get("retry_in_sec", 0.0))))
+			return "Retrying in %ds — attempt %d" % [retry_in_sec, attempt]
+		"closing":
+			return "Disconnecting…"
+		"blocked":
+			return "Connection blocked"
+	return "Disconnected"
+
+
 ## Open uv's official install documentation rather than executing an
 ## installer on the user's behalf.
 ##
@@ -1960,7 +2053,8 @@ func _dispatch_client_action(client_id: String, action: String) -> void:
 	## The status-refresh worker uses the same pattern — see
 	## `_perform_initial_client_status_refresh` and
 	## `_request_client_status_refresh`.
-	var server_url := ClientConfigurator.http_url()
+	var launch_context := ClientConfigurator.capture_launch_context()
+	var server_url := ClientConfigurator.server_url_from(launch_context)
 	## #691: refresh the env snapshot on main before this worker starts —
 	## configure/remove resolve CLI + config paths off-thread and must not
 	## race a concurrent spawn window's setenv/unsetenv.
@@ -1972,7 +2066,9 @@ func _dispatch_client_action(client_id: String, action: String) -> void:
 	_client_action_started_msec[client_id] = Time.get_ticks_msec()
 	_client_action_names[client_id] = action
 	var err := thread.start(
-		Callable(self, "_run_client_action_worker").bind(client_id, action, server_url, generation)
+		Callable(self, "_run_client_action_worker").bind(
+			client_id, action, server_url, launch_context, generation
+		)
 	)
 	if err != OK:
 		_client_action_threads.erase(client_id)
@@ -1983,12 +2079,18 @@ func _dispatch_client_action(client_id: String, action: String) -> void:
 		_refresh_clients_summary()
 
 
-func _run_client_action_worker(client_id: String, action: String, server_url: String, generation: int) -> Dictionary:
+func _run_client_action_worker(
+	client_id: String,
+	action: String,
+	server_url: String,
+	launch_context: Dictionary,
+	generation: int,
+) -> Dictionary:
 	var result: Dictionary
 	if action == "remove":
-		result = ClientConfigurator.remove(client_id, server_url)
+		result = ClientConfigurator.remove(client_id, server_url, launch_context)
 	else:
-		result = ClientConfigurator.configure(client_id, server_url)
+		result = ClientConfigurator.configure(client_id, server_url, launch_context)
 	return {
 		"client_id": client_id,
 		"action": action,
@@ -2131,6 +2233,8 @@ func _on_open_clients_window() -> void:
 	## changed the excluded list while the window was closed.
 	_reset_tools_pending_from_setting()
 	_refresh_tools_ui_state()
+	if vision_routing != null:
+		vision_routing.refresh_ui()
 	# popup_centered() with a minsize forces the window to that size and
 	# centers on the parent viewport. Setting .size on a hidden Window
 	# doesn't always take effect, so we force it at popup time here.
@@ -2430,11 +2534,14 @@ func _on_tools_discard_confirmed() -> void:
 # --- Settings tab (allow-host LAN opt-in, #507) ---
 
 func _build_settings_tab(tabs: TabContainer) -> void:
-	## Tab 3 — settings-style controls that don't fit Clients or Tools.
-	## Currently houses the developer-mode-gated `--allow-host` LAN opt-in.
-	## Rendered once on dock construction, mirroring `_build_tools_tab`;
-	## `_reset_allow_hosts_from_setting()` re-syncs the field each time the
-	## window opens (via `_reset_tools_pending_from_setting`).
+	## Tab 3 — settings-style controls that don't fit Clients or Tools: the
+	## Vision Routing section plus the `--allow-host` LAN opt-in behind a
+	## collapsed "Remote access (advanced)" disclosure, so its security
+	## warning renders exactly at the point of configuration. Rendered once
+	## on dock construction, mirroring `_build_tools_tab`;
+	## `_reset_allow_hosts_from_setting()` and `vision_routing.refresh_ui()`
+	## re-sync each time the window opens (via
+	## `_reset_tools_pending_from_setting` / `_on_open_clients_window`).
 	var settings_tab := VBoxContainer.new()
 	settings_tab.add_theme_constant_override("separation", 8)
 	var settings_margin := _build_margin_container()
@@ -2442,20 +2549,24 @@ func _build_settings_tab(tabs: TabContainer) -> void:
 	settings_margin.add_child(settings_tab)
 	tabs.add_child(settings_margin)
 
-	## Shown in place of the gated controls when developer mode is off —
-	## same gate the dev section uses (see `_apply_dev_mode_visibility`).
-	_allow_hosts_dev_gate_label = Label.new()
-	_allow_hosts_dev_gate_label.text = (
-		"Enable Developer mode (bottom of the dock) to edit remote-access settings."
-	)
-	_allow_hosts_dev_gate_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-	_allow_hosts_dev_gate_label.add_theme_color_override("font_color", COLOR_MUTED)
-	_allow_hosts_dev_gate_label.size_flags_horizontal = Control.SIZE_EXPAND_FILL
-	settings_tab.add_child(_allow_hosts_dev_gate_label)
+	## Vision Routing is configuration, not status — it lives here rather
+	## than in the dock. Not dev-gated: it is the Settings tab's primary
+	## content and must work for every user.
+	if vision_routing != null:
+		vision_routing.build_section(settings_tab)
+
+	## Remote access (advanced): collapsed by default; auto-expands when a
+	## non-empty CIDR allowlist is already configured so an active
+	## off-loopback bind is never hidden behind a collapsed header. The
+	## disclosure replaces the former developer-mode gate for this block.
+	_allow_hosts_fold = FoldableContainer.new()
+	_allow_hosts_fold.title = "Remote access (advanced)"
+	_allow_hosts_fold.folded = true
+	settings_tab.add_child(_allow_hosts_fold)
 
 	_allow_hosts_section = VBoxContainer.new()
 	_allow_hosts_section.add_theme_constant_override("separation", 6)
-	settings_tab.add_child(_allow_hosts_section)
+	_allow_hosts_fold.add_child(_allow_hosts_section)
 
 	_allow_hosts_section.add_child(_make_header("Allow remote hosts (CIDR)"))
 
@@ -2510,25 +2621,27 @@ func _build_settings_tab(tabs: TabContainer) -> void:
 	_allow_hosts_section.add_child(_allow_hosts_apply_btn)
 
 	_reset_allow_hosts_from_setting()
-	## Apply the current dev-mode gate — `_build_ui` runs
-	## `_apply_dev_mode_visibility()` after all tabs are built, but keep this
-	## self-consistent for any future caller that builds the tab alone.
-	_apply_allow_hosts_dev_gate(_dev_mode_toggle != null and _dev_mode_toggle.button_pressed)
-
-
-func _apply_allow_hosts_dev_gate(dev: bool) -> void:
-	if _allow_hosts_section != null:
-		_allow_hosts_section.visible = dev
-	if _allow_hosts_dev_gate_label != null:
-		_allow_hosts_dev_gate_label.visible = not dev
 
 
 func _reset_allow_hosts_from_setting() -> void:
 	_allow_hosts_saved = ClientConfigurator.allow_hosts()
+	_refresh_allow_hosts_fold_state()
 	if _allow_hosts_edit == null:
 		return
 	_allow_hosts_edit.text = _allow_hosts_saved
 	_refresh_allow_hosts_ui_state()
+
+
+## Auto-expands the "Remote access (advanced)" disclosure whenever a
+## non-empty allowlist is configured, so an active off-loopback bind is
+## never hidden behind a collapsed header.
+func _refresh_allow_hosts_fold_state() -> void:
+	if _allow_hosts_fold == null:
+		return
+	if ClientConfigurator.allow_hosts().is_empty():
+		_allow_hosts_fold.fold()
+	else:
+		_allow_hosts_fold.expand()
 
 
 func _allow_hosts_is_dirty() -> bool:
@@ -2799,7 +2912,8 @@ func _perform_initial_client_status_refresh() -> void:
 	_warm_strategy_bytecode()
 
 	var generation := _begin_client_status_refresh_run()
-	var server_url := ClientConfigurator.http_url()
+	var launch_context := ClientConfigurator.capture_launch_context()
+	var server_url := ClientConfigurator.server_url_from(launch_context)
 	var all_probes: Array[Dictionary] = []
 
 	for client_id in _client_rows:
@@ -2816,7 +2930,7 @@ func _perform_initial_client_status_refresh() -> void:
 	_client_status_refresh_thread = Thread.new()
 	var err := _client_status_refresh_thread.start(
 		Callable(self, "_run_client_status_refresh_worker").bind(
-			all_probes, server_url, generation
+			all_probes, server_url, launch_context, generation
 		)
 	)
 	if err != OK:
@@ -2928,12 +3042,15 @@ func _request_client_status_refresh(force: bool = false) -> bool:
 	var client_probes: Array[Dictionary] = []
 	for client_id in _client_rows:
 		client_probes.append(ClientConfigurator.client_status_probe_snapshot(String(client_id)))
-	var server_url := ClientConfigurator.http_url()
+	var launch_context := ClientConfigurator.capture_launch_context()
+	var server_url := ClientConfigurator.server_url_from(launch_context)
 
 	var generation := _begin_client_status_refresh_run()
 	_client_status_refresh_thread = Thread.new()
 	var err := _client_status_refresh_thread.start(
-		Callable(self, "_run_client_status_refresh_worker").bind(client_probes, server_url, generation)
+		Callable(self, "_run_client_status_refresh_worker").bind(
+			client_probes, server_url, launch_context, generation
+		)
 	)
 	if err != OK:
 		_refresh_state = ClientRefreshStateScript.IDLE
@@ -2988,8 +3105,17 @@ func _retry_deferred_client_status_refresh() -> void:
 		_request_client_status_refresh(force)
 
 
-func _run_client_status_refresh_worker(client_probes: Array[Dictionary], server_url: String, generation: int) -> Dictionary:
+func _run_client_status_refresh_worker(
+	client_probes: Array[Dictionary],
+	server_url: String,
+	launch_context: Dictionary,
+	generation: int,
+) -> Dictionary:
 	var results: Dictionary = {}
+	# Command-shaped clients share one attach launch. Discovery can be the
+	# dominant cold-cache cost, so resolve it once per refresh worker rather
+	# than once for Claude Desktop and again for Codex.
+	var resolved_launch := ClientConfigurator.resolve_attach_launch(launch_context)
 	for probe in client_probes:
 		var client_id := String(probe.get("id", ""))
 		if client_id.is_empty():
@@ -2997,7 +3123,9 @@ func _run_client_status_refresh_worker(client_probes: Array[Dictionary], server_
 		var details := ClientConfigurator.check_status_details_for_url_with_cli_path(
 			client_id,
 			server_url,
-			String(probe.get("cli_path", ""))
+			String(probe.get("cli_path", "")),
+			launch_context,
+			resolved_launch,
 		)
 		var installed := bool(probe.get("installed", false))
 		results[client_id] = {
