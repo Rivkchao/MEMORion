@@ -10,7 +10,7 @@ func _ready() -> void:
 	StoryManager.init($HUD/DialogueBox, $HUD/PuzzleUI, $HUD/MatchingPuzzle, $HUD/WirePuzzle, $HUD/UnpackingPuzzle)
 	GameManager.init($HUD)
 	GameManager.set_objective("Cari bintang tersembunyi!", 3, "bintang")
-	
+	RockPuzzleManager.setup_camera(camera_rig, Vector3(-25, 0, 0))
 	# Test unpacking
 	await get_tree().create_timer(1.0).timeout
 	StoryManager.start_unpacking({

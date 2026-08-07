@@ -124,10 +124,17 @@ shadow_opacity = 0.8
 
 [node name="Player" parent="." unique_id=869527826 instance=ExtResource("8_rybkg")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 10, 0)
+walk_speed = null
+sprint_speed = null
+jump_force = null
+gravity = null
 camera_rig = NodePath("../CameraRig")
+fall_threshold = -2.0
+respawn_point = null
 
-[node name="CameraRig" parent="." unique_id=1539430050 instance=ExtResource("9_jjykw")]
+[node name="CameraRig" parent="." unique_id=1539430050 node_paths=PackedStringArray("target") instance=ExtResource("9_jjykw")]
 transform = Transform3D(0.5, 0, 0, 0, 0.5, 0, 0, 0, 0.5, 0, 1, 0.110738784)
+target = NodePath("../Player")
 fov_walking = 65.0
 
 [node name="Terminal" parent="." unique_id=219874606 instance=ExtResource("6_llh03")]
@@ -265,36 +272,36 @@ mesh = SubResource("PlaneMesh_472ct")
 top_level = true
 collision_mask = 2
 
-[node name="RockSlot" parent="." unique_id=993083429 instance=ExtResource("9_kl82j")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -25.549837, 0, 0)
+[node name="RockSlot1" parent="." unique_id=993083429 instance=ExtResource("9_kl82j")]
+transform = Transform3D(1, 0, 0, 0, 1.17, 0, 0, 0, 1.39, -25.549837, 0, 0)
 slot_order = 1
 
 [node name="RockSlot2" parent="." unique_id=649582850 instance=ExtResource("9_kl82j")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -29.095585, 0, 0.87303495)
+transform = Transform3D(1, 0, 0, 0, 1.46, 0, 0, 0, 1.48, -29.095585, 0, 0.87303495)
 slot_order = 3
 
 [node name="RockSlot4" parent="." unique_id=220031889 instance=ExtResource("9_kl82j")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -30.911777, 0, -0.80677104)
+transform = Transform3D(1, 0, 0, 0, 1.41, 0, 0, 0, 1.32, -30.911777, 0, -0.80677104)
 slot_order = 4
 
 [node name="RockSlot5" parent="." unique_id=210471007 instance=ExtResource("9_kl82j")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -33.284103, 0, 0.5394585)
+transform = Transform3D(1, 0, 0, 0, 1.42, 0, 0, 0, 1.81, -33.284103, 0, 0.5394585)
 slot_order = 5
 
 [node name="RockSlot3" parent="." unique_id=103017603 instance=ExtResource("9_kl82j")]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -27.339762, 0, -0.84927964)
+transform = Transform3D(1.83, 0, 0, 0, 1.64, 0, 0, 0, 1.68, -27.339762, 0, -0.84927964)
 slot_order = 2
 
 [node name="StaticBody3D3" type="StaticBody3D" parent="." unique_id=92295311]
 top_level = true
 collision_mask = 2
 
-[node name="DraggableRock" parent="." unique_id=1877361224 instance=ExtResource("10_bcpnl")]
+[node name="DraggableRock2" parent="." unique_id=1877361224 instance=ExtResource("10_bcpnl")]
 transform = Transform3D(1.8303037, 0, 0, 0, 1.6428149, 0, 0, 0, 1.6853626, -21.480776, 0, 0)
 rock_size = 2
 
-[node name="DraggableRock2" parent="." unique_id=813980735 instance=ExtResource("10_bcpnl")]
-transform = Transform3D(1, 0, 0, 0, 1.1698161, 0, 0, 0, 1.3921926, -20.770845, 0, 1.9766085)
+[node name="DraggableRock1" parent="." unique_id=813980735 instance=ExtResource("10_bcpnl")]
+transform = Transform3D(1, 0, 0, 0, 1.1698161, 0, 0, 0, 1.3921926, -20.841318, 0, 1.9766085)
 
 [node name="DraggableRock3" parent="." unique_id=2084932500 instance=ExtResource("10_bcpnl")]
 transform = Transform3D(1, 0, 0, 0, 1.4678085, 0, 0, 0, 1.4811163, -20.770845, 0, -1.9876924)
@@ -304,18 +311,18 @@ rock_size = 3
 transform = Transform3D(1, 0, 0, 0, 1.414631, 0, 0, 0, 1.3266978, -19.815271, 0, -1.9876924)
 rock_size = 4
 
+[node name="DraggableRock5" parent="." unique_id=1272323296 instance=ExtResource("10_bcpnl")]
+transform = Transform3D(1, 0, 0, 0, 1.4207516, 0, 0, 0, 1.8142995, -19.815271, 0.061444283, -0.29127383)
+rock_size = 5
+
 [node name="RockArea" type="Area3D" parent="." unique_id=1634890282]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -17.531204, 0.061444283, -0.29127383)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 2.3250961, -17.531204, 0.061444283, -2.537915)
 collision_mask = 3
 script = ExtResource("11_1kqwc")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="RockArea" unique_id=514944826]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.6708374, 2.4935303)
 shape = SubResource("BoxShape3D_472ct")
-
-[node name="DraggableRock5" parent="." unique_id=1272323296 instance=ExtResource("10_bcpnl")]
-transform = Transform3D(1, 0, 0, 0, 1.4207516, 0, 0, 0, 1.8142995, -19.815271, 0.061444283, -0.29127383)
-rock_size = 5
 
 [node name="StaticBody3D5" type="StaticBody3D" parent="." unique_id=613791264]
 top_level = true
@@ -334,5 +341,29 @@ top_level = true
 collision_mask = 0
 
 [node name="StaticBody3D9" type="StaticBody3D" parent="." unique_id=135898630]
+top_level = true
+collision_mask = 0
+
+[node name="StaticBody3D10" type="StaticBody3D" parent="." unique_id=376258554]
+top_level = true
+collision_mask = 0
+
+[node name="StaticBody3D11" type="StaticBody3D" parent="." unique_id=886223360]
+top_level = true
+collision_mask = 0
+
+[node name="StaticBody3D12" type="StaticBody3D" parent="." unique_id=650690309]
+top_level = true
+collision_mask = 0
+
+[node name="StaticBody3D13" type="StaticBody3D" parent="." unique_id=177720896]
+top_level = true
+collision_mask = 0
+
+[node name="StaticBody3D14" type="StaticBody3D" parent="." unique_id=1713672681]
+top_level = true
+collision_mask = 0
+
+[node name="StaticBody3D15" type="StaticBody3D" parent="." unique_id=2069798342]
 top_level = true
 collision_mask = 0

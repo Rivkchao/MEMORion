@@ -46,6 +46,7 @@ func _input(event: InputEvent) -> void:
 		pitch = clamp(pitch, min_pitch, max_pitch)
 
 func _physics_process(delta: float) -> void:
+	
 	if target == null:
 		return
 	
@@ -63,6 +64,12 @@ func _physics_process(delta: float) -> void:
 
 func _handle_fov(delta: float) -> void:
 	var player = target.get_parent()
+	
+	# Guard — pastikan parent punya velocity (CharacterBody3D)
+	if not player is CharacterBody3D:
+		camera.fov = lerp(camera.fov, fov_default, fov_speed * delta)
+		return
+	
 	var is_moving = Vector2(player.velocity.x, player.velocity.z).length() > 0.1
 	var target_fov = fov_walking if is_moving else fov_default
 	camera.fov = lerp(camera.fov, target_fov, fov_speed * delta)

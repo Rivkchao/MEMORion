@@ -16,6 +16,12 @@ var joystick_input: Vector2 = Vector2.ZERO
 var current_interactable: Interactable = null
 var current_speed: float = walk_speed
 
+@export var fall_threshold: float = -5.0
+var last_safe_position: Vector3 = Vector3.ZERO
+
+func _ready() -> void:
+	last_safe_position = global_position
+
 func _physics_process(delta: float) -> void:
 	_apply_gravity(delta)
 	_handle_movement()
@@ -23,7 +29,17 @@ func _physics_process(delta: float) -> void:
 	_handle_rotation(delta)
 	_handle_animation()
 	_check_interact_prompt()
+	_check_fall()
 	move_and_slide()
+
+func _check_fall() -> void:
+	if global_position.y < fall_threshold:
+		global_position = last_safe_position
+		velocity = Vector3.ZERO
+		return
+	
+	if is_on_floor():
+		last_safe_position = global_position
 
 func _apply_gravity(delta: float) -> void:
 	if not is_on_floor():
