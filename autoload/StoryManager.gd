@@ -1,5 +1,7 @@
 extends Node
 
+signal wire_puzzle_completed(is_correct: bool)
+
 var dialogue_box: Node = null
 var puzzle_ui: Node = null
 var matching_puzzle: Node = null
@@ -12,6 +14,11 @@ func init(db: Node, pu: Node, mp: Node = null, wp: Node = null, up: Node = null)
 	matching_puzzle = mp
 	wire_puzzle = wp
 	unpacking_puzzle = up
+	if wire_puzzle != null:
+		wire_puzzle.puzzle_completed.connect(_on_wire_puzzle_completed)
+
+func _on_wire_puzzle_completed(is_correct: bool) -> void:
+	wire_puzzle_completed.emit(is_correct)
 
 func start_unpacking(puzzle_data: Dictionary) -> void:
 	if unpacking_puzzle == null:
@@ -22,7 +29,7 @@ func start_wire_puzzle() -> void:
 	if wire_puzzle == null:
 		return
 	wire_puzzle.start()
-	
+
 func start_dialogue(lines: Array[String], npc_name: String = "") -> void:
 	if dialogue_box == null:
 		return

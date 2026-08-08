@@ -19,6 +19,7 @@ var dragging_from: int = -1
 var drag_pos: Vector2 = Vector2.ZERO
 var is_complete: bool = false
 var panel_rect: Rect2
+var close_button_rect: Rect2
 signal puzzle_completed(is_correct: bool)
 
 func setup() -> void:
@@ -40,7 +41,11 @@ func setup() -> void:
 	var panel_x = (size.x - panel_width) / 2
 	var panel_y = (size.y - panel_height) / 2
 	panel_rect = Rect2(panel_x, panel_y, panel_width, panel_height)
-	
+	close_button_rect = Rect2(
+		panel_rect.position.x + panel_rect.size.x - 40,
+		panel_rect.position.y - 15,
+		30, 30
+	)
 	# Jarak antar kabel lebih pendek seperti Among Us
 	var wire_spacing = panel_height / float(WIRE_COUNT + 1)
 	var left_offset = panel_x + 80
@@ -122,28 +127,48 @@ func _draw() -> void:
 	for i in range(WIRE_COUNT):
 		var color = WIRE_COLORS[i]
 		draw_circle(left_points[i], 18, color)
-		draw_string(ThemeDB.fallback_font, left_points[i] - Vector2(6, -5), WIRE_LABELS[i], HORIZONTAL_ALIGNMENT_LEFT, -1, 14, Color.WHITE)
+		draw_string(ThemeDB.fallback_font, left_points[i] - Vector2(6, -5), WIRE_LABELS[i], HORIZONTAL_ALIGNMENT_LEFT, -1, 20, Color.WHITE)
 	
 	# Gambar titik kanan (diacak)
 	for i in range(WIRE_COUNT):
 		var original_idx = right_order[i]
 		var color = WIRE_COLORS[original_idx]
 		draw_circle(right_points[i], 18, color)
-		draw_string(ThemeDB.fallback_font, right_points[i] - Vector2(6, -5), WIRE_LABELS[original_idx], HORIZONTAL_ALIGNMENT_LEFT, -1, 14, Color.WHITE)
+		draw_string(ThemeDB.fallback_font, right_points[i] - Vector2(6, -5), WIRE_LABELS[original_idx], HORIZONTAL_ALIGNMENT_LEFT, -1, 20, Color.WHITE)
 	
 	# Gambar koneksi yang sudah dibuat
 	for left_idx in connections:
 		var right_idx = connections[left_idx]
 		var color = WIRE_COLORS[left_idx]
-		draw_line(left_points[left_idx], right_points[right_idx], color, 6)
+		draw_line(left_points[left_idx], right_points[right_idx], color, 10)
 	
 	# Gambar kabel yang sedang di-drag
 	if dragging_from >= 0:
 		var color = WIRE_COLORS[dragging_from]
-		draw_line(left_points[dragging_from], drag_pos, color, 6)
+		draw_line(left_points[dragging_from], drag_pos, color, 10)
 		draw_circle(drag_pos, 12, color)
+	
+	# Tombol close (X)
+	draw_rect(close_button_rect, Color(0.7, 0.15, 0.15))
+	draw_rect(close_button_rect, Color(1, 0.3, 0.3), false, 2)
+	var pad = 8
+	draw_line(
+		close_button_rect.position + Vector2(pad, pad),
+		close_button_rect.position + close_button_rect.size - Vector2(pad, pad),
+		Color.WHITE, 3
+	)
+	draw_line(
+		close_button_rect.position + Vector2(close_button_rect.size.x - pad, pad),
+		close_button_rect.position + Vector2(pad, close_button_rect.size.y - pad),
+		Color.WHITE, 3
+	)
 
 func _gui_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
+		if close_button_rect.has_point(event.position):
+			_on_close_pressed()
+			return
+	
 	if is_complete:
 		return
 	
@@ -181,7 +206,8 @@ func _gui_input(event: InputEvent) -> void:
 		if drag_pos.distance_to(event.position) > 2:
 			drag_pos = event.position
 			queue_redraw()
-
+	
+	
 func _check_complete() -> void:
 	var all_correct = true
 	for left_idx in connections:
@@ -202,4 +228,7 @@ func _check_complete() -> void:
 	else:
 		StoryManager.start_dialogue(["Hampir benar! Gak papa, kita coba lagi ya!"], "Rion")
 	
+	get_parent().hide()
+
+func _on_close_pressed() -> void:
 	get_parent().hide()

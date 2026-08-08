@@ -24,6 +24,7 @@ mesh = ExtResource("2_7d6gb")
 [node name="OmniLight3D" type="OmniLight3D" parent="." unique_id=1790505413]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.18688568, 0.2124143, 0.5040531)
 light_color = Color(1, 0, 0, 1)
+light_energy = 2.0
 
 [node name="OmniLight3D2" type="OmniLight3D" parent="." unique_id=639702552]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.1831756, 0.2124143, 0.5040531)

@@ -1,6 +1,15 @@
 [gd_scene format=3 uid="uid://chcb0n1sv6kvt"]
 
 [ext_resource type="Script" uid="uid://b2mk7b4irl4hs" path="res://unpacking_puzzle.gd" id="1_xapwd"]
+[ext_resource type="PackedScene" uid="uid://bmudh7x6dsnbw" path="res://unpack_slot.tscn" id="2_ofq0y"]
+[ext_resource type="PackedScene" uid="uid://d2hntkjmer33o" path="res://unpack_item.tscn" id="3_t6tar"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_6ksqm"]
+bg_color = Color(0.99215686, 0.9647059, 0.9254902, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
 
 [node name="UnpackingPuzzle" type="CanvasLayer" unique_id=1751902816]
 script = ExtResource("1_xapwd")
@@ -25,6 +34,7 @@ offset_right = 0.5
 offset_bottom = 13.5
 grow_horizontal = 2
 grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_6ksqm")
 
 [node name="MarginContainer" type="MarginContainer" parent="PopupPanel" unique_id=1331497081]
 layout_mode = 2
@@ -34,9 +44,24 @@ layout_mode = 2
 
 [node name="TitleLabel" type="Label" parent="PopupPanel/MarginContainer/VBoxContainer" unique_id=1218815819]
 layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+text = "Bantu Rion menata barang-barang ini!"
+horizontal_alignment = 1
 
 [node name="HintLabel" type="Label" parent="PopupPanel/MarginContainer/VBoxContainer" unique_id=1576459657]
 layout_mode = 2
+theme_override_colors/font_color = Color(0, 0, 0, 1)
+text = "Rapikan barang ke tempat yang sesuai, ya."
+horizontal_alignment = 1
 
 [node name="GameArea" type="Control" parent="PopupPanel/MarginContainer/VBoxContainer" unique_id=1901153725]
+custom_minimum_size = Vector2(600, 350)
 layout_mode = 2
+
+[node name="SlotsContainer" type="Node2D" parent="PopupPanel/MarginContainer/VBoxContainer/GameArea" unique_id=1881993930]
+
+[node name="UnpackSlot" parent="PopupPanel/MarginContainer/VBoxContainer/GameArea/SlotsContainer" unique_id=2033797567 instance=ExtResource("2_ofq0y")]
+
+[node name="ItemsContainer" type="Node2D" parent="PopupPanel/MarginContainer/VBoxContainer/GameArea" unique_id=998426410]
+
+[node name="UnpackItem" parent="PopupPanel/MarginContainer/VBoxContainer/GameArea/ItemsContainer" unique_id=1756647636 instance=ExtResource("3_t6tar")]
