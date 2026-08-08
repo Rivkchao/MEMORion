@@ -21,6 +21,7 @@ GameManager="*uid://dcc8udvj0vqi8"
 NLPManager="*uid://cnbvt12ms3ovq"
 AIManager="*uid://cg561dukvvvws"
 RockPuzzleManager="*uid://5b2qoi6ui3q3"
+SceneLoader="*uid://dohlbqyrqwl3c"
 
 [display]
 
