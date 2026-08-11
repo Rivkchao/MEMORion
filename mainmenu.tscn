@@ -1,0 +1,68 @@
+[gd_scene format=3 uid="uid://cw47ddic68wyy"]
+
+[ext_resource type="Script" uid="uid://c66qogvhiaq4o" path="res://mainmenu.gd" id="1_cmhrf"]
+[ext_resource type="Theme" uid="uid://c4dp0oqkunfvm" path="res://button.tres" id="2_d2nv2"]
+
+[sub_resource type="Theme" id="Theme_277qs"]
+
+[node name="MainMenu" type="Control" unique_id=1172761015]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_cmhrf")
+
+[node name="TextureRect" type="TextureRect" parent="." unique_id=1072670569]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+stretch_mode = 6
+
+[node name="CenterContainer" type="CenterContainer" parent="." unique_id=24234645]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="TextureRect" type="TextureRect" parent="CenterContainer" unique_id=1277328375]
+layout_mode = 2
+
+[node name="VBoxContainer" type="VBoxContainer" parent="." unique_id=2109697409]
+custom_minimum_size = Vector2(300, 0)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -151.0
+offset_top = -21.0
+offset_right = 149.0
+offset_bottom = 23.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("2_d2nv2")
+theme_override_constants/separation = 20
+
+[node name="Button" type="Button" parent="VBoxContainer" unique_id=433023114]
+layout_mode = 2
+theme = SubResource("Theme_277qs")
+text = "Start"
+
+[node name="Button2" type="Button" parent="VBoxContainer" unique_id=217779521]
+layout_mode = 2
+
+[node name="Button3" type="Button" parent="VBoxContainer" unique_id=1286180659]
+layout_mode = 2
+
+[node name="Button4" type="Button" parent="VBoxContainer" unique_id=571602716]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="." unique_id=793631692]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0

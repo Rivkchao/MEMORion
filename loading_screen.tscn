@@ -10,6 +10,8 @@
 [ext_resource type="Texture2D" uid="uid://bm8wlelef7nkh" path="res://assets/anim/frame0006.png" id="8_632gl"]
 [ext_resource type="Texture2D" uid="uid://dpjie7ugtb0wn" path="res://assets/anim/frame0007.png" id="9_bufdl"]
 
+[sub_resource type="Theme" id="Theme_jrdmd"]
+
 [sub_resource type="SpriteFrames" id="SpriteFrames_c6lqs"]
 animations = [{
 "frames": [{
@@ -42,18 +44,34 @@ animations = [{
 "speed": 6.0
 }]
 
-[node name="LoadingScreen" type="Control" unique_id=894722806]
-layout_mode = 3
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
+[node name="LoadingScreen" type="CanvasLayer" unique_id=132151679]
 script = ExtResource("1_jrdmd")
 
-[node name="ProgressBar" type="ProgressBar" parent="." unique_id=1207079108]
+[node name="Control" type="Control" parent="." unique_id=1288007412]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="ColorRect" type="ColorRect" parent="Control" unique_id=1074636445]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="ProgressBar" type="ProgressBar" parent="Control" unique_id=1207079108]
 layout_mode = 0
 offset_right = 4.0
 offset_bottom = 27.0
+theme = SubResource("Theme_jrdmd")
 
-[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="." unique_id=1367368880]
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="Control" unique_id=1367368880]
 sprite_frames = SubResource("SpriteFrames_c6lqs")
 frame_progress = 0.1933882
+
+[node name="Label" type="Label" parent="Control" unique_id=732355380]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+text = "Memuat..."

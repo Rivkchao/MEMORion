@@ -1,8 +1,10 @@
 [gd_scene format=3 uid="uid://chcb0n1sv6kvt"]
 
 [ext_resource type="Script" uid="uid://b2mk7b4irl4hs" path="res://unpacking_puzzle.gd" id="1_xapwd"]
-[ext_resource type="PackedScene" uid="uid://bmudh7x6dsnbw" path="res://unpack_slot.tscn" id="2_ofq0y"]
-[ext_resource type="PackedScene" uid="uid://d2hntkjmer33o" path="res://unpack_item.tscn" id="3_t6tar"]
+[ext_resource type="Script" uid="uid://d02ytf1lidv51" path="res://unpack_slot.gd" id="2_t6tar"]
+[ext_resource type="Texture2D" uid="uid://c61st46qhhxag" path="res://Grass.png" id="3_4not2"]
+[ext_resource type="Texture2D" uid="uid://cuvn4oyn4nrcl" path="res://Dirt.png" id="3_8iwnc"]
+[ext_resource type="Script" uid="uid://fsd3mqvau0aj" path="res://unpack_item.gd" id="4_t6tar"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_6ksqm"]
 bg_color = Color(0.99215686, 0.9647059, 0.9254902, 1)
@@ -10,6 +12,8 @@ corner_radius_top_left = 16
 corner_radius_top_right = 16
 corner_radius_bottom_right = 16
 corner_radius_bottom_left = 16
+
+[sub_resource type="RectangleShape2D" id="RectangleShape2D_c6lqs"]
 
 [node name="UnpackingPuzzle" type="CanvasLayer" unique_id=1751902816]
 script = ExtResource("1_xapwd")
@@ -60,8 +64,31 @@ layout_mode = 2
 
 [node name="SlotsContainer" type="Node2D" parent="PopupPanel/MarginContainer/VBoxContainer/GameArea" unique_id=1881993930]
 
-[node name="UnpackSlot" parent="PopupPanel/MarginContainer/VBoxContainer/GameArea/SlotsContainer" unique_id=2033797567 instance=ExtResource("2_ofq0y")]
+[node name="UnpackSlot" type="Node2D" parent="PopupPanel/MarginContainer/VBoxContainer/GameArea/SlotsContainer" unique_id=2033797567]
+script = ExtResource("2_t6tar")
+
+[node name="Sprite2D" type="Sprite2D" parent="PopupPanel/MarginContainer/VBoxContainer/GameArea/SlotsContainer/UnpackSlot" unique_id=792173588]
+texture = ExtResource("3_4not2")
+
+[node name="Label" type="Label" parent="PopupPanel/MarginContainer/VBoxContainer/GameArea/SlotsContainer/UnpackSlot" unique_id=1871844865]
+offset_right = 40.0
+offset_bottom = 23.0
 
 [node name="ItemsContainer" type="Node2D" parent="PopupPanel/MarginContainer/VBoxContainer/GameArea" unique_id=998426410]
 
-[node name="UnpackItem" parent="PopupPanel/MarginContainer/VBoxContainer/GameArea/ItemsContainer" unique_id=1756647636 instance=ExtResource("3_t6tar")]
+[node name="UnpackItem" type="Control" parent="PopupPanel/MarginContainer/VBoxContainer/GameArea/ItemsContainer" unique_id=59785343]
+layout_mode = 3
+anchors_preset = 0
+script = ExtResource("4_t6tar")
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PopupPanel/MarginContainer/VBoxContainer/GameArea/ItemsContainer/UnpackItem" unique_id=521701023]
+shape = SubResource("RectangleShape2D_c6lqs")
+
+[node name="Sprite2D" type="Sprite2D" parent="PopupPanel/MarginContainer/VBoxContainer/GameArea/ItemsContainer/UnpackItem" unique_id=1023980045]
+texture = ExtResource("3_8iwnc")
+
+[node name="Label" type="Label" parent="PopupPanel/MarginContainer/VBoxContainer/GameArea/ItemsContainer/UnpackItem" unique_id=1106137320]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 23.0
+text = "test"

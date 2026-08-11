@@ -22,7 +22,12 @@ func _ready() -> void:
 	hide()
 	hint_label.text = "Rapikan barang ke tempat yang sesuai, ya."
 	title_label.text = puzzle_title
-
+	for child in items_container.get_children():
+		if child is UnpackItem:
+			items.append(child)
+			child.picked.connect(_on_item_picked)
+			print("connected: ", child.name)
+		
 	for child in slots_container.get_children():
 		if child is UnpackSlot:
 			slots.append(child)
@@ -35,6 +40,7 @@ func _ready() -> void:
 func start(puzzle_data: Dictionary = {}) -> void:
 	if puzzle_data.has("title"):
 		title_label.text = puzzle_data["title"]
+	game_area.mouse_filter = Control.MOUSE_FILTER_IGNORE
 
 	var positions: Array = []
 	for item in items:
@@ -77,7 +83,8 @@ func _drop_item(item: UnpackItem) -> void:
 	for slot in slots:
 		if slot.occupied:
 			continue
-		if slot.get_world_rect().has_point(item.global_position):
+		var item_center = item.global_position + item.size / 2
+		if slot.get_world_rect().has_point(item_center):
 			if slot.accepts == item.item_type:
 				var tween = create_tween()
 				tween.tween_property(item, "global_position", slot.global_position, 0.15)\
@@ -92,7 +99,7 @@ func _drop_item(item: UnpackItem) -> void:
 
 	if not snapped:
 		var tween = create_tween()
-		tween.tween_property(item, "position", item.original_pos, 0.25)\
+		tween.tween_property(item, "global_position", item.original_pos, 0.25)\
 			.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 
 	dragging_item = null
