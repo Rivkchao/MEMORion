@@ -2,20 +2,21 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://cskbgt5a0qs1f"
-path="res://.godot/imported/Untitled design(9).png-0cb74743db2bc0213b80dbcbf0316ce2.ctex"
+uid="uid://cuvn4oyn4nrcl"
+path.s3tc="res://.godot/imported/Dirt.png-cc1fb26691f8e5bcf036ffa7faba0c81.s3tc.ctex"
 metadata={
-"vram_texture": false
+"imported_formats": ["s3tc_bptc"],
+"vram_texture": true
 }
 
 [deps]
 
-source_file="res://assets/Texture/Untitled design(9).png"
-dest_files=["res://.godot/imported/Untitled design(9).png-0cb74743db2bc0213b80dbcbf0316ce2.ctex"]
+source_file="res://Dirt.png"
+dest_files=["res://.godot/imported/Dirt.png-cc1fb26691f8e5bcf036ffa7faba0c81.s3tc.ctex"]
 
 [params]
 
-compress/mode=0
+compress/mode=2
 compress/high_quality=false
 compress/lossy_quality=0.7
 compress/uastc_level=0
@@ -23,9 +24,9 @@ compress/rdo_quality_loss=0.0
 compress/hdr_compression=1
 compress/normal_map=0
 compress/channel_pack=0
-mipmaps/generate=false
+mipmaps/generate=true
 mipmaps/limit=-1
-roughness/mode=0
+roughness/mode=1
 roughness/src_normal=""
 process/channel_remap/red=0
 process/channel_remap/green=1

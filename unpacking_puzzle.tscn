@@ -1,94 +1,122 @@
 [gd_scene format=3 uid="uid://chcb0n1sv6kvt"]
 
 [ext_resource type="Script" uid="uid://b2mk7b4irl4hs" path="res://unpacking_puzzle.gd" id="1_xapwd"]
-[ext_resource type="Script" uid="uid://d02ytf1lidv51" path="res://unpack_slot.gd" id="2_t6tar"]
-[ext_resource type="Texture2D" uid="uid://c61st46qhhxag" path="res://Grass.png" id="3_4not2"]
-[ext_resource type="Texture2D" uid="uid://cuvn4oyn4nrcl" path="res://Dirt.png" id="3_8iwnc"]
-[ext_resource type="Script" uid="uid://fsd3mqvau0aj" path="res://unpack_item.gd" id="4_t6tar"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_6ksqm"]
-bg_color = Color(0.99215686, 0.9647059, 0.9254902, 1)
+bg_color = Color(0.992157, 0.964706, 0.92549, 1)
 corner_radius_top_left = 16
 corner_radius_top_right = 16
 corner_radius_bottom_right = 16
 corner_radius_bottom_left = 16
 
-[sub_resource type="RectangleShape2D" id="RectangleShape2D_c6lqs"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_box"]
+bg_color = Color(0.85, 0.75, 0.6, 1.0)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
 
-[node name="UnpackingPuzzle" type="CanvasLayer" unique_id=1751902816]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_shelf"]
+bg_color = Color(0.9, 0.95, 1.0, 1.0)
+corner_radius_top_left = 8
+corner_radius_top_right = 8
+corner_radius_bottom_right = 8
+corner_radius_bottom_left = 8
+
+[node name="UnpackingPuzzle" type="CanvasLayer"]
 script = ExtResource("1_xapwd")
 
-[node name="Dimmer" type="ColorRect" parent="." unique_id=1085834118]
+[node name="Dimmer" type="ColorRect" parent="."]
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-color = Color(0, 0, 0, 1)
+color = Color(0, 0, 0, 0.7)
 
-[node name="PopupPanel" type="PanelContainer" parent="." unique_id=362573025]
+[node name="PopupPanel" type="PanelContainer" parent="."]
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -0.5
-offset_top = -13.5
-offset_right = 0.5
-offset_bottom = 13.5
+offset_left = -400.0
+offset_top = -250.0
+offset_right = 400.0
+offset_bottom = 250.0
 grow_horizontal = 2
 grow_vertical = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_6ksqm")
 
-[node name="MarginContainer" type="MarginContainer" parent="PopupPanel" unique_id=1331497081]
+[node name="MarginContainer" type="MarginContainer" parent="PopupPanel"]
 layout_mode = 2
+theme_override_constants/margin_left = 20
+theme_override_constants/margin_top = 20
+theme_override_constants/margin_right = 20
+theme_override_constants/margin_bottom = 20
 
-[node name="VBoxContainer" type="VBoxContainer" parent="PopupPanel/MarginContainer" unique_id=1014016358]
+[node name="VBoxContainer" type="VBoxContainer" parent="PopupPanel/MarginContainer"]
 layout_mode = 2
+theme_override_constants/separation = 15
 
-[node name="TitleLabel" type="Label" parent="PopupPanel/MarginContainer/VBoxContainer" unique_id=1218815819]
+[node name="TitleLabel" type="Label" parent="PopupPanel/MarginContainer/VBoxContainer"]
 layout_mode = 2
 theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_font_sizes/font_size = 24
 text = "Bantu Rion menata barang-barang ini!"
 horizontal_alignment = 1
 
-[node name="HintLabel" type="Label" parent="PopupPanel/MarginContainer/VBoxContainer" unique_id=1576459657]
+[node name="HintLabel" type="Label" parent="PopupPanel/MarginContainer/VBoxContainer"]
 layout_mode = 2
-theme_override_colors/font_color = Color(0, 0, 0, 1)
+theme_override_colors/font_color = Color(0.3, 0.3, 0.3, 1)
 text = "Rapikan barang ke tempat yang sesuai, ya."
 horizontal_alignment = 1
 
-[node name="GameArea" type="Control" parent="PopupPanel/MarginContainer/VBoxContainer" unique_id=1901153725]
-custom_minimum_size = Vector2(600, 350)
+[node name="GameArea" type="HSplitContainer" parent="PopupPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+split_offset = 300
+collapsed = true
+dragger_visibility = 2
+
+[node name="BoxArea" type="PanelContainer" parent="PopupPanel/MarginContainer/VBoxContainer/GameArea"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_box")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="PopupPanel/MarginContainer/VBoxContainer/GameArea/BoxArea"]
 layout_mode = 2
 
-[node name="SlotsContainer" type="Node2D" parent="PopupPanel/MarginContainer/VBoxContainer/GameArea" unique_id=1881993930]
+[node name="Label" type="Label" parent="PopupPanel/MarginContainer/VBoxContainer/GameArea/BoxArea/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 0
+theme_override_colors/font_color = Color(0.4, 0.3, 0.2, 1)
+text = "KARDUS"
+horizontal_alignment = 1
 
-[node name="UnpackSlot" type="Node2D" parent="PopupPanel/MarginContainer/VBoxContainer/GameArea/SlotsContainer" unique_id=2033797567]
-script = ExtResource("2_t6tar")
+[node name="BoxControl" type="Control" parent="PopupPanel/MarginContainer/VBoxContainer/GameArea/BoxArea/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
 
-[node name="Sprite2D" type="Sprite2D" parent="PopupPanel/MarginContainer/VBoxContainer/GameArea/SlotsContainer/UnpackSlot" unique_id=792173588]
-texture = ExtResource("3_4not2")
+[node name="ShelfArea" type="PanelContainer" parent="PopupPanel/MarginContainer/VBoxContainer/GameArea"]
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_shelf")
 
-[node name="Label" type="Label" parent="PopupPanel/MarginContainer/VBoxContainer/GameArea/SlotsContainer/UnpackSlot" unique_id=1871844865]
-offset_right = 40.0
-offset_bottom = 23.0
+[node name="VBoxContainer" type="VBoxContainer" parent="PopupPanel/MarginContainer/VBoxContainer/GameArea/ShelfArea"]
+layout_mode = 2
 
-[node name="ItemsContainer" type="Node2D" parent="PopupPanel/MarginContainer/VBoxContainer/GameArea" unique_id=998426410]
+[node name="Label" type="Label" parent="PopupPanel/MarginContainer/VBoxContainer/GameArea/ShelfArea/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 0
+theme_override_colors/font_color = Color(0.2, 0.3, 0.4, 1)
+text = "RAK"
+horizontal_alignment = 1
 
-[node name="UnpackItem" type="Control" parent="PopupPanel/MarginContainer/VBoxContainer/GameArea/ItemsContainer" unique_id=59785343]
-layout_mode = 3
-anchors_preset = 0
-script = ExtResource("4_t6tar")
+[node name="ShelfControl" type="Control" parent="PopupPanel/MarginContainer/VBoxContainer/GameArea/ShelfArea/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
 
-[node name="CollisionShape2D" type="CollisionShape2D" parent="PopupPanel/MarginContainer/VBoxContainer/GameArea/ItemsContainer/UnpackItem" unique_id=521701023]
-shape = SubResource("RectangleShape2D_c6lqs")
-
-[node name="Sprite2D" type="Sprite2D" parent="PopupPanel/MarginContainer/VBoxContainer/GameArea/ItemsContainer/UnpackItem" unique_id=1023980045]
-texture = ExtResource("3_8iwnc")
-
-[node name="Label" type="Label" parent="PopupPanel/MarginContainer/VBoxContainer/GameArea/ItemsContainer/UnpackItem" unique_id=1106137320]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 23.0
-text = "test"
+[node name="ProgressLabel" type="Label" parent="PopupPanel/MarginContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.1, 0.6, 0.1, 1)
+text = "Progress: 0 / 3"
+horizontal_alignment = 1

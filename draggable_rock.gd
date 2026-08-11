@@ -19,7 +19,7 @@ func return_to_original() -> void:
 	var tween = create_tween()
 	tween.tween_property(self, "global_position", original_position, 0.3)
 
-func _physics_process(delta: float) -> void:
+func _physics_process(_delta: float) -> void:
 	# Respawn kalau tenggelam
 	if global_position.y < respawn_y_threshold:
 		return_to_original()

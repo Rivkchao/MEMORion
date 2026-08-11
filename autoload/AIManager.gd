@@ -2,7 +2,8 @@
 extends Node
 
 const API_URL: String = "https://openrouter.ai/api/v1/chat/completions"
-const CONFIG_PATH: String = "res://api_config.cfg"
+const CONFIG_PATH_USER: String = "user://api_config.cfg"
+const CONFIG_PATH_RES: String = "res://api_config.cfg"
 
 # Dimuat dari api_config.cfg saat _ready() — JANGAN hardcode di sini!
 var _api_key: String = ""
@@ -18,13 +19,27 @@ func _ready() -> void:
 
 func _load_api_key() -> void:
 	var config = ConfigFile.new()
-	var err = config.load(CONFIG_PATH)
+
+	# 1) Coba muat dari user:// (lokasi aman, di luar project)
+	var err = config.load(CONFIG_PATH_USER)
+
+	# 2) Fallback ke res:// untuk kemudahan development
+	if err != OK:
+		err = config.load(CONFIG_PATH_RES)
+
 	if err == OK:
 		_api_key = config.get_value("api", "openrouter_key", "")
-		if _api_key.is_empty():
-			push_error("[AIManager] api_config.cfg ditemukan tapi 'openrouter_key' kosong!")
+		if _api_key.is_empty() or _api_key == "ISI_API_KEY_KAMU_DISINI":
+			push_warning("[AIManager] api_config.cfg ditemukan tapi 'openrouter_key' belum diisi!")
+			_api_key = ""
+		else:
+			print("[AIManager] API key berhasil dimuat.")
 	else:
-		push_error("[AIManager] File api_config.cfg tidak ditemukan! Salin api_config.cfg.example dan isi key-nya.")
+		# Buat file template di user:// agar user tahu lokasinya
+		var template = ConfigFile.new()
+		template.set_value("api", "openrouter_key", "ISI_API_KEY_KAMU_DISINI")
+		template.save(CONFIG_PATH_USER)
+		push_warning("[AIManager] api_config.cfg tidak ditemukan. Template sudah dibuat di: %s\nBuka file tersebut dan isi openrouter_key dengan API key-mu." % ProjectSettings.globalize_path(CONFIG_PATH_USER))
 
 func analyze_player_emotion(user_input: String, npc_role: String = "Teman yang suportif") -> void:
 	var http_request := HTTPRequest.new()

@@ -22,6 +22,7 @@ NLPManager="*uid://cnbvt12ms3ovq"
 AIManager="*uid://cg561dukvvvws"
 RockPuzzleManager="*uid://5b2qoi6ui3q3"
 SceneLoader="*uid://dohlbqyrqwl3c"
+_mcp_game_helper="*res://addons/godot_ai/runtime/game_helper.gd"
 
 [display]
 
@@ -36,7 +37,7 @@ version_control/autoload_on_startup=true
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/terrain_3d/plugin.cfg")
+enabled=PackedStringArray("res://addons/godot_ai/plugin.cfg", "res://addons/terrain_3d/plugin.cfg")
 
 [input]
 
