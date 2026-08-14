@@ -1,0 +1,25 @@
+[remap]
+
+importer="wavefront_obj"
+importer_version=1
+type="Mesh"
+uid="uid://cfpvsrlcs0qd6"
+path="res://.godot/imported/Spacestation_Structure_Fuselage_Curved_Outer_Normal.obj-1355a3437e350bf60ef92ea66f2f0150.mesh"
+
+[deps]
+
+files=["res://.godot/imported/Spacestation_Structure_Fuselage_Curved_Outer_Normal.obj-1355a3437e350bf60ef92ea66f2f0150.mesh"]
+
+source_file="res://assets/models/spaceship_blocks_collection/Spacestation_Structure_Fuselage_Curved_Outer_Normal.obj"
+dest_files=["res://.godot/imported/Spacestation_Structure_Fuselage_Curved_Outer_Normal.obj-1355a3437e350bf60ef92ea66f2f0150.mesh", "res://.godot/imported/Spacestation_Structure_Fuselage_Curved_Outer_Normal.obj-1355a3437e350bf60ef92ea66f2f0150.mesh"]
+
+[params]
+
+generate_tangents=true
+generate_lods=true
+generate_shadow_mesh=true
+generate_lightmap_uv2=false
+generate_lightmap_uv2_texel_size=0.2
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
+force_disable_mesh_compression=false

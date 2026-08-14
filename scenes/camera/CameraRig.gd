@@ -9,7 +9,7 @@ extends Node3D
 # Orbit settings
 @export var orbit_sensitivity: float = 0.3
 @export var min_pitch: float = -70.0
-@export var max_pitch: float = 0.0
+@export var max_pitch: float = 70.0
 
 # Zoom settings
 @export var zoom_speed: float = 0.5
@@ -46,20 +46,28 @@ func _input(event: InputEvent) -> void:
 		pitch = clamp(pitch, min_pitch, max_pitch)
 
 func _physics_process(delta: float) -> void:
-	
 	if target == null:
 		return
 	
-	# Hitung posisi orbit
 	var rotation_quat = Quaternion.from_euler(Vector3(deg_to_rad(pitch), deg_to_rad(yaw), 0))
 	var offset = rotation_quat * Vector3(0, 0, zoom_distance)
+	var desired_pos = target.global_position + offset
 	
-	var target_pos = target.global_position + offset
-	global_position = global_position.lerp(target_pos, follow_speed * delta)
+	# Raycast dari player ke posisi kamera
+	var space = get_world_3d().direct_space_state
+	var query = PhysicsRayQueryParameters3D.create(
+		target.global_position,
+		desired_pos
+	)
+	query.exclude = [target.get_parent()]
+	var result = space.intersect_ray(query)
 	
-	# Kamera selalu look at player
+	if result:
+		global_position = result.position + result.normal * 0.3
+	else:
+		global_position = global_position.lerp(desired_pos, follow_speed * delta)
+	
 	look_at(target.global_position, Vector3.UP)
-	
 	_handle_fov(delta)
 
 func _handle_fov(delta: float) -> void:

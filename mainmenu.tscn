@@ -51,16 +51,19 @@ theme_override_constants/separation = 20
 [node name="Button" type="Button" parent="VBoxContainer" unique_id=433023114]
 layout_mode = 2
 theme = SubResource("Theme_277qs")
-text = "Start"
+text = "New Game"
 
 [node name="Button2" type="Button" parent="VBoxContainer" unique_id=217779521]
 layout_mode = 2
+text = "Load Game"
 
 [node name="Button3" type="Button" parent="VBoxContainer" unique_id=1286180659]
 layout_mode = 2
+text = "Settings"
 
 [node name="Button4" type="Button" parent="VBoxContainer" unique_id=571602716]
 layout_mode = 2
+text = "Quit"
 
 [node name="Label" type="Label" parent="." unique_id=793631692]
 layout_mode = 0
