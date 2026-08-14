@@ -13,6 +13,9 @@ var mat_correct: StandardMaterial3D
 func _ready() -> void:
 	RockPuzzleManager.register_slot(self)
 	
+	# Perbesar sedikit mesh slot agar tidak z-fighting (tembus) dengan batu yang ditempatkan
+	mesh.scale = mesh.scale * 1.05
+	
 	# Material default (putih semi transparan)
 	mat_default = StandardMaterial3D.new()
 	mat_default.albedo_color = Color(1, 1, 1, 0.5)
