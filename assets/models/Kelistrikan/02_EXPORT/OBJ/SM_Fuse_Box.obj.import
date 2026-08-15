@@ -1,0 +1,25 @@
+[remap]
+
+importer="wavefront_obj"
+importer_version=1
+type="Mesh"
+uid="uid://1j0awcouix5x"
+path="res://.godot/imported/SM_Fuse_Box.obj-4454bbbc742df59292fa617a4ec7b0dd.mesh"
+
+[deps]
+
+files=["res://.godot/imported/SM_Fuse_Box.obj-4454bbbc742df59292fa617a4ec7b0dd.mesh"]
+
+source_file="res://assets/models/Kelistrikan/02_EXPORT/OBJ/SM_Fuse_Box.obj"
+dest_files=["res://.godot/imported/SM_Fuse_Box.obj-4454bbbc742df59292fa617a4ec7b0dd.mesh", "res://.godot/imported/SM_Fuse_Box.obj-4454bbbc742df59292fa617a4ec7b0dd.mesh"]
+
+[params]
+
+generate_tangents=true
+generate_lods=true
+generate_shadow_mesh=true
+generate_lightmap_uv2=false
+generate_lightmap_uv2_texel_size=0.2
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
+force_disable_mesh_compression=false

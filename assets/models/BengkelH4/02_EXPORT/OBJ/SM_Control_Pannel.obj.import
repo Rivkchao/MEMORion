@@ -1,0 +1,25 @@
+[remap]
+
+importer="wavefront_obj"
+importer_version=1
+type="Mesh"
+uid="uid://bxwuf237rishi"
+path="res://.godot/imported/SM_Control_Pannel.obj-73942c46b9e0eab7cd93ff56d4c1afca.mesh"
+
+[deps]
+
+files=["res://.godot/imported/SM_Control_Pannel.obj-73942c46b9e0eab7cd93ff56d4c1afca.mesh"]
+
+source_file="res://assets/models/BengkelH4/02_EXPORT/OBJ/SM_Control_Pannel.obj"
+dest_files=["res://.godot/imported/SM_Control_Pannel.obj-73942c46b9e0eab7cd93ff56d4c1afca.mesh", "res://.godot/imported/SM_Control_Pannel.obj-73942c46b9e0eab7cd93ff56d4c1afca.mesh"]
+
+[params]
+
+generate_tangents=true
+generate_lods=true
+generate_shadow_mesh=true
+generate_lightmap_uv2=false
+generate_lightmap_uv2_texel_size=0.2
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
+force_disable_mesh_compression=false

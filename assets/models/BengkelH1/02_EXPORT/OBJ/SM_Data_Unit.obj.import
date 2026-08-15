@@ -1,0 +1,25 @@
+[remap]
+
+importer="wavefront_obj"
+importer_version=1
+type="Mesh"
+uid="uid://dy522o4ci544n"
+path="res://.godot/imported/SM_Data_Unit.obj-93523a144016fae8bae5fec8e1dfa7ad.mesh"
+
+[deps]
+
+files=["res://.godot/imported/SM_Data_Unit.obj-93523a144016fae8bae5fec8e1dfa7ad.mesh"]
+
+source_file="res://assets/models/BengkelH1/02_EXPORT/OBJ/SM_Data_Unit.obj"
+dest_files=["res://.godot/imported/SM_Data_Unit.obj-93523a144016fae8bae5fec8e1dfa7ad.mesh", "res://.godot/imported/SM_Data_Unit.obj-93523a144016fae8bae5fec8e1dfa7ad.mesh"]
+
+[params]
+
+generate_tangents=true
+generate_lods=true
+generate_shadow_mesh=true
+generate_lightmap_uv2=false
+generate_lightmap_uv2_texel_size=0.2
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
+force_disable_mesh_compression=false

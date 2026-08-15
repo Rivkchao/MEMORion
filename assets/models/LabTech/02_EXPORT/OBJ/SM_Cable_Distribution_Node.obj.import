@@ -1,0 +1,25 @@
+[remap]
+
+importer="wavefront_obj"
+importer_version=1
+type="Mesh"
+uid="uid://800asdi0bole"
+path="res://.godot/imported/SM_Cable_Distribution_Node.obj-a40b4f9f10efc39378acac5ef68fe52d.mesh"
+
+[deps]
+
+files=["res://.godot/imported/SM_Cable_Distribution_Node.obj-a40b4f9f10efc39378acac5ef68fe52d.mesh"]
+
+source_file="res://assets/models/LabTech/02_EXPORT/OBJ/SM_Cable_Distribution_Node.obj"
+dest_files=["res://.godot/imported/SM_Cable_Distribution_Node.obj-a40b4f9f10efc39378acac5ef68fe52d.mesh", "res://.godot/imported/SM_Cable_Distribution_Node.obj-a40b4f9f10efc39378acac5ef68fe52d.mesh"]
+
+[params]
+
+generate_tangents=true
+generate_lods=true
+generate_shadow_mesh=true
+generate_lightmap_uv2=false
+generate_lightmap_uv2_texel_size=0.2
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
+force_disable_mesh_compression=false

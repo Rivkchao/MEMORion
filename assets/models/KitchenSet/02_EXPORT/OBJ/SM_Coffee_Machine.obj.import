@@ -1,0 +1,25 @@
+[remap]
+
+importer="wavefront_obj"
+importer_version=1
+type="Mesh"
+uid="uid://ccfy586hfw327"
+path="res://.godot/imported/SM_Coffee_Machine.obj-2a8ab51d6d1d44a8f18a077969c2cdc2.mesh"
+
+[deps]
+
+files=["res://.godot/imported/SM_Coffee_Machine.obj-2a8ab51d6d1d44a8f18a077969c2cdc2.mesh"]
+
+source_file="res://assets/models/KitchenSet/02_EXPORT/OBJ/SM_Coffee_Machine.obj"
+dest_files=["res://.godot/imported/SM_Coffee_Machine.obj-2a8ab51d6d1d44a8f18a077969c2cdc2.mesh", "res://.godot/imported/SM_Coffee_Machine.obj-2a8ab51d6d1d44a8f18a077969c2cdc2.mesh"]
+
+[params]
+
+generate_tangents=true
+generate_lods=true
+generate_shadow_mesh=true
+generate_lightmap_uv2=false
+generate_lightmap_uv2_texel_size=0.2
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
+force_disable_mesh_compression=false

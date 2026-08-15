@@ -1,0 +1,190 @@
+[gd_scene format=3 uid="uid://draevktwo8aya"]
+
+[ext_resource type="PackedScene" uid="uid://bvv3ipmutgehe" path="res://assets/models/BengkelH3/02_EXPORT/FBX/SM_Door.fbx" id="1_y1gpe"]
+[ext_resource type="PackedScene" uid="uid://1xbhwgxgpiio" path="res://assets/models/BengkelP1/02_EXPORT/FBX/SM_Wall_V0.fbx" id="2_5xue8"]
+[ext_resource type="PackedScene" uid="uid://dw5wa7qn6r0ng" path="res://assets/models/BengkelH1/02_EXPORT/FBX/SM_Wall_Vent_Grate.fbx" id="3_ye5hi"]
+[ext_resource type="PackedScene" uid="uid://c6c4bsm36d3n4" path="res://assets/models/Radar/02_EXPORT/FBX/SM_Turret_ScanArray.fbx" id="4_dn4ym"]
+[ext_resource type="PackedScene" uid="uid://b1vc1jxlo8e2n" path="res://assets/models/FurnitureBedroom/02_EXPORT/FBX/SM_Dresser_4Drawer.fbx" id="5_cwxvd"]
+[ext_resource type="PackedScene" uid="uid://bllatuxc5e34a" path="res://assets/models/FurnitureBedroom/02_EXPORT/FBX/SM_Bedside_Table.fbx" id="6_0kstk"]
+[ext_resource type="PackedScene" uid="uid://c6oxq1mcpakl2" path="res://assets/models/RuangKerja/02_EXPORT/FBX/SM_Control_Desk.fbx" id="7_aks5f"]
+[ext_resource type="PackedScene" uid="uid://cenmjmsov378q" path="res://assets/models/Utility Props/02_EXPORT/FBX/SM_Storage_Box.fbx" id="8_74m4h"]
+[ext_resource type="PackedScene" uid="uid://clrbhfgrbkyrc" path="res://assets/models/Utility Props/02_EXPORT/FBX/SM_Storage_Crate.fbx" id="9_4tmqr"]
+[ext_resource type="PackedScene" uid="uid://peaoq1kdb14b" path="res://assets/models/Eksperimen/02_EXPORT/FBX/SM_Fusion_T1.fbx" id="10_ows5h"]
+[ext_resource type="PackedScene" uid="uid://ckbpjwtf3o6b6" path="res://assets/models/Eksperimen/02_EXPORT/FBX/SM_BioChem_T2.fbx" id="11_m8l7i"]
+[ext_resource type="PackedScene" uid="uid://cfs8bg0rg12ht" path="res://assets/models/Eksperimen/02_EXPORT/FBX/SM_Thermal_T1.fbx" id="12_qetj3"]
+[ext_resource type="PackedScene" uid="uid://mcqrcexmbj63" path="res://assets/models/BengkelH1/02_EXPORT/FBX/SM_Cellule_Compact.fbx" id="13_5mf3q"]
+[ext_resource type="PackedScene" uid="uid://b6eb5p5yd3hbl" path="res://assets/models/RuangKerja/02_EXPORT/FBX/SM_Holo.fbx" id="14_6e7mp"]
+[ext_resource type="PackedScene" uid="uid://s5a5eyk5yovq" path="res://assets/models/FurnitureBedroom/02_EXPORT/FBX/SM_Chair_Room.fbx" id="15_cwa7o"]
+[ext_resource type="PackedScene" uid="uid://cn3tfi3t8axd7" path="res://assets/models/5/02_EXPORT/FBX/SM_Battery_T2.fbx" id="16_yb2p1"]
+[ext_resource type="PackedScene" uid="uid://cbttnrgrfppmh" path="res://assets/models/KitchenSet/02_EXPORT/FBX/SM_Microwave.fbx" id="17_rtgv3"]
+[ext_resource type="PackedScene" uid="uid://cvmxx7eol8yux" path="res://assets/models/LabTech/02_EXPORT/FBX/SM_Floor_Data_Node.fbx" id="18_chgul"]
+[ext_resource type="PackedScene" uid="uid://dsnppn3ypq10o" path="res://assets/models/LabTech/02_EXPORT/FBX/SM_Energy_Canister_Unit.fbx" id="19_rd68b"]
+[ext_resource type="PackedScene" uid="uid://criaf6ekyt5xk" path="res://assets/models/Kelistrikan/02_EXPORT/FBX/SM_Control_Pannel.fbx" id="20_3qcai"]
+[ext_resource type="PackedScene" uid="uid://t56ao8p67byu" path="res://assets/models/Kelistrikan/02_EXPORT/FBX/SM_Fuse_Box.fbx" id="21_bwlgc"]
+[ext_resource type="PackedScene" uid="uid://yon0o3qbxe6a" path="res://assets/models/Kelistrikan/02_EXPORT/FBX/SM_Power_Junction.fbx" id="22_1qnaa"]
+
+[sub_resource type="BoxMesh" id="BoxMesh_c6lqs"]
+size = Vector3(122.731346, 0.07324219, 72.507614)
+
+[sub_resource type="BoxMesh" id="BoxMesh_cj8ai"]
+size = Vector3(0.1, 2.7924805, 8.248916)
+
+[sub_resource type="BoxMesh" id="BoxMesh_hioc1"]
+size = Vector3(1, 13.020276, 22.350758)
+
+[sub_resource type="BoxMesh" id="BoxMesh_dwm5t"]
+size = Vector3(60.132965, 9.958349, 0.6621094)
+
+[sub_resource type="BoxMesh" id="BoxMesh_7015p"]
+size = Vector3(20.814575, 10.505041, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_ekobq"]
+size = Vector3(24.293304, 16.291931, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_y1g16"]
+size = Vector3(26.441895, 15.980225, 1)
+
+[sub_resource type="BoxMesh" id="BoxMesh_dkbaa"]
+size = Vector3(22.766388, 14.955994, 1)
+
+[node name="Node3D" type="Node3D" unique_id=1583766968]
+
+[node name="SM_Door" parent="." unique_id=1801039323 instance=ExtResource("1_y1gpe")]
+transform = Transform3D(4, 0, 0, 0, 4.2, 0, 0, 0, 4, -14.979917, -0.4290552, -28.205107)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1917339438]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12.247105, -0.4633789, -10.329094)
+mesh = SubResource("BoxMesh_c6lqs")
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="." unique_id=1239661522]
+transform = Transform3D(-2.1855695e-07, 0, -5, 0, 5, 0, 5, 0, -2.1855695e-07, -35.33318, 6.230361, -19.389214)
+mesh = SubResource("BoxMesh_cj8ai")
+
+[node name="MeshInstance3D3" type="MeshInstance3D" parent="." unique_id=1447749052]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -15.58058, 6.178326, -31.061148)
+mesh = SubResource("BoxMesh_hioc1")
+
+[node name="MeshInstance3D4" type="MeshInstance3D" parent="." unique_id=1283232845]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -43.288063, 4.98878, 4.645401)
+mesh = SubResource("BoxMesh_dwm5t")
+
+[node name="MeshInstance3D5" type="MeshInstance3D" parent="." unique_id=353249786]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -13.239601, 4.8582087, 14.912096)
+mesh = SubResource("BoxMesh_7015p")
+
+[node name="MeshInstance3D6" type="MeshInstance3D" parent="." unique_id=398140449]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, 22.454304, 7.544937, -34.270535)
+mesh = SubResource("BoxMesh_ekobq")
+
+[node name="MeshInstance3D7" type="MeshInstance3D" parent="." unique_id=1363937778]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 35.213154, 7.62854, -22.279219)
+mesh = SubResource("BoxMesh_y1g16")
+
+[node name="MeshInstance3D14" type="MeshInstance3D" parent="." unique_id=1268366448]
+transform = Transform3D(-4.371139e-08, 0, 1, 0, 1, 0, -1, 0, -4.371139e-08, -55.42695, 5.8165417, -30.77919)
+mesh = SubResource("BoxMesh_dkbaa")
+
+[node name="SM_Wall_V0" parent="." unique_id=1684170462 instance=ExtResource("2_5xue8")]
+transform = Transform3D(1, 0, 0, 0, 2.2401404, 0, 0, 0, 2.2290075, -14.716074, 1.5978751, -21.511744)
+
+[node name="SM_Wall_V1" parent="." unique_id=1555890478 instance=ExtResource("2_5xue8")]
+transform = Transform3D(1, 0, 0, 0, 2.2401404, 0, 0, 0, 2.2290075, -14.716074, 6.064285, -21.511744)
+
+[node name="SM_Wall_V2" parent="." unique_id=1292158222 instance=ExtResource("2_5xue8")]
+transform = Transform3D(1, 0, 0, 0, 2.2401404, 0, 0, 0, 2.2290075, -14.716074, 10.538715, -21.511744)
+
+[node name="SM_Wall_V3" parent="." unique_id=2046118950 instance=ExtResource("2_5xue8")]
+transform = Transform3D(1, 0, 0, 0, 2.2401404, 0, 0, 0, 2.2290075, -14.716074, 10.538715, -26.042091)
+
+[node name="SM_Wall_V4" parent="." unique_id=2067817351 instance=ExtResource("2_5xue8")]
+transform = Transform3D(1, 0, 0, 0, 2.2401404, 0, 0, 0, 2.2290075, -14.716074, 10.538715, -30.509964)
+
+[node name="SM_Wall_V5" parent="." unique_id=985805569 instance=ExtResource("2_5xue8")]
+transform = Transform3D(1, 0, 0, 0, 2.2401404, 0, 0, 0, 2.2290075, -14.716074, 10.538715, -34.97165)
+
+[node name="SM_Wall_V6" parent="." unique_id=1570095672 instance=ExtResource("2_5xue8")]
+transform = Transform3D(1, 0, 0, 0, 2.2401404, 0, 0, 0, 2.2290075, -14.716074, 10.538715, -39.47342)
+
+[node name="SM_Wall_V7" parent="." unique_id=1626133778 instance=ExtResource("2_5xue8")]
+transform = Transform3D(1, 0, 0, 0, 2.2401404, 0, 0, 0, 2.2290075, -14.716074, 5.9917545, -39.49334)
+
+[node name="SM_Wall_V9" parent="." unique_id=574795872 instance=ExtResource("2_5xue8")]
+transform = Transform3D(1, 0, 0, 0, 2.2401404, 0, 0, 0, 2.2290075, -14.716074, 5.9917545, -35.02337)
+
+[node name="SM_Wall_V10" parent="." unique_id=1995669216 instance=ExtResource("2_5xue8")]
+transform = Transform3D(1, 0, 0, 0, 2.2401404, 0, 0, 0, 2.2290075, -14.716074, 1.6535974, -35.02337)
+
+[node name="SM_Wall_V8" parent="." unique_id=1377477139 instance=ExtResource("2_5xue8")]
+transform = Transform3D(1, 0, 0, 0, 2.2401404, 0, 0, 0, 2.2290075, -14.716074, 1.9866238, -39.49334)
+
+[node name="SM_Wall_Vent_Grate" parent="." unique_id=284016857 instance=ExtResource("3_ye5hi")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 2, -14.596716, 11.43127, -39.528683)
+
+[node name="SM_Turret_ScanArray" parent="." unique_id=435810220 instance=ExtResource("4_dn4ym")]
+transform = Transform3D(6, 0, 0, 0, 6, 0, 0, 0, 6, 5.0120506, 0, -40.90593)
+
+[node name="SM_Dresser_4Drawer" parent="." unique_id=526106296 instance=ExtResource("5_cwxvd")]
+transform = Transform3D(8, 0, 0, 0, 8, 0, 0, 0, 8, 8.143486, 0, 20.797913)
+
+[node name="SM_Bedside_Table" parent="." unique_id=1663090456 instance=ExtResource("6_0kstk")]
+transform = Transform3D(9, 0, 0, 0, 14.5, 0, 0, 0, 20, 8.087998, -9.536743e-07, 11.333658)
+
+[node name="SM_Control_Desk" parent="." unique_id=901113214 instance=ExtResource("7_aks5f")]
+transform = Transform3D(-2.6226832e-07, 0, -10, 0, 6, 0, 6, 0, -4.371139e-07, 21.422363, 0, 0.56404114)
+
+[node name="SM_Storage_Box" parent="." unique_id=703295464 instance=ExtResource("8_74m4h")]
+transform = Transform3D(10, 0, 0, 0, 10, 0, 0, 0, 10, 33.00895, 0.11081028, -18.40289)
+
+[node name="SM_Storage_Crate" parent="." unique_id=640430614 instance=ExtResource("9_4tmqr")]
+transform = Transform3D(8, 0, 0, 0, 8, 0, 0, 0, 8, 37.94099, 0.14144707, -17.388031)
+
+[node name="SM_Fusion_T1" parent="." unique_id=804448855 instance=ExtResource("10_ows5h")]
+transform = Transform3D(-2.1855695e-07, 0, 5, 0, 5, 0, -5, 0, -2.1855695e-07, 46.26243, 0, 10.042858)
+
+[node name="SM_BioChem_T2" parent="." unique_id=530446800 instance=ExtResource("11_m8l7i")]
+transform = Transform3D(4, 0, 0, 0, 5, 0, 0, 0, 5, 44.045048, 0, 20.160637)
+
+[node name="SM_Thermal_T1" parent="." unique_id=647678644 instance=ExtResource("12_qetj3")]
+transform = Transform3D(5, 0, 0, 0, 5, 0, 0, 0, 5, 43.023434, 0, -25.695164)
+
+[node name="SM_Cellule_Compact" parent="." unique_id=1174848269 instance=ExtResource("13_5mf3q")]
+transform = Transform3D(1.7760394, 0, 2.417785, 0, 3, 0, -2.417785, 0, 1.7760394, 29.822578, 5.100985, -34.69305)
+
+[node name="SM_Holo" parent="." unique_id=1928555921 instance=ExtResource("14_6e7mp")]
+transform = Transform3D(5, 0, 0, 0, 5, 0, 0, 0, 5, 29.835228, 0, -34.571884)
+
+[node name="SM_Chair_Room" parent="." unique_id=163875068 instance=ExtResource("15_cwa7o")]
+transform = Transform3D(-3.496911e-07, 0, 8, 0, 8, 0, -8, 0, -3.496911e-07, 19.829237, 0, 8.213132)
+
+[node name="SM_Battery_T2" parent="." unique_id=312676489 instance=ExtResource("16_yb2p1")]
+transform = Transform3D(3.5, 0, 0, 0, 3.5, 0, 0, 0, 3.5, 44.186615, -0.31311655, -41.559452)
+
+[node name="SM_Microwave" parent="." unique_id=1092087708 instance=ExtResource("17_rtgv3")]
+transform = Transform3D(20, 0, 0, 0, 20, 0, 0, 0, 20, -34.536346, 0, -34.279823)
+
+[node name="SM_Floor_Data_Node" parent="." unique_id=929484073 instance=ExtResource("18_chgul")]
+transform = Transform3D(18, 0, 0, 0, 18, 0, 0, 0, 18, -39.901676, 0, 14.2665615)
+
+[node name="SM_Energy_Canister_Unit" parent="." unique_id=2122996372 instance=ExtResource("19_rd68b")]
+transform = Transform3D(30, 0, 0, 0, 30, 0, 0, 0, 30, -69.93858, 0, 20.41659)
+
+[node name="SM_Energy_Canister_Unit2" parent="." unique_id=1965104870 instance=ExtResource("19_rd68b")]
+transform = Transform3D(30, 0, 0, 0, 30, 0, 0, 0, 30, -69.93858, 0, 15.05971)
+
+[node name="SM_Energy_Canister_Unit3" parent="." unique_id=1068123340 instance=ExtResource("19_rd68b")]
+transform = Transform3D(30, 0, 0, 0, 30, 0, 0, 0, 30, -69.93858, 0, 9.581961)
+
+[node name="SM_Energy_Canister_Unit4" parent="." unique_id=286613927 instance=ExtResource("19_rd68b")]
+transform = Transform3D(-1.3113416e-06, 0, -30, 0, 30, 0, 30, 0, -1.3113416e-06, -60.45715, 0, 7.8895607)
+
+[node name="SM_Energy_Canister_Unit5" parent="." unique_id=407341052 instance=ExtResource("19_rd68b")]
+transform = Transform3D(-1.3113416e-06, 0, -30, 0, 30, 0, 30, 0, -1.3113416e-06, -55.231945, 0, 7.8895607)
+
+[node name="SM_Control_Pannel" parent="." unique_id=857706478 instance=ExtResource("20_3qcai")]
+transform = Transform3D(-2.6226832e-07, 0, 6, 0, 6, 0, -6, 0, -2.6226832e-07, -32.15267, 0, 19.971498)
+
+[node name="SM_Fuse_Box" parent="." unique_id=390179209 instance=ExtResource("21_bwlgc")]
+transform = Transform3D(-2.1855695e-07, 0, 5, 0, 5, 0, -5, 0, -2.1855695e-07, 31.933887, 13.636431, -23.417276)
+
+[node name="SM_Power_Junction" parent="." unique_id=793055641 instance=ExtResource("22_1qnaa")]
+transform = Transform3D(-2.1855695e-07, 0, 5, 0, 5, 0, -5, 0, -2.1855695e-07, 43.721786, 13.906118, -23.17372)

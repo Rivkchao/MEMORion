@@ -1,0 +1,25 @@
+[remap]
+
+importer="wavefront_obj"
+importer_version=1
+type="Mesh"
+uid="uid://comed5f2gfpeg"
+path="res://.godot/imported/SM_Tuyau_Droit.obj-14049b02fbcd5a4791b272790e17d0eb.mesh"
+
+[deps]
+
+files=["res://.godot/imported/SM_Tuyau_Droit.obj-14049b02fbcd5a4791b272790e17d0eb.mesh"]
+
+source_file="res://assets/models/BengkelH4/02_EXPORT/OBJ/SM_Tuyau_Droit.obj"
+dest_files=["res://.godot/imported/SM_Tuyau_Droit.obj-14049b02fbcd5a4791b272790e17d0eb.mesh", "res://.godot/imported/SM_Tuyau_Droit.obj-14049b02fbcd5a4791b272790e17d0eb.mesh"]
+
+[params]
+
+generate_tangents=true
+generate_lods=true
+generate_shadow_mesh=true
+generate_lightmap_uv2=false
+generate_lightmap_uv2_texel_size=0.2
+scale_mesh=Vector3(1, 1, 1)
+offset_mesh=Vector3(0, 0, 0)
+force_disable_mesh_compression=false
