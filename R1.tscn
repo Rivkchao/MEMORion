@@ -7,6 +7,7 @@
 [ext_resource type="PackedScene" uid="uid://bllatuxc5e34a" path="res://assets/models/FurnitureBedroom/02_EXPORT/FBX/SM_Bedside_Table.fbx" id="6_0kstk"]
 [ext_resource type="PackedScene" uid="uid://c6oxq1mcpakl2" path="res://assets/models/RuangKerja/02_EXPORT/FBX/SM_Control_Desk.fbx" id="7_aks5f"]
 [ext_resource type="PackedScene" uid="uid://cenmjmsov378q" path="res://assets/models/Utility Props/02_EXPORT/FBX/SM_Storage_Box.fbx" id="8_74m4h"]
+[ext_resource type="PackedScene" uid="uid://g5yje6p3v6vd" path="res://assets/models/BengkelH3/02_EXPORT/FBX/SM_Wall_Cross_Junction.fbx" id="8_cwa7o"]
 [ext_resource type="PackedScene" uid="uid://clrbhfgrbkyrc" path="res://assets/models/Utility Props/02_EXPORT/FBX/SM_Storage_Crate.fbx" id="9_4tmqr"]
 [ext_resource type="PackedScene" uid="uid://peaoq1kdb14b" path="res://assets/models/Eksperimen/02_EXPORT/FBX/SM_Fusion_T1.fbx" id="10_ows5h"]
 [ext_resource type="PackedScene" uid="uid://ckbpjwtf3o6b6" path="res://assets/models/Eksperimen/02_EXPORT/FBX/SM_BioChem_T2.fbx" id="11_m8l7i"]
@@ -31,6 +32,10 @@
 [ext_resource type="PackedScene" uid="uid://nr5jla63p8fj" path="res://assets/models/BengkelP3/02_EXPORT/FBX/SM_DoorFrame_Double.fbx" id="29_74m4h"]
 [ext_resource type="PackedScene" uid="uid://deryq24f1b3wp" path="res://assets/models/BengkelH3/02_EXPORT/FBX/SM_Floor_Light_01.fbx" id="30_4tmqr"]
 [ext_resource type="PackedScene" uid="uid://c4l55und5hhco" path="res://assets/models/RuangKerja/02_EXPORT/FBX/SM_Tech Storage_Rack.fbx" id="31_ows5h"]
+[ext_resource type="PackedScene" uid="uid://k20uj3b3d2op" path="res://assets/models/BengkelH3/02_EXPORT/FBX/SM_Wall_2x2.fbx" id="33_yb2p1"]
+[ext_resource type="PackedScene" uid="uid://co1ih8nspkpf1" path="res://assets/models/BengkelH3/02_EXPORT/FBX/SM_Wall_Corner.fbx" id="34_rtgv3"]
+[ext_resource type="PackedScene" uid="uid://dj6gmx7v7jckc" path="res://assets/models/BengkelH3/02_EXPORT/FBX/SM_Wall_Straight.fbx" id="35_chgul"]
+[ext_resource type="PackedScene" uid="uid://c5h2rqlxg3f4i" path="res://assets/models/BengkelH3/02_EXPORT/FBX/SM_Wall_T_Junction.fbx" id="36_rd68b"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_b6pli"]
 albedo_color = Color(0.37254903, 0.23529412, 0.05490196, 1)
@@ -1042,6 +1047,9 @@ transform = Transform3D(-6.3639607, 7.636754, -2.5592337e-07, 0, -4.7208303e-07,
 [node name="CornerLamp-RW6" parent="RoundingWall" unique_id=1295004114 instance=ExtResource("24_dn4ym")]
 transform = Transform3D(-6.3639607, 7.636754, -2.5592337e-07, 0, -4.7208303e-07, -8.28, -6.3639607, -7.636754, 2.5592337e-07, 49.91732, 2.5124087, 39.794476)
 
+[node name="SM_Wall_Cross_Junction" parent="RoundingWall" unique_id=1317082204 instance=ExtResource("8_cwa7o")]
+transform = Transform3D(9.553427e-15, 2.1855695e-07, 5, 5, -2.1855695e-07, 0, 2.1855695e-07, 5, -2.1855695e-07, 0.263, 14.859, -7.444)
+
 [node name="OnaProgramRoom" type="Node3D" parent="." unique_id=1659421764]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 0.3594532)
 
@@ -1297,13 +1305,13 @@ transform = Transform3D(7, 0, 0, 0, 7, 0, 0, 0, 7, 4.521077, 0, -40.90593)
 [node name="RalluxRoom" type="Node3D" parent="." unique_id=1182283575]
 
 [node name="Storage-RR" parent="RalluxRoom" unique_id=526106296 instance=ExtResource("5_cwxvd")]
-transform = Transform3D(8, 0, 0, 0, 8, 0, 0, 0, 8, 8.143486, 0, 24.218618)
+transform = Transform3D(8, 0, 0, 0, 8, 0, 0, 0, 8, 11.567786, 0, 24.218618)
 
 [node name="Storage2-RR" parent="RalluxRoom" unique_id=1663090456 instance=ExtResource("6_0kstk")]
-transform = Transform3D(9, 0, 0, 0, 14.5, 0, 0, 0, 20, 8.186848, -9.536743e-07, 33.876587)
+transform = Transform3D(9, 0, 0, 0, 14.5, 0, 0, 0, 20, 11.611148, -9.536743e-07, 33.876587)
 
 [node name="Control_Desk-RR" parent="RalluxRoom" unique_id=901113214 instance=ExtResource("7_aks5f")]
-transform = Transform3D(-2.6226832e-07, 0, -10, 0, 6, 0, 6, 0, -4.371139e-07, 21.787413, 0, 13.7359295)
+transform = Transform3D(-2.6226832e-07, 0, -10, 0, 6, 0, 6, 0, -4.371139e-07, 24.022926, 0, 14.257837)
 
 [node name="Experiment1-RR" parent="RalluxRoom" unique_id=804448855 instance=ExtResource("10_ows5h")]
 transform = Transform3D(-2.1855695e-07, 0, 5, 0, 5, 0, -5, 0, -2.1855695e-07, 46.174683, 0, 20.772095)
@@ -1312,7 +1320,7 @@ transform = Transform3D(-2.1855695e-07, 0, 5, 0, 5, 0, -5, 0, -2.1855695e-07, 46
 transform = Transform3D(4, 0, 0, 0, 5, 0, 0, 0, 5, 43.80614, 0, 33.64306)
 
 [node name="Chair-RR" parent="RalluxRoom" unique_id=163875068 instance=ExtResource("15_cwa7o")]
-transform = Transform3D(-3.496911e-07, 0, 8, 0, 8, 0, -8, 0, -3.496911e-07, 21.905891, 0, 21.385021)
+transform = Transform3D(-3.496911e-07, 0, 8, 0, 8, 0, -8, 0, -3.496911e-07, 24.141405, 0, 21.906929)
 
 [node name="Box" type="Node3D" parent="." unique_id=1704237102]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 3.961094)
@@ -2962,13 +2970,76 @@ transform = Transform3D(2.5, 0, 0, 0, 5, 0, 0, 0, 7, 47.37266, -9.536743e-07, 4.
 transform = Transform3D(5, 0, 0, 0, 5, 0, 0, 0, 5, 47.4873, 0.09985113, 4.945222)
 
 [node name="PalletUnpacking_Rak2" parent="UnpackingGame" unique_id=550654075 instance=ExtResource("24_0kstk")]
-transform = Transform3D(-1.09278474e-07, 0, -7, 0, 5, 0, 2.5, 0, -3.059797e-07, 0.26365447, -9.536743e-07, 37.644093)
+transform = Transform3D(-1.09278474e-07, 0, -7, 0, 5, 0, 2.5, 0, -3.059797e-07, 2.3234017, -9.536743e-07, 37.644093)
 
 [node name="Unpacking_Rak2" parent="UnpackingGame" unique_id=20944484 instance=ExtResource("31_ows5h")]
-transform = Transform3D(-2.1855695e-07, 0, -5, 0, 5, 0, 5, 0, -2.1855695e-07, 0.37829375, 0.09985113, 37.628956)
+transform = Transform3D(-2.1855695e-07, 0, -5, 0, 5, 0, 5, 0, -2.1855695e-07, 2.438041, 0.09985113, 37.628956)
 
 [node name="PalletUnpacking_Rak3" parent="UnpackingGame" unique_id=3971380 instance=ExtResource("24_0kstk")]
-transform = Transform3D(-1.09278474e-07, 0, -7, 0, 5, 0, 2.5, 0, -3.059797e-07, -8.55673, -9.536743e-07, 37.644093)
+transform = Transform3D(-1.09278474e-07, 0, -7, 0, 5, 0, 2.5, 0, -3.059797e-07, -6.496983, -9.536743e-07, 37.644093)
 
 [node name="Unpacking_Rak3" parent="UnpackingGame" unique_id=855602084 instance=ExtResource("31_ows5h")]
-transform = Transform3D(-2.1855695e-07, 0, -5, 0, 5, 0, 5, 0, -2.1855695e-07, -8.442091, 0.09985113, 37.628956)
+transform = Transform3D(-2.1855695e-07, 0, -5, 0, 5, 0, 5, 0, -2.1855695e-07, -6.382344, 0.09985113, 37.628956)
+
+[node name="SM_Wall_2x2" parent="." unique_id=457194267 instance=ExtResource("33_yb2p1")]
+transform = Transform3D(-4.371139e-08, 65, 0, -1, -2.8412403e-06, 0, 0, 0, 55, -13.300911, 14.917219, -0.3406906)
+
+[node name="SM_Wall_Corner" parent="." unique_id=310523681 instance=ExtResource("34_rtgv3")]
+transform = Transform3D(-2.1855695e-07, -5, 0, 5, -2.1855695e-07, 0, 0, 0, 5, -65.439, 14.859, -40.239)
+
+[node name="SM_Wall_Corner2" parent="." unique_id=1684430516 instance=ExtResource("34_rtgv3")]
+transform = Transform3D(4.371139e-07, -5.962442e-08, 5, -5, 2.1855695e-07, 4.371139e-07, -2.1855695e-07, -5, -5.9624405e-08, -65.439, 14.859, -7.5106263)
+
+[node name="SM_Wall_Corner3" parent="." unique_id=1402546249 instance=ExtResource("34_rtgv3")]
+transform = Transform3D(9.553427e-15, -2.1855695e-07, -5, -5, -2.1855695e-07, 0, -2.1855695e-07, 5, -2.1855695e-07, 40.894, 14.859, -7.444)
+
+[node name="SM_Wall_Straight" parent="." unique_id=1771364143 instance=ExtResource("35_chgul")]
+transform = Transform3D(-2.1855695e-07, -5, 0, 5, -2.1855695e-07, 0, 0, 0, 5, -65.439, 14.859, -30.181)
+
+[node name="SM_Wall_Straight2" parent="." unique_id=898611335 instance=ExtResource("35_chgul")]
+transform = Transform3D(-2.1855695e-07, -5, 0, 5, -2.1855695e-07, 0, 0, 0, 5, -65.439, 14.859, -20.123)
+
+[node name="SM_Wall_Straight3" parent="." unique_id=1710827994 instance=ExtResource("35_chgul")]
+transform = Transform3D(9.553427e-15, 2.1855695e-07, 5, 5, -2.1855695e-07, 0, 2.1855695e-07, 5, -2.1855695e-07, -55.381, 14.859, -7.443627)
+
+[node name="SM_Wall_Straight4" parent="." unique_id=13890020 instance=ExtResource("35_chgul")]
+transform = Transform3D(9.553427e-15, 2.1855695e-07, 5, 5, -2.1855695e-07, 0, 2.1855695e-07, 5, -2.1855695e-07, -45.323, 14.859, -7.443627)
+
+[node name="SM_Wall_Straight5" parent="." unique_id=1671413074 instance=ExtResource("35_chgul")]
+transform = Transform3D(9.553427e-15, 2.1855695e-07, 5, 5, -2.1855695e-07, 0, 2.1855695e-07, 5, -2.1855695e-07, -35.265, 14.859, -7.443627)
+
+[node name="SM_Wall_Straight8" parent="." unique_id=1371122195 instance=ExtResource("35_chgul")]
+transform = Transform3D(9.553427e-15, 2.1855695e-07, 5, 5, -2.1855695e-07, 0, 2.1855695e-07, 5, -2.1855695e-07, 10.320508, 14.859, -7.443627)
+
+[node name="SM_Wall_Straight11" parent="." unique_id=642305543 instance=ExtResource("35_chgul")]
+transform = Transform3D(-2.1855695e-07, -5, 0, 5, -2.1855695e-07, 0, 0, 0, 5, 0.263, 14.859, 2.977638)
+
+[node name="SM_Wall_Straight12" parent="." unique_id=2067474924 instance=ExtResource("35_chgul")]
+transform = Transform3D(-2.1855695e-07, -5, 0, 5, -2.1855695e-07, 0, 0, 0, 5, 0.263, 14.859, 13.4)
+
+[node name="SM_Wall_Straight13" parent="." unique_id=2059489148 instance=ExtResource("35_chgul")]
+transform = Transform3D(-2.1855695e-07, -5, 0, 5, -2.1855695e-07, 0, 0, 0, 5, 0.263, 14.896, 23.394)
+
+[node name="SM_Wall_Straight9" parent="." unique_id=25877588 instance=ExtResource("35_chgul")]
+transform = Transform3D(9.553427e-15, 2.1855695e-07, 5, 5, -2.1855695e-07, 0, 2.1855695e-07, 5, -2.1855695e-07, 20.778114, 14.859, -7.443627)
+
+[node name="SM_Wall_Straight10" parent="." unique_id=1740976023 instance=ExtResource("35_chgul")]
+transform = Transform3D(9.553427e-15, 2.1855695e-07, 5, 5, -2.1855695e-07, 0, 2.1855695e-07, 5, -2.1855695e-07, 30.836113, 14.859, -7.443627)
+
+[node name="SM_Wall_T_Junction" parent="." unique_id=1852084304 instance=ExtResource("36_rd68b")]
+transform = Transform3D(-2.1855695e-07, -5, 0, 5, -2.1855695e-07, 0, 0, 0, 5, -25.207, 14.859, -7.443627)
+
+[node name="SM_Wall_T_Junction2" parent="." unique_id=2145155809 instance=ExtResource("36_rd68b")]
+transform = Transform3D(2.1855695e-07, 5, -4.371139e-07, 5, -2.1855695e-07, 0, -1.9106854e-14, -4.371139e-07, -5, -9.795, 14.859, -7.444)
+
+[node name="SM_Wall_T_Junction3" parent="." unique_id=405007098 instance=ExtResource("36_rd68b")]
+transform = Transform3D(9.553427e-15, 2.1855695e-07, -5, 5, -2.1855695e-07, 0, -2.1855695e-07, -5, -2.1855695e-07, 0.263, 14.896, 33.816)
+
+[node name="SM_Wall_Straight14" parent="." unique_id=1114226756 instance=ExtResource("35_chgul")]
+transform = Transform3D(2.185569e-07, 4.9999986, 0.0036065578, 4.9999995, -2.1855693e-07, 4.3517177e-15, 1.5765167e-10, 0.0036065578, -4.9999986, 0.25187737, 14.859, -18.289349)
+
+[node name="SM_Wall_Straight15" parent="." unique_id=528480334 instance=ExtResource("35_chgul")]
+transform = Transform3D(2.185569e-07, 4.9999986, 0.0036065578, 4.9999995, -2.1855693e-07, 4.3517177e-15, 1.5765167e-10, 0.0036065578, -4.9999986, 0.25939542, 14.859, -28.71171)
+
+[node name="SM_Wall_T_Junction4" parent="." unique_id=1568558879 instance=ExtResource("36_rd68b")]
+transform = Transform3D(-1.5765877e-10, -0.0036067963, 4.9999986, 4.9999995, -2.1855693e-07, -5.4974408e-15, 2.1855689e-07, 4.9999986, 0.0036067963, 0.274, 14.896, -38.706)
