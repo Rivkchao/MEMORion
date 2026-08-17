@@ -36,18 +36,32 @@
 [ext_resource type="PackedScene" uid="uid://co1ih8nspkpf1" path="res://assets/models/BengkelH3/02_EXPORT/FBX/SM_Wall_Corner.fbx" id="34_rtgv3"]
 [ext_resource type="PackedScene" uid="uid://dj6gmx7v7jckc" path="res://assets/models/BengkelH3/02_EXPORT/FBX/SM_Wall_Straight.fbx" id="35_chgul"]
 [ext_resource type="PackedScene" uid="uid://c5h2rqlxg3f4i" path="res://assets/models/BengkelH3/02_EXPORT/FBX/SM_Wall_T_Junction.fbx" id="36_rd68b"]
+[ext_resource type="PackedScene" uid="uid://c4lcoh04o2fc0" path="res://assets/models/BengkelP3/02_EXPORT/FBX/SM_Door_Single_V1.fbx" id="37_yb2p1"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_b6pli"]
+cull_mode = 2
 albedo_color = Color(0.37254903, 0.23529412, 0.05490196, 1)
 
 [sub_resource type="BoxMesh" id="BoxMesh_c6lqs"]
 material = SubResource("StandardMaterial3D_b6pli")
-size = Vector3(127.68217, 1, 91.95215)
+size = Vector3(125.452644, 1, 90.04617)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_cj8ai"]
+transparency = 1
+albedo_color = Color(0.29000002, 0.8816666, 1, 0.15686275)
+roughness = 0.05
+emission_enabled = true
+emission = Color(0, 0.9411765, 1, 1)
+emission_energy_multiplier = 0.5
+
+[sub_resource type="BoxMesh" id="BoxMesh_dy5on"]
+material = SubResource("StandardMaterial3D_cj8ai")
+size = Vector3(30.626999, 16.268677, 0.05)
 
 [node name="BengkelRallux" type="Node3D" unique_id=1583766968]
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1917339438]
-transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -11.843191, -0.5836277, -4.567898)
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12.9579525, -0.5836277, -5.070324)
 mesh = SubResource("BoxMesh_c6lqs")
 
 [node name="CrusherRoom" type="Node3D" parent="." unique_id=1490693363]
@@ -1300,7 +1314,7 @@ transform = Transform3D(-1.3113416e-06, 0, 30, 0, 30, 0, -30, 0, -1.3113416e-06,
 transform = Transform3D(-2.6226832e-07, 0, 6, 0, 6, 0, -6, 0, -2.6226832e-07, -32.15267, 0, 31.63922)
 
 [node name="Radar" parent="." unique_id=435810220 instance=ExtResource("4_dn4ym")]
-transform = Transform3D(7, 0, 0, 0, 7, 0, 0, 0, 7, 4.521077, 0, -40.90593)
+transform = Transform3D(7, 0, 0, 0, 7, 0, 0, 0, 7, 6.037819, 0, -45.069927)
 
 [node name="RalluxRoom" type="Node3D" parent="." unique_id=1182283575]
 
@@ -1385,13 +1399,13 @@ transform = Transform3D(4.1440916, 0, 5.641498, 0, 7, 0, -5.641498, 0, 4.1440916
 transform = Transform3D(7, 0, 0, 0, 7, 0, 0, 0, 7, 30.795948, 0, -38.267345)
 
 [node name="Battery-EC" parent="EnergyCoreRoom" unique_id=312676489 instance=ExtResource("16_yb2p1")]
-transform = Transform3D(3.5, 0, 0, 0, 3.5, 0, 0, 0, 3.5, 45.554787, -0.31311655, -44.446144)
+transform = Transform3D(3.5, 0, 0, 0, 3.5, 0, 0, 0, 3.5, 44.683346, -0.31311655, -44.446144)
 
 [node name="Fuse_Box-EC" parent="EnergyCoreRoom" unique_id=390179209 instance=ExtResource("21_bwlgc")]
 transform = Transform3D(-2.1855695e-07, 0, 5, 0, 5, 0, -5, 0, -2.1855695e-07, 28.878956, 10.449526, -20.09324)
 
 [node name="Power_Junction-EC" parent="EnergyCoreRoom" unique_id=793055641 instance=ExtResource("22_1qnaa")]
-transform = Transform3D(-2.1855695e-07, 0, 5, 0, 5, 0, -5, 0, -2.1855695e-07, 37.958908, 10.539711, -19.516891)
+transform = Transform3D(-5, 0, 4.371139e-07, 0, 5, 0, -4.371139e-07, 0, -5, 49.70038, 10.539711, -35.856766)
 
 [node name="LampuSudut" type="Node3D" parent="." unique_id=11742205]
 
@@ -3043,3 +3057,14 @@ transform = Transform3D(2.185569e-07, 4.9999986, 0.0036065578, 4.9999995, -2.185
 
 [node name="SM_Wall_T_Junction4" parent="." unique_id=1568558879 instance=ExtResource("36_rd68b")]
 transform = Transform3D(-1.5765877e-10, -0.0036067963, 4.9999986, 4.9999995, -2.1855693e-07, -5.4974408e-15, 2.1855689e-07, 4.9999986, 0.0036067963, 0.274, 14.896, -38.706)
+
+[node name="MeshInstance3D2" type="MeshInstance3D" parent="." unique_id=211832969]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 34.435734, 6.7578907, -19.322731)
+mesh = SubResource("BoxMesh_dy5on")
+
+[node name="MeshInstance3D3" type="MeshInstance3D" parent="." unique_id=1611418055]
+transform = Transform3D(-4.371139e-08, 0, -1, 0, 1, 0, 1, 0, -4.371139e-08, 19.095, 6.758, -34.64)
+mesh = SubResource("BoxMesh_dy5on")
+
+[node name="SM_Door_Single_V1" parent="." unique_id=926128430 instance=ExtResource("37_yb2p1")]
+transform = Transform3D(1.5, 0, 0, 0, 8.36, 0, 0, 0, 10, 19.114933, 0.14822817, -32.958725)
