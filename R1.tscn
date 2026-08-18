@@ -18,7 +18,9 @@
 [ext_resource type="PackedScene" uid="uid://cn3tfi3t8axd7" path="res://assets/models/5/02_EXPORT/FBX/SM_Battery_T2.fbx" id="16_yb2p1"]
 [ext_resource type="PackedScene" uid="uid://cbttnrgrfppmh" path="res://assets/models/KitchenSet/02_EXPORT/FBX/SM_Microwave.fbx" id="17_rtgv3"]
 [ext_resource type="PackedScene" uid="uid://cvmxx7eol8yux" path="res://assets/models/LabTech/02_EXPORT/FBX/SM_Floor_Data_Node.fbx" id="18_chgul"]
+[ext_resource type="PackedScene" uid="uid://cvnnwmfv8qpn4" path="res://assets/models/5/02_EXPORT/FBX/SM_CableAdapter_Large.fbx" id="19_bwlgc"]
 [ext_resource type="PackedScene" uid="uid://dsnppn3ypq10o" path="res://assets/models/LabTech/02_EXPORT/FBX/SM_Energy_Canister_Unit.fbx" id="19_rd68b"]
+[ext_resource type="PackedScene" uid="uid://bhporhy6f4x68" path="res://assets/models/5/02_EXPORT/FBX/SM_CableAdapter_Small.fbx" id="20_1qnaa"]
 [ext_resource type="PackedScene" uid="uid://criaf6ekyt5xk" path="res://assets/models/Kelistrikan/02_EXPORT/FBX/SM_Control_Pannel.fbx" id="20_3qcai"]
 [ext_resource type="PackedScene" uid="uid://t56ao8p67byu" path="res://assets/models/Kelistrikan/02_EXPORT/FBX/SM_Fuse_Box.fbx" id="21_bwlgc"]
 [ext_resource type="PackedScene" uid="uid://yon0o3qbxe6a" path="res://assets/models/Kelistrikan/02_EXPORT/FBX/SM_Power_Junction.fbx" id="22_1qnaa"]
@@ -31,12 +33,17 @@
 [ext_resource type="PackedScene" uid="uid://j7yco67jqlnx" path="res://assets/models/Kelistrikan/02_EXPORT/FBX/SM_Ventilateur.fbx" id="28_aks5f"]
 [ext_resource type="PackedScene" uid="uid://nr5jla63p8fj" path="res://assets/models/BengkelP3/02_EXPORT/FBX/SM_DoorFrame_Double.fbx" id="29_74m4h"]
 [ext_resource type="PackedScene" uid="uid://deryq24f1b3wp" path="res://assets/models/BengkelH3/02_EXPORT/FBX/SM_Floor_Light_01.fbx" id="30_4tmqr"]
+[ext_resource type="PackedScene" uid="uid://dcj45lfc4laop" path="res://assets/models/Kelistrikan/02_EXPORT/FBX/SM_Power_Cabinet.fbx" id="31_1qnaa"]
 [ext_resource type="PackedScene" uid="uid://c4l55und5hhco" path="res://assets/models/RuangKerja/02_EXPORT/FBX/SM_Tech Storage_Rack.fbx" id="31_ows5h"]
 [ext_resource type="PackedScene" uid="uid://k20uj3b3d2op" path="res://assets/models/BengkelH3/02_EXPORT/FBX/SM_Wall_2x2.fbx" id="33_yb2p1"]
 [ext_resource type="PackedScene" uid="uid://co1ih8nspkpf1" path="res://assets/models/BengkelH3/02_EXPORT/FBX/SM_Wall_Corner.fbx" id="34_rtgv3"]
 [ext_resource type="PackedScene" uid="uid://dj6gmx7v7jckc" path="res://assets/models/BengkelH3/02_EXPORT/FBX/SM_Wall_Straight.fbx" id="35_chgul"]
 [ext_resource type="PackedScene" uid="uid://c5h2rqlxg3f4i" path="res://assets/models/BengkelH3/02_EXPORT/FBX/SM_Wall_T_Junction.fbx" id="36_rd68b"]
 [ext_resource type="PackedScene" uid="uid://c4lcoh04o2fc0" path="res://assets/models/BengkelP3/02_EXPORT/FBX/SM_Door_Single_V1.fbx" id="37_yb2p1"]
+[ext_resource type="PackedScene" uid="uid://d1pbk4jbvm3al" path="res://assets/models/BengkelH1/02_EXPORT/FBX/SM_Barrier_03.fbx" id="40_3r50f"]
+[ext_resource type="PackedScene" uid="uid://v0m1x6qf8dld" path="res://assets/models/BengkelH1/02_EXPORT/FBX/SM_Data_Unit.fbx" id="41_r8b8q"]
+[ext_resource type="PackedScene" uid="uid://uyd1f444af7o" path="res://assets/models/Table/02_EXPORT/FBX/SM_Data_Storage_Unit.fbx" id="42_r1tgq"]
+[ext_resource type="PackedScene" uid="uid://d6g23qbx05ig" path="res://assets/models/quitdoor.glb" id="44_3r50f"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_b6pli"]
 cull_mode = 2
@@ -818,6 +825,15 @@ transform = Transform3D(1, 0, 0, 0, 2.5, 0, 0, 0, 2.5, -75.540726, 7.468384, -33
 [node name="RoundingWall111" parent="RoundingWall" unique_id=1660601442 instance=ExtResource("2_5xue8")]
 transform = Transform3D(1, 0, 0, 0, 2.5, 0, 0, 0, 2.5, -75.540726, 2.4602656, -33.62999)
 
+[node name="RoundingWall250" parent="RoundingWall" unique_id=1109502012 instance=ExtResource("2_5xue8")]
+transform = Transform3D(1, 0, 0, 0, 2.5, 0, 0, 0, 2.5, -75.540726, 12.46907, -38.631245)
+
+[node name="RoundingWall251" parent="RoundingWall" unique_id=1587052609 instance=ExtResource("2_5xue8")]
+transform = Transform3D(1, 0, 0, 0, 2.5, 0, 0, 0, 2.5, -75.540726, 7.468384, -38.631245)
+
+[node name="RoundingWall252" parent="RoundingWall" unique_id=1629631119 instance=ExtResource("2_5xue8")]
+transform = Transform3D(1, 0, 0, 0, 2.5, 0, 0, 0, 2.5, -75.540726, 2.4602656, -38.631245)
+
 [node name="RoundingWall193" parent="RoundingWall" unique_id=1934571158 instance=ExtResource("2_5xue8")]
 transform = Transform3D(1, 0, 0, 0, 2.5, 0, 0, 0, 2.5, 49.84845, 12.46907, 37.212894)
 
@@ -1305,16 +1321,16 @@ transform = Transform3D(-1.3113416e-06, 0, -30, 0, 30, 0, 30, 0, -1.3113416e-06,
 transform = Transform3D(-1.3113416e-06, 0, -30, 0, 30, 0, 30, 0, -1.3113416e-06, -55.231945, 0, 6.370225)
 
 [node name="OnaSample6" parent="OnaProgramRoom" unique_id=416731655 instance=ExtResource("19_rd68b")]
-transform = Transform3D(-1.3113416e-06, 0, 30, 0, 30, 0, -30, 0, -1.3113416e-06, -60.45715, 0, 37.004967)
+transform = Transform3D(-1.3113416e-06, 0, 30, 0, 30, 0, -30, 0, -1.3113416e-06, -63.34071, 0, 37.004967)
 
 [node name="OnaSample7" parent="OnaProgramRoom" unique_id=1156687638 instance=ExtResource("19_rd68b")]
-transform = Transform3D(-1.3113416e-06, 0, 30, 0, 30, 0, -30, 0, -1.3113416e-06, -55.231945, 0, 37.004967)
+transform = Transform3D(-1.3113416e-06, 0, 30, 0, 30, 0, -30, 0, -1.3113416e-06, -58.115505, 0, 37.004967)
 
 [node name="PreviewControl" parent="OnaProgramRoom" unique_id=857706478 instance=ExtResource("20_3qcai")]
-transform = Transform3D(-2.6226832e-07, 0, 6, 0, 6, 0, -6, 0, -2.6226832e-07, -32.15267, 0, 31.63922)
+transform = Transform3D(-2.6226832e-07, 0, 6, 0, 6, 0, -6, 0, -2.6226832e-07, -34.905483, 0, 31.63922)
 
 [node name="Radar" parent="." unique_id=435810220 instance=ExtResource("4_dn4ym")]
-transform = Transform3D(7, 0, 0, 0, 7, 0, 0, 0, 7, 6.037819, 0, -45.069927)
+transform = Transform3D(7, 0, 0, 0, 7, 0, 0, 0, 7, 7.3190317, 0, -45.069927)
 
 [node name="RalluxRoom" type="Node3D" parent="." unique_id=1182283575]
 
@@ -1335,6 +1351,12 @@ transform = Transform3D(4, 0, 0, 0, 5, 0, 0, 0, 5, 43.80614, 0, 33.64306)
 
 [node name="Chair-RR" parent="RalluxRoom" unique_id=163875068 instance=ExtResource("15_cwa7o")]
 transform = Transform3D(-3.496911e-07, 0, 8, 0, 8, 0, -8, 0, -3.496911e-07, 24.141405, 0, 21.906929)
+
+[node name="SM_CableAdapter_Large" parent="RalluxRoom" unique_id=1131828660 instance=ExtResource("19_bwlgc")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18.518902, 2.1011343, 17.048594)
+
+[node name="SM_CableAdapter_Small" parent="RalluxRoom" unique_id=737595985 instance=ExtResource("20_1qnaa")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 18.51895, 1.6912367, 17.048172)
 
 [node name="Box" type="Node3D" parent="." unique_id=1704237102]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0, 3.961094)
@@ -1390,22 +1412,25 @@ transform = Transform3D(-2.84124e-07, 0, 5, 0, 5, 0, -6.5, 0, -2.1855695e-07, 34
 [node name="EnergyCoreRoom" type="Node3D" parent="." unique_id=830167077]
 
 [node name="ThermalMachine-EC" parent="EnergyCoreRoom" unique_id=647678644 instance=ExtResource("12_qetj3")]
-transform = Transform3D(5, 0, 0, 0, 5, 0, 0, 0, 5, 44.12963, 0, -26.19756)
+transform = Transform3D(5, 0, 0, 0, 5, 0, 0, 0, 5, 44.13, 0, -21.846)
 
 [node name="Fragment-EC" parent="EnergyCoreRoom" unique_id=1174848269 instance=ExtResource("13_5mf3q")]
-transform = Transform3D(4.1440916, 0, 5.641498, 0, 7, 0, -5.641498, 0, 4.1440916, 30.783298, 6.235079, -38.38851)
+transform = Transform3D(4.1440916, 0, 5.641498, 0, 7, 0, -5.641498, 0, 4.1440916, 31.659634, 6.235079, -34.321636)
 
 [node name="HoloTable-EC" parent="EnergyCoreRoom" unique_id=1928555921 instance=ExtResource("14_6e7mp")]
-transform = Transform3D(7, 0, 0, 0, 7, 0, 0, 0, 7, 30.795948, 0, -38.267345)
+transform = Transform3D(7, 0, 0, 0, 7, 0, 0, 0, 7, 31.672283, 0, -34.20047)
 
 [node name="Battery-EC" parent="EnergyCoreRoom" unique_id=312676489 instance=ExtResource("16_yb2p1")]
-transform = Transform3D(3.5, 0, 0, 0, 3.5, 0, 0, 0, 3.5, 44.683346, -0.31311655, -44.446144)
+transform = Transform3D(3.5, 0, 0, 0, 3.5, 0, 0, 0, 3.5, 44.683346, -0.1331625, -44.446144)
 
 [node name="Fuse_Box-EC" parent="EnergyCoreRoom" unique_id=390179209 instance=ExtResource("21_bwlgc")]
 transform = Transform3D(-2.1855695e-07, 0, 5, 0, 5, 0, -5, 0, -2.1855695e-07, 28.878956, 10.449526, -20.09324)
 
 [node name="Power_Junction-EC" parent="EnergyCoreRoom" unique_id=793055641 instance=ExtResource("22_1qnaa")]
 transform = Transform3D(-5, 0, 4.371139e-07, 0, 5, 0, -4.371139e-07, 0, -5, 49.70038, 10.539711, -35.856766)
+
+[node name="SM_Power_Cabinet" parent="EnergyCoreRoom" unique_id=1171549995 instance=ExtResource("31_1qnaa")]
+transform = Transform3D(-1.7484555e-07, 0, 4, 0, 4, 0, -4, 0, -1.7484555e-07, 34.354446, -4.7683716e-07, -21.636904)
 
 [node name="LampuSudut" type="Node3D" parent="." unique_id=11742205]
 
@@ -3068,3 +3093,15 @@ mesh = SubResource("BoxMesh_dy5on")
 
 [node name="SM_Door_Single_V1" parent="." unique_id=926128430 instance=ExtResource("37_yb2p1")]
 transform = Transform3D(1.5, 0, 0, 0, 8.36, 0, 0, 0, 10, 19.114933, 0.14822817, -32.958725)
+
+[node name="SM_Barrier_03" parent="." unique_id=1853626546 instance=ExtResource("40_3r50f")]
+transform = Transform3D(-2.1855695e-07, 0, 5, 0, 5, 0, -5, 0, -2.1855695e-07, 7.362035, 0, -39.048492)
+
+[node name="SM_Data_Unit" parent="." unique_id=674305631 instance=ExtResource("41_r8b8q")]
+transform = Transform3D(4, 0, 0, 0, 4, 0, 0, 0, 4, 11.532576, 7.19049, 21.385517)
+
+[node name="SM_Data_Storage_Unit" parent="." unique_id=1519484453 instance=ExtResource("42_r1tgq")]
+transform = Transform3D(5, 0, 0, 0, 5, 0, 0, 0, 5, 12.42967, 7.4027166, 22.997911)
+
+[node name="quitdoor" parent="." unique_id=1381481805 instance=ExtResource("44_3r50f")]
+transform = Transform3D(-9.616506e-07, 0, 20, 0, 22.5, 0, -22, 0, -8.742278e-07, -75.351006, -0.41191196, -45.763237)
