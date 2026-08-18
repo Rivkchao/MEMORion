@@ -3021,7 +3021,7 @@ transform = Transform3D(-1.09278474e-07, 0, -7, 0, 5, 0, 2.5, 0, -3.059797e-07, 
 transform = Transform3D(-2.1855695e-07, 0, -5, 0, 5, 0, 5, 0, -2.1855695e-07, -6.382344, 0.09985113, 37.628956)
 
 [node name="SM_Wall_2x2" parent="." unique_id=457194267 instance=ExtResource("33_yb2p1")]
-transform = Transform3D(-4.371139e-08, 65, 0, -1, -2.8412403e-06, 0, 0, 0, 55, -13.300911, 14.917219, -0.3406906)
+transform = Transform3D(-4.371139e-08, 65, 0, -1, -2.8412403e-06, 0, 0, 0, 55, -12.7116165, 14.917219, -3.7736435)
 
 [node name="SM_Wall_Corner" parent="." unique_id=310523681 instance=ExtResource("34_rtgv3")]
 transform = Transform3D(-2.1855695e-07, -5, 0, 5, -2.1855695e-07, 0, 0, 0, 5, -65.439, 14.859, -40.239)
