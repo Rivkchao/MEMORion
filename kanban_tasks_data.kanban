@@ -1,0 +1,58 @@
+{
+	"categories": [
+		{
+			"uuid": "365f2dc2-c18e-4ac1-ac25-7b7b656a78b9",
+			"title": "Task",
+			"color": "dc65e4"
+		}
+	],
+	"stages": [
+		{
+			"uuid": "84c58f87-097b-47e3-9b54-f2c0b5af570f",
+			"title": "Todo",
+			"tasks": [
+				"0118afe4-047c-4098-b554-a599096a37ad",
+				"2343ccbe-e5d5-4c79-acb9-a23c773d9e59"
+			]
+		},
+		{
+			"uuid": "0d9c07e3-9d4d-4c70-97c3-256930af6f8a",
+			"title": "Doing",
+			"tasks": []
+		},
+		{
+			"uuid": "f63d67df-b783-4ed5-a765-0086b38c74b5",
+			"title": "Done",
+			"tasks": []
+		}
+	],
+	"tasks": [
+		{
+			"uuid": "0118afe4-047c-4098-b554-a599096a37ad",
+			"title": "",
+			"description": "",
+			"category": "365f2dc2-c18e-4ac1-ac25-7b7b656a78b9",
+			"steps": []
+		},
+		{
+			"uuid": "2343ccbe-e5d5-4c79-acb9-a23c773d9e59",
+			"title": "New task",
+			"description": "",
+			"category": "365f2dc2-c18e-4ac1-ac25-7b7b656a78b9",
+			"steps": []
+		}
+	],
+	"layout": {
+		"columns": [
+			[
+				"84c58f87-097b-47e3-9b54-f2c0b5af570f"
+			],
+			[
+				"0d9c07e3-9d4d-4c70-97c3-256930af6f8a"
+			],
+			[
+				"f63d67df-b783-4ed5-a765-0086b38c74b5"
+			]
+		]
+	}
+}
