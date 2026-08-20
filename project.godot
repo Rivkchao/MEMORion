@@ -26,20 +26,18 @@ GameManager="*uid://dcc8udvj0vqi8"
 NLPManager="*uid://cnbvt12ms3ovq"
 AIManager="*uid://cg561dukvvvws"
 RockPuzzleManager="*uid://5b2qoi6ui3q3"
-_mcp_game_helper="*res://addons/godot_ai/runtime/game_helper.gd"
 AppConfig="*uid://cjke6crjg14a0"
 SceneLoader="*uid://cbwmrnp0af35y"
 ProjectMusicController="*uid://r5t485lr3p7t"
 ProjectUISoundController="*uid://cc37235kj4384"
 SceneTransition="*uid://cec4jkbrtthg3"
 LoadingScreen="*uid://rncmc7smqy2"
+_mcp_game_helper="*res://addons/godot_ai/runtime/game_helper.gd"
 
 [display]
 
 window/size/viewport_width=1920
 window/size/viewport_height=1080
-window/size/window_width_override=1280
-window/size/window_height_override=720
 window/stretch/mode="canvas_items"
 
 [editor]

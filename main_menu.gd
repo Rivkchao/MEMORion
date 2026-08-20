@@ -1,23 +1,4 @@
-@tool
 extends Control
-
-@export_group("Menu Theme")
-@export var font_size: int = 24:
-	set(value):
-		font_size = value
-		_apply_styling()
-@export var default_color: Color = Color.WHITE:
-	set(value):
-		default_color = value
-		_apply_styling()
-@export var highlight_color: Color = Color("4aa3df"):
-	set(value):
-		highlight_color = value
-		_apply_styling()
-@export var custom_font: Font:
-	set(value):
-		custom_font = value
-		_apply_styling()
 
 @export_group("References")
 @export var button_container: Container
@@ -30,29 +11,44 @@ extends Control
 @onready var options_btn: Button = $MenuContainer/OptionsBtn
 @onready var exit_btn: Button = $MenuContainer/ExitBtn
 
+@onready var logo_rect: TextureRect = $Logo
+
 func _ready() -> void:
-	_apply_styling()
+	_start_logo_flip_animation()
 	
 	if Engine.is_editor_hint():
 		return
 	
-	# Connect tombol
+	# Connect signal tombol klik
 	new_game_btn.pressed.connect(_on_new_game)
 	load_btn.pressed.connect(_on_load_game)
 	options_btn.pressed.connect(_on_options)
 	exit_btn.pressed.connect(_on_exit)
 	
-	# Animasi fade in
+	# Animasi fade in menu awal
 	modulate.a = 0.0
 	var tween = create_tween()
 	tween.tween_property(self, "modulate:a", 1.0, 0.8)
+
+func _start_logo_flip_animation() -> void:
+	logo_rect.pivot_offset = logo_rect.size / 2.0
+	
+	var flip_tween = create_tween().set_loops()
+	
+	# Jeda diam 3 detik
+	flip_tween.tween_interval(3.0)
+	
+	# Putar 360 derajat (Flip horizontal)
+	flip_tween.tween_property(logo_rect, "scale:x", 0.0, 0.4).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
+	flip_tween.tween_property(logo_rect, "scale:x", -1.0, 0.4).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
+	flip_tween.tween_property(logo_rect, "scale:x", 0.0, 0.4).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
+	flip_tween.tween_property(logo_rect, "scale:x", 1.0, 0.4).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 
 func _on_new_game() -> void:
 	LoadingScreen.load_scene(game_scene)
 
 func _on_load_game() -> void:
 	# TODO: M9 Save/Load
-	# Sementara langsung load game scene
 	LoadingScreen.load_scene(game_scene)
 
 func _on_options() -> void:
@@ -61,43 +57,3 @@ func _on_options() -> void:
 
 func _on_exit() -> void:
 	get_tree().quit()
-
-func _apply_styling() -> void:
-	if not button_container:
-		return
-	
-	var style_empty = StyleBoxEmpty.new()
-	var style_focus = StyleBoxFlat.new()
-	style_focus.bg_color = Color(highlight_color.r, highlight_color.g, highlight_color.b, 0.15)
-	style_focus.border_color = highlight_color
-	style_focus.border_width_left = 4
-	style_focus.content_margin_left = 12
-	style_focus.content_margin_top = 4
-	style_focus.content_margin_bottom = 4
-	
-	for child in button_container.get_children():
-		if child is Button:
-			child.add_theme_stylebox_override("normal", style_empty)
-			child.add_theme_stylebox_override("hover", style_focus)
-			child.add_theme_stylebox_override("focus", style_focus)
-			child.add_theme_stylebox_override("pressed", style_focus)
-			
-			child.add_theme_color_override("font_color", default_color)
-			child.add_theme_color_override("font_hover_color", highlight_color)
-			child.add_theme_color_override("font_focus_color", highlight_color)
-			
-			# Hanya pasang outline jika BELUM diatur di Inspector tombol
-			if not child.has_theme_color_override("font_outline_color"):
-				child.add_theme_color_override("font_outline_color", Color.BLACK)
-			
-			if not child.has_theme_constant_override("outline_size"):
-				child.add_theme_constant_override("outline_size", 4)
-			
-			# Hanya pasang font_size jika BELUM diatur di Inspector tombol
-			if not child.has_theme_font_size_override("font_size"):
-				child.add_theme_font_size_override("font_size", font_size)
-			
-			if custom_font and not child.has_theme_font_override("font"):
-				child.add_theme_font_override("font", custom_font)
-				
-			child.alignment = HORIZONTAL_ALIGNMENT_LEFT

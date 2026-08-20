@@ -10,7 +10,7 @@ extends CharacterBody3D
 @onready var interact_area: Area3D = $InteractArea
 @onready var anim_tree: AnimationTree = $AnimationTree
 @onready var anim_state: AnimationNodeStateMachinePlayback = anim_tree["parameters/playback"]
-@onready var camera_node: Node3D = get_node(camera_rig)
+@onready var camera_node: Node3D = get_node_or_null(camera_rig)
 
 var joystick_input: Vector2 = Vector2.ZERO
 var current_interactable: Interactable = null
@@ -128,6 +128,14 @@ func _handle_movement() -> void:
 	if input_dir == Vector2.ZERO or _is_any_ui_active():
 		velocity.x = move_toward(velocity.x, 0, current_speed)
 		velocity.z = move_toward(velocity.z, 0, current_speed)
+		return
+
+	if camera_node == null:
+		if not camera_rig.is_empty():
+			camera_node = get_node_or_null(camera_rig)
+		if camera_node == null:
+			camera_node = get_viewport().get_camera_3d()
+	if camera_node == null:
 		return
 
 	var cam_basis = camera_node.global_transform.basis

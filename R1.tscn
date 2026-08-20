@@ -1,5 +1,6 @@
 [gd_scene format=3 uid="uid://draevktwo8aya"]
 
+[ext_resource type="Script" uid="uid://b4l34w5spfgth" path="res://scenes/main/Main.gd" id="1_8jj7e"]
 [ext_resource type="PackedScene" uid="uid://1xbhwgxgpiio" path="res://assets/models/BengkelP1/02_EXPORT/FBX/SM_Wall_V0.fbx" id="2_5xue8"]
 [ext_resource type="PackedScene" uid="uid://dw5wa7qn6r0ng" path="res://assets/models/BengkelH1/02_EXPORT/FBX/SM_Wall_Vent_Grate.fbx" id="3_ye5hi"]
 [ext_resource type="PackedScene" uid="uid://c6c4bsm36d3n4" path="res://assets/models/Radar/02_EXPORT/FBX/SM_Turret_ScanArray.fbx" id="4_dn4ym"]
@@ -44,6 +45,9 @@
 [ext_resource type="PackedScene" uid="uid://v0m1x6qf8dld" path="res://assets/models/BengkelH1/02_EXPORT/FBX/SM_Data_Unit.fbx" id="41_r8b8q"]
 [ext_resource type="PackedScene" uid="uid://uyd1f444af7o" path="res://assets/models/Table/02_EXPORT/FBX/SM_Data_Storage_Unit.fbx" id="42_r1tgq"]
 [ext_resource type="PackedScene" uid="uid://bi7721j7lw836" path="res://assets/models/quitdoor.glb" id="44_3r50f"]
+[ext_resource type="PackedScene" uid="uid://b508smaiacdnq" path="res://scenes/player/Player.tscn" id="46_rvpk0"]
+[ext_resource type="PackedScene" uid="uid://dpj8grnlkea4p" path="res://scenes/camera/CameraRig.tscn" id="47_ukcy8"]
+[ext_resource type="PackedScene" uid="uid://brjwd8h3yb3wt" path="res://scenes/ui/HUD.tscn" id="48_e701n"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_b6pli"]
 cull_mode = 2
@@ -72,6 +76,7 @@ size = Vector3(130.56543, 0.654, 100)
 size = Vector3(133.26947, 17.661499, 1)
 
 [node name="BengkelRallux" type="Node3D" unique_id=1583766968]
+script = ExtResource("1_8jj7e")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="." unique_id=1917339438]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -12.9579525, -0.5836277, -5.070324)
@@ -3125,3 +3130,14 @@ shape = SubResource("BoxShape3D_c0jhv")
 [node name="CollisionShape3D3" type="CollisionShape3D" parent="Collision" unique_id=1238781603]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14.547516, 7.230239, -49.542645)
 shape = SubResource("BoxShape3D_c0jhv")
+
+[node name="DirectionalLight3D" type="DirectionalLight3D" parent="." unique_id=1310152665]
+transform = Transform3D(0.87758255, -0.3088544, 0.36668488, 0, 0.7648422, 0.64421767, -0.47942555, -0.56535417, 0.6712122, 0, 0, 0)
+
+[node name="Player" parent="." unique_id=869527826 instance=ExtResource("46_rvpk0")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1, 0)
+camera_rig = NodePath("../CameraRig")
+
+[node name="CameraRig" parent="." unique_id=1539430050 instance=ExtResource("47_ukcy8")]
+
+[node name="HUD" parent="." unique_id=818947581 instance=ExtResource("48_e701n")]
