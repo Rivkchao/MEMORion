@@ -1,0 +1,106 @@
+[gd_scene format=3 uid="uid://0m4an2nc7ymj"]
+
+[ext_resource type="Script" uid="uid://b17tgq04a6nd3" path="res://main_menu.gd" id="1_06t4h"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_472ct"]
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_c0jhv"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_0yr4a"]
+bg_color = Color(0.15686275, 0.3529412, 0.87058824, 0.43137255)
+border_width_left = 4
+corner_radius_top_left = 4
+corner_radius_top_right = 4
+corner_radius_bottom_right = 4
+corner_radius_bottom_left = 4
+shadow_size = 4
+
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_t66vt"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_ogmk6"]
+
+[node name="MainMenu" type="Control" unique_id=350799414 node_paths=PackedStringArray("button_container")]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_06t4h")
+button_container = NodePath("MenuContainer")
+game_scene = "res://LEV1.tscn"
+
+[node name="BackgroundMenu" type="TextureRect" parent="." unique_id=26583062]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+expand_mode = 1
+stretch_mode = 6
+
+[node name="Logo" type="TextureRect" parent="." unique_id=1325951490]
+layout_mode = 0
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="MenuContainer" type="VBoxContainer" parent="." unique_id=663582292]
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 80.0
+offset_top = -420.0
+offset_right = 580.0
+offset_bottom = -76.0
+grow_vertical = 0
+offset_transform_enabled = true
+
+[node name="NewGameBtn" type="Button" parent="MenuContainer" unique_id=1121382902]
+layout_mode = 2
+theme_override_constants/outline_size = 3
+theme_override_font_sizes/font_size = 60
+theme_override_styles/normal = SubResource("StyleBoxEmpty_472ct")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_c0jhv")
+theme_override_styles/hover = SubResource("StyleBoxFlat_0yr4a")
+theme_override_styles/disabled = SubResource("StyleBoxEmpty_t66vt")
+theme_override_styles/focus = SubResource("StyleBoxFlat_ogmk6")
+text = "New Game"
+alignment = 0
+
+[node name="LoadGameBtn" type="Button" parent="MenuContainer" unique_id=1758833460]
+layout_mode = 2
+theme_override_constants/outline_size = 3
+theme_override_font_sizes/font_size = 60
+theme_override_styles/normal = SubResource("StyleBoxEmpty_472ct")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_c0jhv")
+theme_override_styles/hover = SubResource("StyleBoxFlat_0yr4a")
+theme_override_styles/disabled = SubResource("StyleBoxEmpty_t66vt")
+theme_override_styles/focus = SubResource("StyleBoxFlat_ogmk6")
+text = "Load Game"
+alignment = 0
+
+[node name="OptionsBtn" type="Button" parent="MenuContainer" unique_id=1476508756]
+layout_mode = 2
+theme_override_constants/outline_size = 3
+theme_override_font_sizes/font_size = 60
+theme_override_styles/normal = SubResource("StyleBoxEmpty_472ct")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_c0jhv")
+theme_override_styles/hover = SubResource("StyleBoxFlat_0yr4a")
+theme_override_styles/disabled = SubResource("StyleBoxEmpty_t66vt")
+theme_override_styles/focus = SubResource("StyleBoxFlat_ogmk6")
+text = "Options"
+alignment = 0
+
+[node name="ExitBtn" type="Button" parent="MenuContainer" unique_id=1123371572]
+layout_mode = 2
+theme_override_constants/outline_size = 3
+theme_override_font_sizes/font_size = 60
+theme_override_styles/normal = SubResource("StyleBoxEmpty_472ct")
+theme_override_styles/pressed = SubResource("StyleBoxEmpty_c0jhv")
+theme_override_styles/hover = SubResource("StyleBoxFlat_0yr4a")
+theme_override_styles/disabled = SubResource("StyleBoxEmpty_t66vt")
+theme_override_styles/focus = SubResource("StyleBoxFlat_ogmk6")
+text = "Exit"
+alignment = 0

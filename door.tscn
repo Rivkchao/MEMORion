@@ -1,0 +1,15 @@
+[gd_scene format=3 uid="uid://cv8ie6ga6ou70"]
+
+[ext_resource type="Script" uid="uid://csijrqns8nxyo" path="res://door.gd" id="1_ba8gm"]
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_472ct"]
+
+[node name="Door" type="StaticBody3D" unique_id=1561601490]
+script = ExtResource("1_ba8gm")
+
+[node name="Label3D" type="Label3D" parent="." unique_id=310028149]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.2445196, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=480864748]
+transform = Transform3D(1, 0, 0, 0, 2.0309334, 0, 0, 0, 1, 0, 0, 0)
+shape = SubResource("BoxShape3D_472ct")
