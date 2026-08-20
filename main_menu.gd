@@ -81,12 +81,23 @@ func _apply_styling() -> void:
 			child.add_theme_stylebox_override("hover", style_focus)
 			child.add_theme_stylebox_override("focus", style_focus)
 			child.add_theme_stylebox_override("pressed", style_focus)
+			
 			child.add_theme_color_override("font_color", default_color)
 			child.add_theme_color_override("font_hover_color", highlight_color)
 			child.add_theme_color_override("font_focus_color", highlight_color)
-			child.add_theme_color_override("font_outline_color", Color.BLACK)
-			child.add_theme_constant_override("outline_size", 4)
-			child.add_theme_font_size_override("font_size", font_size)
-			if custom_font:
+			
+			# Hanya pasang outline jika BELUM diatur di Inspector tombol
+			if not child.has_theme_color_override("font_outline_color"):
+				child.add_theme_color_override("font_outline_color", Color.BLACK)
+			
+			if not child.has_theme_constant_override("outline_size"):
+				child.add_theme_constant_override("outline_size", 4)
+			
+			# Hanya pasang font_size jika BELUM diatur di Inspector tombol
+			if not child.has_theme_font_size_override("font_size"):
+				child.add_theme_font_size_override("font_size", font_size)
+			
+			if custom_font and not child.has_theme_font_override("font"):
 				child.add_theme_font_override("font", custom_font)
+				
 			child.alignment = HORIZONTAL_ALIGNMENT_LEFT
