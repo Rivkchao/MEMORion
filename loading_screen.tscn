@@ -12,6 +12,9 @@
 
 [sub_resource type="Theme" id="Theme_jrdmd"]
 
+[sub_resource type="LabelSettings" id="LabelSettings_jrdmd"]
+font_size = 42
+
 [sub_resource type="SpriteFrames" id="SpriteFrames_c6lqs"]
 animations = [{
 "frames": [{
@@ -47,7 +50,16 @@ animations = [{
 [node name="LoadingScreen" type="CanvasLayer" unique_id=132151679]
 script = ExtResource("1_jrdmd")
 
-[node name="Control" type="Control" parent="." unique_id=1288007412]
+[node name="FadeRect" type="ColorRect" parent="." unique_id=1074636445]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+color = Color(0, 0, 0, 1)
+
+[node name="Panel" type="Control" parent="." unique_id=1288007412]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -55,23 +67,29 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 
-[node name="ColorRect" type="ColorRect" parent="Control" unique_id=1074636445]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 40.0
-
-[node name="ProgressBar" type="ProgressBar" parent="Control" unique_id=1207079108]
-layout_mode = 0
-offset_right = 4.0
-offset_bottom = 27.0
+[node name="ProgressBar" type="ProgressBar" parent="Panel" unique_id=1207079108]
+layout_mode = 1
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -33.0
+grow_horizontal = 2
+grow_vertical = 0
 theme = SubResource("Theme_jrdmd")
 
-[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="Control" unique_id=1367368880]
+[node name="LoadingLabel" type="Label" parent="Panel" unique_id=732355380]
+layout_mode = 0
+offset_left = 1577.0
+offset_top = 905.0
+offset_right = 1656.0
+offset_bottom = 934.0
+text = "Memuat..."
+label_settings = SubResource("LabelSettings_jrdmd")
+
+[node name="AnimatedSprite2D" type="AnimatedSprite2D" parent="Panel" unique_id=1367368880]
+position = Vector2(1364, 986)
+scale = Vector2(0.2, 0.2)
 sprite_frames = SubResource("SpriteFrames_c6lqs")
 frame_progress = 0.1933882
-
-[node name="Label" type="Label" parent="Control" unique_id=732355380]
-layout_mode = 0
-offset_right = 40.0
-offset_bottom = 23.0
-text = "Memuat..."
+flip_h = true
