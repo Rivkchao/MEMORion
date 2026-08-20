@@ -43,7 +43,7 @@
 [ext_resource type="PackedScene" uid="uid://d1pbk4jbvm3al" path="res://assets/models/BengkelH1/02_EXPORT/FBX/SM_Barrier_03.fbx" id="40_3r50f"]
 [ext_resource type="PackedScene" uid="uid://v0m1x6qf8dld" path="res://assets/models/BengkelH1/02_EXPORT/FBX/SM_Data_Unit.fbx" id="41_r8b8q"]
 [ext_resource type="PackedScene" uid="uid://uyd1f444af7o" path="res://assets/models/Table/02_EXPORT/FBX/SM_Data_Storage_Unit.fbx" id="42_r1tgq"]
-[ext_resource type="PackedScene" uid="uid://d6g23qbx05ig" path="res://assets/models/quitdoor.glb" id="44_3r50f"]
+[ext_resource type="PackedScene" uid="uid://bi7721j7lw836" path="res://assets/models/quitdoor.glb" id="44_3r50f"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_b6pli"]
 cull_mode = 2
@@ -64,6 +64,12 @@ emission_energy_multiplier = 0.5
 [sub_resource type="BoxMesh" id="BoxMesh_dy5on"]
 material = SubResource("StandardMaterial3D_cj8ai")
 size = Vector3(30.626999, 16.268677, 0.05)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_472ct"]
+size = Vector3(130.56543, 0.654, 100)
+
+[sub_resource type="BoxShape3D" id="BoxShape3D_c0jhv"]
+size = Vector3(133.26947, 17.661499, 1)
 
 [node name="BengkelRallux" type="Node3D" unique_id=1583766968]
 
@@ -3105,3 +3111,17 @@ transform = Transform3D(5, 0, 0, 0, 5, 0, 0, 0, 5, 12.42967, 7.4027166, 22.99791
 
 [node name="quitdoor" parent="." unique_id=1381481805 instance=ExtResource("44_3r50f")]
 transform = Transform3D(-9.616506e-07, 0, 20, 0, 22.5, 0, -22, 0, -8.742278e-07, -75.351006, -0.41191196, -45.763237)
+
+[node name="Collision" type="StaticBody3D" parent="." unique_id=1979512451]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="Collision" unique_id=704707310]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14.172739, -0.1729126, -5.9086914)
+shape = SubResource("BoxShape3D_472ct")
+
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="Collision" unique_id=2057431179]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14.547516, 7.230239, 40.114845)
+shape = SubResource("BoxShape3D_c0jhv")
+
+[node name="CollisionShape3D3" type="CollisionShape3D" parent="Collision" unique_id=1238781603]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -14.547516, 7.230239, -49.542645)
+shape = SubResource("BoxShape3D_c0jhv")

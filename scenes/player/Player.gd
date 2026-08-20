@@ -21,7 +21,61 @@ var last_safe_position: Vector3 = Vector3.ZERO
 
 func _ready() -> void:
 	last_safe_position = global_position
+@export var hand_point_path: NodePath
+@onready var hand_point: Marker3D = get_node(hand_point_path)
 
+var held_item: Carryable3D = null
+
+func pick_up_item(item: Carryable3D) -> void:
+	if held_item != null:
+		return
+	
+	held_item = item
+	item.is_held = true
+	
+	if item.has_node("CollisionShape3D"):
+		item.get_node("CollisionShape3D").disabled = true
+	
+	item.hide_prompt()
+	current_interactable = null
+	
+	item.reparent(hand_point)
+	var tween = create_tween()
+	tween.tween_property(item, "position", Vector3.ZERO, 0.2)\
+		.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+
+func try_place_item_3d(slot: PlacementSlot3D) -> void:
+	if held_item == null:
+		return
+	if slot.is_filled:
+		StoryManager.start_dialogue(["Slot ini sudah terisi!"], "Rion")
+		return
+	if slot.accepts != held_item.item_type:
+		StoryManager.start_dialogue(["Hmm, sepertinya ini bukan tempatnya..."], "Rion")
+		return
+	
+	var item = held_item
+	held_item = null
+	item.is_held = false
+	
+	if item.has_node("CollisionShape3D"):
+		item.get_node("CollisionShape3D").disabled = false
+	
+	slot.place_item(item)
+	
+	# Cek complete di puzzle manager
+	var puzzle = slot.get_parent().get_parent()
+	if puzzle.has_method("check_complete"):
+		puzzle.check_complete()
+
+func drop_item() -> void:
+	if held_item == null:
+		return
+	held_item.is_held = false
+	if held_item.has_node("CollisionShape3D"):
+		held_item.get_node("CollisionShape3D").disabled = false
+	held_item.return_to_original()
+	held_item = null
 func _physics_process(delta: float) -> void:
 	_apply_gravity(delta)
 	_handle_movement()
@@ -134,12 +188,15 @@ func _try_interact() -> void:
 
 func _input(event: InputEvent) -> void:
 	if event.is_action_pressed("interact"):
-		# Cek apakah ada UI aktif dulu
 		if _is_any_ui_active():
 			if StoryManager.dialogue_box != null and StoryManager.dialogue_box.is_active():
 				StoryManager.dialogue_box.next()
 			return
 		_try_interact()
+	
+	# Drop item dengan tombol lain (opsional)
+	if event.is_action_pressed("ui_cancel") and held_item != null:
+		drop_item()
 
 func _is_any_ui_active() -> bool:
 	if RockPuzzleManager.is_puzzle_active and RockPuzzleManager.dragging_rock != null:
