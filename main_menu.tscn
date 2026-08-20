@@ -6,25 +6,12 @@
 [ext_resource type="Texture2D" uid="uid://d1rladtgy4jtv" path="res://MEMORion+Logo.png" id="3_jix8l"]
 [ext_resource type="Texture2D" uid="uid://f1iskpkgcldc" path="res://FrameMainMenu.png" id="4_8qtwp"]
 [ext_resource type="Texture2D" uid="uid://shh448vpfc48" path="res://MEMORion+Text.png" id="6_0o4t1"]
-[ext_resource type="Texture2D" uid="uid://q5fbpjbg1ls8" path="res://BtnBackground.png" id="6_dy7ct"]
 [ext_resource type="Texture2D" uid="uid://bhbj0j31scnvg" path="res://BgMenu.png" id="7_dy7ct"]
-[ext_resource type="FontFile" uid="uid://b4ioew2rwhdlc" path="res://TelegrafRegular_272984568a25d8528fe2de8b20b29011.otf" id="8_8qtwp"]
+[ext_resource type="FontFile" uid="uid://bb7sml07wupsb" path="res://Telegraf UltraBold 800.otf" id="8_8qtwp"]
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_c6lqs"]
 atlas = ExtResource("7_dy7ct")
 region = Rect2(362, 18.447632, 1184, 1056.8451)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_qe12f"]
-atlas = ExtResource("6_dy7ct")
-region = Rect2(56, 320, 641, 158)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_8qtwp"]
-atlas = ExtResource("6_dy7ct")
-region = Rect2(59, 1132, 609, 162)
-
-[sub_resource type="AtlasTexture" id="AtlasTexture_dy7ct"]
-atlas = ExtResource("6_dy7ct")
-region = Rect2(59, 1132, 609, 162)
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_glbon"]
 
@@ -86,7 +73,7 @@ texture = ExtResource("6_0o4t1")
 expand_mode = 1
 stretch_mode = 4
 
-[node name="BgBtn1" type="TextureRect" parent="." unique_id=945467401]
+[node name="BgBtn" type="TextureRect" parent="." unique_id=945467401]
 layout_mode = 0
 offset_left = 218.0
 offset_top = 234.0
@@ -95,42 +82,6 @@ offset_bottom = 920.7568
 texture = SubResource("AtlasTexture_c6lqs")
 expand_mode = 5
 stretch_mode = 5
-
-[node name="BgBtn2" type="TextureRect" parent="." unique_id=1088310097]
-visible = false
-layout_mode = 0
-offset_left = 222.0
-offset_top = 416.0
-offset_right = 722.0
-offset_bottom = 616.0
-texture = SubResource("AtlasTexture_qe12f")
-expand_mode = 5
-stretch_mode = 5
-flip_h = true
-
-[node name="BgBtn3" type="TextureRect" parent="." unique_id=558286309]
-visible = false
-layout_mode = 0
-offset_left = 222.0
-offset_top = 596.0
-offset_right = 722.0
-offset_bottom = 796.0
-texture = SubResource("AtlasTexture_8qtwp")
-expand_mode = 5
-stretch_mode = 5
-flip_h = true
-
-[node name="BgBtn4" type="TextureRect" parent="." unique_id=341104477]
-visible = false
-layout_mode = 0
-offset_left = 222.0
-offset_top = 776.0
-offset_right = 722.0
-offset_bottom = 976.0
-texture = SubResource("AtlasTexture_dy7ct")
-expand_mode = 5
-stretch_mode = 5
-flip_h = true
 
 [node name="MenuContainer" type="Control" parent="." unique_id=1233013517]
 layout_mode = 1
