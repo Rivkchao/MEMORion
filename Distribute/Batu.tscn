@@ -5,7 +5,7 @@
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_lgbpg"]
 resource_name = "Rocks"
 cull_mode = 2
-albedo_color = Color(0.6745098, 0.6117647, 1, 1)
+albedo_color = Color(0.9, 0.758, 1.61, 1)
 albedo_texture = ExtResource("2_k16mp")
 metadata/_gltf_primary_texture_coord = 0
 
@@ -43,7 +43,17 @@ _surfaces = [{
 blend_shape_mode = 0
 shadow_mesh = SubResource("ArrayMesh_ekma6")
 
-[node name="Rock_Medium_22" type="Node3D" unique_id=55236288]
+[sub_resource type="SphereShape3D" id="SphereShape3D_c6lqs"]
+radius = 1.5805373
 
-[node name="Rock_Medium_2" type="MeshInstance3D" parent="." unique_id=793388407]
+[node name="Rock" type="Node3D" unique_id=55236288]
+
+[node name="Mesh Rock" type="MeshInstance3D" parent="." unique_id=793388407]
 mesh = SubResource("ArrayMesh_xx8kk")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="." unique_id=1762120802]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.016959906, 0)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D" unique_id=1159531141]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.13104534, 0.60205007, 0)
+shape = SubResource("SphereShape3D_c6lqs")

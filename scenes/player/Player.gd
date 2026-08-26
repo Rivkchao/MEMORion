@@ -3,28 +3,30 @@ extends CharacterBody3D
 @export var walk_speed: float = 5.0
 @export var sprint_speed: float = 10.0
 @export var jump_force: float = 8.0
+@export var jump_delay: float = 0.45
 @export var gravity: float = 20.0
 @export var camera_rig: NodePath
 
 @onready var mesh: Node3D = $RionMesh
 @onready var interact_area: Area3D = $InteractArea
 @onready var anim_tree: AnimationTree = $AnimationTree
-@onready var anim_state: AnimationNodeStateMachinePlayback = anim_tree["parameters/playback"]
 @onready var camera_node: Node3D = get_node_or_null(camera_rig)
 
 var joystick_input: Vector2 = Vector2.ZERO
 var current_interactable: Interactable = null
 var current_speed: float = walk_speed
+var is_jumping_prep: bool = false
 
 @export var fall_threshold: float = -5.0
 var last_safe_position: Vector3 = Vector3.ZERO
 
-func _ready() -> void:
-	last_safe_position = global_position
 @export var hand_point_path: NodePath
 @onready var hand_point: Marker3D = get_node(hand_point_path)
 
 var held_item: Carryable3D = null
+
+func _ready() -> void:
+	last_safe_position = global_position
 
 func pick_up_item(item: Carryable3D) -> void:
 	if held_item != null:
@@ -63,7 +65,6 @@ func try_place_item_3d(slot: PlacementSlot3D) -> void:
 	
 	slot.place_item(item)
 	
-	# Cek complete di puzzle manager
 	var puzzle = slot.get_parent().get_parent()
 	if puzzle.has_method("check_complete"):
 		puzzle.check_complete()
@@ -76,15 +77,16 @@ func drop_item() -> void:
 		held_item.get_node("CollisionShape3D").disabled = false
 	held_item.return_to_original()
 	held_item = null
+
 func _physics_process(delta: float) -> void:
 	_apply_gravity(delta)
 	_handle_movement()
 	_handle_jump()
+	move_and_slide()
 	_handle_rotation(delta)
-	_handle_animation()
+	_handle_animation(delta)
 	_check_interact_prompt()
 	_check_fall()
-	move_and_slide()
 
 func _check_fall() -> void:
 	if global_position.y < fall_threshold:
@@ -98,7 +100,7 @@ func _check_fall() -> void:
 func _apply_gravity(delta: float) -> void:
 	if not is_on_floor():
 		velocity.y -= gravity * delta
-	else:
+	elif velocity.y < 0:
 		velocity.y = -0.5
 
 func _handle_movement() -> void:
@@ -110,21 +112,19 @@ func _handle_movement() -> void:
 		velocity.x = 0
 		velocity.z = 0
 		return
-	# 1. Tentukan kecepatan aktif (Sprint / Walk)
+
 	if Input.is_action_pressed("sprint"):
 		current_speed = sprint_speed
 	else:
 		current_speed = walk_speed
 
 	var input_dir = Vector2.ZERO
-
 	input_dir.x = Input.get_axis("move_left", "move_right")
 	input_dir.y = Input.get_axis("move_forward", "move_back")
 
 	if joystick_input.length() > 0.1:
 		input_dir = joystick_input
 
-	# Jika tidak ada input arah atau UI sedang terbuka, hentikan pergerakan
 	if input_dir == Vector2.ZERO or _is_any_ui_active():
 		velocity.x = move_toward(velocity.x, 0, current_speed)
 		velocity.z = move_toward(velocity.z, 0, current_speed)
@@ -144,13 +144,23 @@ func _handle_movement() -> void:
 
 	var move_dir = (forward * -input_dir.y + right * input_dir.x).normalized()
 
-	# Gunakan current_speed
 	velocity.x = move_dir.x * current_speed
 	velocity.z = move_dir.z * current_speed
-	
+
 func _handle_jump() -> void:
-	if is_on_floor() and Input.is_action_just_pressed("jump"):
-		velocity.y = jump_force
+	if is_on_floor() and Input.is_action_just_pressed("jump") and not is_jumping_prep:
+		is_jumping_prep = true
+		
+		# Picu OneShot request JumpShot
+		anim_tree.set("parameters/JumpShot/request", AnimationNodeOneShot.ONE_SHOT_REQUEST_FIRE)
+		
+		# Delay fase jongkok sebelum tubuh meluncur ke atas
+		await get_tree().create_timer(jump_delay).timeout
+		
+		if is_on_floor():
+			velocity.y = jump_force
+			
+		is_jumping_prep = false
 
 func _handle_rotation(delta: float) -> void:
 	var move_dir = Vector3(velocity.x, 0, velocity.z)
@@ -162,15 +172,22 @@ func _handle_rotation(delta: float) -> void:
 			10.0 * delta
 		)
 
-func _handle_animation() -> void:
-	var is_moving = Vector2(velocity.x, velocity.z).length() > 0.1
+func _handle_animation(delta: float) -> void:
+	var horizontal_speed = Vector2(velocity.x, velocity.z).length()
+	var target_move_blend: float = 0.0
 
-	if not is_on_floor():
-		anim_state.travel("Jump")
-	elif is_moving:
-		anim_state.travel("Walk")
+	if horizontal_speed > 0.1:
+		if Input.is_action_pressed("sprint"):
+			target_move_blend = 1.0  # Run
+		else:
+			target_move_blend = 0.5  # Walk
 	else:
-		anim_state.travel("Idle")
+		target_move_blend = 0.0      # Idle
+
+	# Update posisi blend kaki & badan dasar
+	var move_path = "parameters/StateMachine/Move/blend_position"
+	var current_move: float = anim_tree.get(move_path) if anim_tree.get(move_path) != null else 0.0
+	anim_tree.set(move_path, lerpf(current_move, target_move_blend, 8.0 * delta))
 
 func _check_interact_prompt() -> void:
 	var bodies = interact_area.get_overlapping_bodies()
@@ -202,7 +219,6 @@ func _input(event: InputEvent) -> void:
 			return
 		_try_interact()
 	
-	# Drop item dengan tombol lain (opsional)
 	if event.is_action_pressed("ui_cancel") and held_item != null:
 		drop_item()
 

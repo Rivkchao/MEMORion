@@ -7,7 +7,7 @@
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_ktxfr"]
 render_priority = 0
 shader = ExtResource("2_25j4m")
-shader_parameter/grass_color = Color(0.37156692, 0.4350897, 0.5553293, 1)
+shader_parameter/grass_color = Color(0.55232596, 0, 0.80317783, 1)
 shader_parameter/texture_albedo = ExtResource("3_v7ik4")
 shader_parameter/wind_speed = 1.5
 shader_parameter/wind_strength = 0.25

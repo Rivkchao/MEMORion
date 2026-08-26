@@ -1,26 +1,10 @@
 [gd_scene format=4 uid="uid://c6e0yd6hjhb1q"]
 
-[ext_resource type="Shader" uid="uid://dk5w3b7kn6eim" path="res://Distribute/Pohon1.gdshader" id="1_l2xxt"]
 [ext_resource type="Texture2D" uid="uid://bwkvrheqt6jie" path="res://assets/World/Stylized Nature MegaKit[Standard](1)/glTF/Bark_NormalTree.png" id="2_1wqee"]
 [ext_resource type="Texture2D" uid="uid://bod5f1ndajms5" path="res://assets/World/Stylized Nature MegaKit[Standard](1)/Textures/Bark_DeadTree.png" id="3_q6clg"]
 [ext_resource type="Texture2D" uid="uid://380uq3ehjw3m" path="res://assets/World/Stylized Nature MegaKit[Standard](1)/Textures/Bark_NormalTree.png" id="4_8oox7"]
 [ext_resource type="Texture2D" uid="uid://d0mib64bu58wu" path="res://assets/World/Stylized Nature MegaKit[Standard](1)/Textures/Pohon2.png" id="5_l2xxt"]
 [ext_resource type="Texture2D" uid="uid://c47kgfbvagv02" path="res://assets/World/Stylized Nature MegaKit[Standard](1)/Textures/Pohon1B.png" id="6_o5pkt"]
-
-[sub_resource type="FastNoiseLite" id="FastNoiseLite_1cp5i"]
-
-[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_77ry0"]
-noise = SubResource("FastNoiseLite_1cp5i")
-seamless = true
-
-[sub_resource type="ShaderMaterial" id="ShaderMaterial_jtfv3"]
-render_priority = 0
-shader = ExtResource("1_l2xxt")
-shader_parameter/custom_aurora_tint = Color(0.4, 0.85, 1, 1)
-shader_parameter/aurora_intensity = 0.10000000475
-shader_parameter/fresnel_power = 2.162000055195
-shader_parameter/smoke_speed = 0.5
-shader_parameter/smoke_noise = SubResource("NoiseTexture2D_77ry0")
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_bpw06"]
 resource_name = "Bark_NormalTree"
@@ -117,10 +101,9 @@ shadow_mesh = SubResource("ArrayMesh_at21g")
 radius = 0.6489258
 height = 7.8254395
 
-[node name="CommonTree_12" type="Node3D" unique_id=2020048456]
+[node name="PohonBiru" type="Node3D" unique_id=2020048456]
 
-[node name="CommonTree_1" type="MeshInstance3D" parent="." unique_id=1124771348]
-material_overlay = SubResource("ShaderMaterial_jtfv3")
+[node name="MeshPohonBiru" type="MeshInstance3D" parent="." unique_id=1124771348]
 mesh = SubResource("ArrayMesh_x22v4")
 
 [node name="StaticBody3D" type="StaticBody3D" parent="." unique_id=1213584503]

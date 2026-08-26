@@ -23,7 +23,6 @@ anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1_06t4h")
-game_scene = "res://LEV1.tscn"
 
 [node name="BackgroundMenu" type="TextureRect" parent="." unique_id=26583062]
 layout_mode = 1

@@ -47,7 +47,25 @@ _surfaces = [{
 blend_shape_mode = 0
 shadow_mesh = SubResource("ArrayMesh_ten71")
 
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_c6lqs"]
+radius = 0.63134766
+height = 9.112793
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_dy5on"]
+radius = 0.32714844
+height = 3.8564453
+
 [node name="DeadTree_12" unique_id=962329599 instance=ExtResource("1_mpbix")]
 
 [node name="DeadTree_1" parent="." index="0" unique_id=530168257]
 mesh = SubResource("ArrayMesh_027hx")
+
+[node name="StaticBody3D" type="StaticBody3D" parent="." index="1" unique_id=1836422189]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D" index="0" unique_id=1700989292]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.0065528154, 3.5563965, 0)
+shape = SubResource("CapsuleShape3D_c6lqs")
+
+[node name="CollisionShape3D2" type="CollisionShape3D" parent="StaticBody3D" index="1" unique_id=1940554343]
+transform = Transform3D(-0.53877074, -0.8424524, 0, 0.8424524, -0.53877074, 0, 0, 0, 1, 1.6147039, 5.4433274, 0)
+shape = SubResource("CapsuleShape3D_dy5on")
