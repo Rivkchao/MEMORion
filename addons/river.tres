@@ -2,11 +2,29 @@
 
 [ext_resource type="Shader" uid="uid://cv3tpucllqhgc" path="res://addons/river.gdshader" id="1_ekq50"]
 
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_77ry0"]
+frequency = 0.005
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_jtfv3"]
+noise = SubResource("FastNoiseLite_77ry0")
+seamless = true
+
 [resource]
 render_priority = 0
 shader = ExtResource("1_ekq50")
 shader_parameter/water_color = Color(0.1, 0.4, 0.8, 0.7)
 shader_parameter/shallow_color = Color(0.2, 0.6, 0.9, 0.5)
-shader_parameter/wave_speed = 0.5
-shader_parameter/wave_strength = 0.02
-shader_parameter/transparency = 0.7
+shader_parameter/foam_color = Color(1, 1, 1, 1)
+shader_parameter/transparency = 0.61200002907
+shader_parameter/wave_speed = 1.0000000475
+shader_parameter/wave_strength = 0.20000000298023
+shader_parameter/flow_direction = Vector2(0, 1)
+shader_parameter/flow_speed = 0.1530000072675
+shader_parameter/foam_distance = 0.6
+shader_parameter/foam_cutoff = 0.45
+shader_parameter/foam_opacity = 0.2000000095
+shader_parameter/glow_intensity = 0.0
+shader_parameter/night_glow_color = Color(0.039215688, 0.43137255, 0.61960787, 1)
+shader_parameter/fresnel_power = 3.5
+shader_parameter/foam_glow_boost = 2.0
+shader_parameter/foam_noise = SubResource("NoiseTexture2D_jtfv3")

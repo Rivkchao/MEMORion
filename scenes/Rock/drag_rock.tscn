@@ -1,0 +1,24 @@
+[gd_scene format=3 uid="uid://dvyuukq65ob7b"]
+
+[ext_resource type="PackedScene" uid="uid://beijg8hskf5ev" path="res://scenes/Rock/draggable_rock.tscn" id="1_jy0kw"]
+
+[node name="Node3D" type="Node3D" unique_id=34364412]
+
+[node name="DraggableRock2" parent="." unique_id=1877361224 instance=ExtResource("1_jy0kw")]
+transform = Transform3D(1.83, 0, 0, 0, 1.64, 0, 0, 0, 1.68, -21.480776, 0, 0)
+rock_size = 2
+
+[node name="DraggableRock1" parent="." unique_id=1728498461 instance=ExtResource("1_jy0kw")]
+transform = Transform3D(1, 0, 0, 0, 1.16, 0, 0, 0, 1.39, -20.841318, 0, 1.9766085)
+
+[node name="DraggableRock3" parent="." unique_id=922449652 instance=ExtResource("1_jy0kw")]
+transform = Transform3D(1, 0, 0, 0, 1.46, 0, 0, 0, 1.48, -21.280449, -0.07254219, -2.0585465)
+rock_size = 3
+
+[node name="DraggableRock4" parent="." unique_id=635995263 instance=ExtResource("1_jy0kw")]
+transform = Transform3D(1, 0, 0, 0, 1.41, 0, 0, 0, 1.32, -19.815271, 0, -1.9876924)
+rock_size = 4
+
+[node name="DraggableRock5" parent="." unique_id=292508180 instance=ExtResource("1_jy0kw")]
+transform = Transform3D(1, 0, 0, 0, 1.42, 0, 0, 0, 1.81, -19.815271, 0.061444283, -0.29127383)
+rock_size = 5

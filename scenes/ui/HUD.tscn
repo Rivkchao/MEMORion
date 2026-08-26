@@ -2,9 +2,7 @@
 
 [ext_resource type="Script" uid="uid://pi42ohs0vvma" path="res://scenes/ui/hud.gd" id="1_atyv1"]
 [ext_resource type="PackedScene" uid="uid://cw5rnrg6cp2r8" path="res://scenes/ui/DialogueBox.tscn" id="1_kw0id"]
-[ext_resource type="PackedScene" uid="uid://ds78msy3d3u6l" path="res://scenes/ui/PuzzleUI.tscn" id="2_6ll6g"]
-[ext_resource type="PackedScene" uid="uid://co6qtf6b6hrdm" path="res://wire_puzzle.tscn" id="4_ig75s"]
-[ext_resource type="PackedScene" uid="uid://chcb0n1sv6kvt" path="res://unpacking_puzzle.tscn" id="5_4ed8p"]
+[ext_resource type="PackedScene" uid="uid://co6qtf6b6hrdm" path="res://scenes/Terminal/wire_puzzle.tscn" id="2_ig75s"]
 
 [node name="HUD" type="CanvasLayer" unique_id=818947581]
 script = ExtResource("1_atyv1")
@@ -14,22 +12,6 @@ offset_right = 40.0
 offset_bottom = 23.0
 
 [node name="DialogueUI" type="Control" parent="." unique_id=518772473]
-layout_mode = 3
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
-
-[node name="PuzzleUI" parent="." unique_id=1160088906 instance=ExtResource("2_6ll6g")]
-offset = Vector2(-100, -200)
-transform = Transform2D(1, 0, 0, 1, -100, -200)
-
-[node name="InventoryUI" type="Control" parent="." unique_id=1629384628]
-layout_mode = 3
-anchors_preset = 0
-offset_right = 40.0
-offset_bottom = 40.0
-
-[node name="PuzzleMenu" type="Control" parent="." unique_id=54079786]
 layout_mode = 3
 anchors_preset = 0
 offset_right = 40.0
@@ -56,6 +38,4 @@ layout_mode = 2
 [node name="ProgressLabel" type="Label" parent="ObjectivePanel/MarginContainer/VBoxContainer" unique_id=261245446]
 layout_mode = 2
 
-[node name="WirePuzzle" parent="." unique_id=746694349 instance=ExtResource("4_ig75s")]
-
-[node name="UnpackingPuzzle" parent="." unique_id=1751902816 instance=ExtResource("5_4ed8p")]
+[node name="WirePuzzle" parent="." unique_id=746694349 instance=ExtResource("2_ig75s")]

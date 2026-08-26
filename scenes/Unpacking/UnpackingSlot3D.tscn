@@ -1,0 +1,25 @@
+[gd_scene format=3 uid="uid://dajekethxs4cf"]
+
+[ext_resource type="Script" uid="uid://cabp4q5bx5k3q" path="res://scenes/Unpacking/unpacking_slot_3d.gd" id="1_h4qtk"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_dy5on"]
+transparency = 1
+albedo_color = Color(1, 1, 1, 0.4)
+emission_enabled = true
+
+[sub_resource type="BoxMesh" id="BoxMesh_c6lqs"]
+material = SubResource("StandardMaterial3D_dy5on")
+size = Vector3(0.3, 0.05, 0.3)
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_c6lqs"]
+
+[node name="UnpackingSlot3d" type="Area3D" unique_id=1553961323 groups=["unpack_slots"]]
+collision_layer = 4
+collision_mask = 0
+script = ExtResource("1_h4qtk")
+
+[node name="PreviewMesh" type="MeshInstance3D" parent="." unique_id=1657700702]
+mesh = SubResource("BoxMesh_c6lqs")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=975093337]
+shape = SubResource("SphereShape3D_c6lqs")

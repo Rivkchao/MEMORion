@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://5mndk10n55bu"]
+
+[ext_resource type="Script" uid="uid://danyj7nt81p62" path="res://scenes/Rock/RockDistractionOverlay.gd" id="1_kf42u"]
+
+[node name="RockDistractionOverlay" type="CanvasLayer" unique_id=604625228]
+script = ExtResource("1_kf42u")
