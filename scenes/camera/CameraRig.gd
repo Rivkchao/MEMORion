@@ -39,6 +39,34 @@ func _ready() -> void:
 	if camera:
 		camera.position = Vector3.ZERO
 		camera.rotation = Vector3.ZERO
+		_apply_scene_camera_settings()
+
+func _apply_scene_camera_settings() -> void:
+	if camera == null:
+		return
+	
+	# Deklarasi tipe eksplisit (Node & String) agar tidak memicu Variant Warning
+	var current_scene: Node = get_tree().current_scene
+	@warning_ignore("incompatible_ternary")
+	var scene_name: String = current_scene.name if current_scene != null else ""
+	var file_path: String = ""
+	
+	if current_scene != null and not current_scene.scene_file_path.is_empty():
+		file_path = current_scene.scene_file_path.get_file().get_basename()
+
+	# Cek apakah masuk ke BengkelRallux / R1 (Interior) atau LEV1 (Outdoor)
+	if scene_name in ["BengkelRallux", "R1"] or file_path in ["BengkelRallux", "R1"]:
+		camera.near = 0.05
+		camera.far = 1000.0       # Jarak render jauh tanpa batas kabut/clipping di interior
+		zoom_distance = 3.5       # Sedikit lebih dekat agar pas di dalam ruangan
+	elif scene_name == "LEV1" or file_path == "LEV1":
+		camera.near = 0.05
+		camera.far = 300.0        # Optimal untuk outdoor / terrain
+		zoom_distance = 4.0
+	else:
+		# Fallback default untuk scene lain
+		camera.near = 0.05
+		camera.far = 500.0
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseButton:
@@ -86,9 +114,7 @@ func _physics_process(delta: float) -> void:
 		# Cek selisih sudut hadap target terhadap sudut yaw kamera saat ini
 		var angle_diff: float = absf(wrapf(target_yaw - yaw, -PI, PI))
 		
-		# KUNCI PERBAIKAN:
-		# Jika selisih sudut mendekati 180 derajat (menekan S / menghadap kamera),
-		# JANGAN putar yaw kamera agar tidak terjadi looping putaran di tempat!
+		# KUNCI: Cegah looping spin jika bergerak ke arah kamera
 		if angle_diff < deg_to_rad(130.0):
 			yaw = lerp_angle(yaw, target_yaw, auto_align_speed * delta)
 
@@ -113,7 +139,6 @@ func _physics_process(delta: float) -> void:
 			excludes.append(child.get_rid())
 	query.exclude = excludes
 
-	# KODE PERBAIKAN:
 	var result: Dictionary = space.intersect_ray(query)
 	var final_pos: Vector3 = desired_pos
 	if not result.is_empty():
