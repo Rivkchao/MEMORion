@@ -1,0 +1,19 @@
+[gd_scene format=3 uid="uid://b38icer0aidyx"]
+
+[ext_resource type="Script" uid="uid://c1rffj1rr3kuc" path="res://scenes/Unpacking/unpack_item_3d.gd" id="1_0k8ym"]
+[ext_resource type="PackedScene" uid="uid://bt5t0k48qhgbw" path="res://assets/models/ItemUnpacking/02_EXPORT/FBX/SM_Circuit_Board.fbx" id="2_0k8ym"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_c6lqs"]
+
+[node name="UnpackItem3d" type="Area3D" unique_id=1650450852 groups=["unpack_items"]]
+collision_layer = 32768
+collision_mask = 0
+script = ExtResource("1_0k8ym")
+item_type = "circuit"
+item_name = "Circuit Board"
+
+[node name="SM_Circuit_Board" parent="." unique_id=1357611055 instance=ExtResource("2_0k8ym")]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=2060505367]
+transform = Transform3D(1, 0, 0, 0, -0.12246454, -0.9924729, 0, 0.9924729, -0.12246454, 0, 0, 0)
+shape = SubResource("SphereShape3D_c6lqs")

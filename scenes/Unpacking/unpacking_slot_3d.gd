@@ -21,12 +21,17 @@ func snap_item(item: Node3D) -> void:
 	if preview_mesh:
 		preview_mesh.visible = false
 	
-	var col = item.find_child("CollisionShape3D", true, false)
+	# Matikan deteksi tabrakan agar tidak menghalangi pemain
+	var col: CollisionShape3D = item.find_child("CollisionShape3D", true, false) as CollisionShape3D
 	if col:
 		col.disabled = true
-		
-	var tween = create_tween().set_parallel(true)
+	
+	# Simpan scale asli agar tidak menciut/rusak
+	var original_scale: Vector3 = item.scale
+	
+	var tween: Tween = create_tween().set_parallel(true)
 	tween.tween_property(item, "global_position", global_position, 0.35)\
 		.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 	tween.tween_property(item, "global_rotation", global_rotation, 0.35)\
 		.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tween.tween_property(item, "scale", original_scale, 0.35)

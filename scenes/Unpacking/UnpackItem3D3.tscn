@@ -1,0 +1,20 @@
+[gd_scene format=3 uid="uid://ca0caxwnkfg"]
+
+[ext_resource type="Script" uid="uid://c1rffj1rr3kuc" path="res://scenes/Unpacking/unpack_item_3d.gd" id="1_mpufx"]
+[ext_resource type="PackedScene" uid="uid://bg53k4bv3citj" path="res://assets/models/ItemUnpacking/02_EXPORT/FBX/SM_Electric_Motor.fbx" id="2_mpufx"]
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_c6lqs"]
+radius = 0.29351807
+
+[node name="UnpackItem3d" type="Area3D" unique_id=1650450852 groups=["unpack_items"]]
+collision_layer = 32768
+collision_mask = 0
+script = ExtResource("1_mpufx")
+item_type = "Electric Motor"
+item_name = "Electric Motor"
+
+[node name="SM_Electric_Motor" parent="." unique_id=2006978286 instance=ExtResource("2_mpufx")]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=2060505367]
+transform = Transform3D(1, 0, 0, 0, -0.12246454, -0.9924729, 0, 0.9924729, -0.12246454, 0, 0.13559136, 0)
+shape = SubResource("SphereShape3D_c6lqs")

@@ -4,14 +4,17 @@
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_dy5on"]
 transparency = 1
-albedo_color = Color(1, 1, 1, 0.4)
+albedo_color = Color(1, 1, 0, 1)
 emission_enabled = true
 
 [sub_resource type="BoxMesh" id="BoxMesh_c6lqs"]
 material = SubResource("StandardMaterial3D_dy5on")
 size = Vector3(0.3, 0.05, 0.3)
 
-[sub_resource type="SphereShape3D" id="SphereShape3D_c6lqs"]
+[sub_resource type="ConcavePolygonShape3D" id="ConcavePolygonShape3D_h4qtk"]
+data = PackedVector3Array(-0.14999999, 0.024999999, 0.14999999, 0.14999999, 0.024999999, 0.14999999, -0.14999999, -0.024999999, 0.14999999, 0.14999999, 0.024999999, 0.14999999, 0.14999999, -0.024999999, 0.14999999, -0.14999999, -0.024999999, 0.14999999, 0.14999999, 0.024999999, -0.14999999, -0.14999999, 0.024999999, -0.14999999, 0.14999999, -0.024999999, -0.14999999, -0.14999999, 0.024999999, -0.14999999, -0.14999999, -0.024999999, -0.14999999, 0.14999999, -0.024999999, -0.14999999, 0.14999999, 0.024999999, 0.14999999, 0.14999999, 0.024999999, -0.14999999, 0.14999999, -0.024999999, 0.14999999, 0.14999999, 0.024999999, -0.14999999, 0.14999999, -0.024999999, -0.14999999, 0.14999999, -0.024999999, 0.14999999, -0.14999999, 0.024999999, -0.14999999, -0.14999999, 0.024999999, 0.14999999, -0.14999999, -0.024999999, -0.14999999, -0.14999999, 0.024999999, 0.14999999, -0.14999999, -0.024999999, 0.14999999, -0.14999999, -0.024999999, -0.14999999, 0.14999999, 0.024999999, 0.14999999, -0.14999999, 0.024999999, 0.14999999, 0.14999999, 0.024999999, -0.14999999, -0.14999999, 0.024999999, 0.14999999, -0.14999999, 0.024999999, -0.14999999, 0.14999999, 0.024999999, -0.14999999, -0.14999999, -0.024999999, 0.14999999, 0.14999999, -0.024999999, 0.14999999, -0.14999999, -0.024999999, -0.14999999, 0.14999999, -0.024999999, 0.14999999, 0.14999999, -0.024999999, -0.14999999, -0.14999999, -0.024999999, -0.14999999)
+
+[sub_resource type="SphereShape3D" id="SphereShape3D_dy5on"]
 
 [node name="UnpackingSlot3d" type="Area3D" unique_id=1553961323 groups=["unpack_slots"]]
 collision_layer = 4
@@ -21,5 +24,10 @@ script = ExtResource("1_h4qtk")
 [node name="PreviewMesh" type="MeshInstance3D" parent="." unique_id=1657700702]
 mesh = SubResource("BoxMesh_c6lqs")
 
-[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=975093337]
-shape = SubResource("SphereShape3D_c6lqs")
+[node name="StaticBody3D" type="StaticBody3D" parent="PreviewMesh" unique_id=1056428733]
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="PreviewMesh/StaticBody3D" unique_id=283840303]
+shape = SubResource("ConcavePolygonShape3D_h4qtk")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1106908489]
+shape = SubResource("SphereShape3D_dy5on")
