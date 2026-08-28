@@ -9,8 +9,8 @@ func _ready() -> void:
 	wire_panel.puzzle_completed.connect(_on_puzzle_completed)
 
 func start() -> void:
-	wire_panel.setup()
 	show()
+	wire_panel.setup()
 		
 func _on_puzzle_completed(is_correct: bool) -> void:
 	puzzle_completed.emit(is_correct)

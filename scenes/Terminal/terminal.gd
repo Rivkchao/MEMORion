@@ -29,11 +29,8 @@ func _process(delta: float) -> void:
 		_flicker_timer = flicker_speed
 
 func interact() -> void:
-	print("[Terminal] Fungsi interact() terpanggil!")
 	if _puzzle_solved:
-		print("[Terminal] Puzzle sudah selesai sebelumnya.")
 		return
-	print("[Terminal] Membuka wire puzzle...")
 	StoryManager.start_wire_puzzle()
 	
 func _on_wire_puzzle_completed(is_correct: bool) -> void:
