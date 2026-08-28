@@ -5,6 +5,26 @@ var objective_current: int = 0
 var objective_total: int = 0
 var objective_item: String = "bintang"
 
+var spawn_override_position: Vector3 = Vector3.ZERO
+var spawn_override_scene: String = "LEV1"
+var has_spawn_override: bool = false
+
+func set_spawn_override(pos: Vector3, for_scene_name: String = "LEV1") -> void:
+	spawn_override_position = pos
+	spawn_override_scene = for_scene_name
+	has_spawn_override = true
+
+func consume_spawn_override_for(current_scene_str: String) -> Vector3:
+	if has_spawn_override:
+		if spawn_override_scene == "" or current_scene_str.contains(spawn_override_scene) or spawn_override_scene.contains(current_scene_str):
+			has_spawn_override = false
+			return spawn_override_position
+	return Vector3.ZERO
+
+func save_state(player_node: Node3D, target_scene_for_override: String = "LEV1") -> void:
+	if player_node:
+		set_spawn_override(player_node.global_position, target_scene_for_override)
+
 func init(hud_node: CanvasLayer) -> void:
 	hud = hud_node
 

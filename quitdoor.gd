@@ -18,9 +18,17 @@ func _input(event: InputEvent) -> void:
 
 func _try_interact() -> void:
 	if player == null:
+		player = get_tree().root.find_child("Player", true, false) as Node3D
+	if player == null:
+		player = get_tree().get_first_node_in_group("player") as Node3D
+	
+	if player == null:
 		return
 		
 	var d: float = player.global_position.distance_to(global_position)
 	if d <= interact_distance:
 		print("[DoorExit] Pindah scene ke: ", target_scene)
-		get_tree().change_scene_to_file(target_scene)
+		if has_node("/root/LoadingScreen"):
+			LoadingScreen.load_scene(target_scene)
+		else:
+			get_tree().change_scene_to_file(target_scene)

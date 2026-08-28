@@ -8,18 +8,25 @@ extends StaticBody3D
 @export var challenge_question: String = ""
 @export var challenge_answers: Array[String] = []
 
-@onready var label_3d: Label3D = $Label3D
+@onready var label_3d: Label3D = get_node_or_null("Label3D")
 @onready var dialogue_bubble: Node3D = get_node_or_null("DialogueBubble")
 
 func _ready() -> void:
-	label_3d.show()
+	if label_3d:
+		label_3d.hide()
 
 func show_prompt() -> void:
-	label_3d.text = interact_label
-	label_3d.show()
+	if label_3d:
+		label_3d.text = interact_label
+		label_3d.show()
 
 func hide_prompt() -> void:
-	label_3d.hide()
+	if label_3d:
+		label_3d.hide()
+
+func get_label() -> String:
+	return interact_label
+
 
 func interact() -> void:
 	if dialogue_lines.is_empty():
@@ -41,6 +48,3 @@ func _on_dialogue_finished() -> void:
 	StoryManager.dialogue_box.dialogue_finished.disconnect(_on_dialogue_finished)
 	if has_challenge:
 		StoryManager.start_challenge(challenge_question, challenge_answers)
-			
-func get_label() -> String:
-	return interact_label

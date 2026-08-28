@@ -26,6 +26,19 @@ var last_safe_position: Vector3 = Vector3.ZERO
 var held_item: Carryable3D = null
 
 func _ready() -> void:
+	add_to_group("player")
+	var scene_str: String = ""
+	if owner and owner.scene_file_path:
+		scene_str = owner.scene_file_path
+	elif get_tree() and get_tree().current_scene:
+		scene_str = get_tree().current_scene.scene_file_path
+		if scene_str == "":
+			scene_str = get_tree().current_scene.name
+	
+	if scene_str != "":
+		var new_pos = GameManager.consume_spawn_override_for(scene_str)
+		if new_pos != Vector3.ZERO:
+			global_position = new_pos
 	last_safe_position = global_position
 
 func pick_up_item(item: Carryable3D) -> void:

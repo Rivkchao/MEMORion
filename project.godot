@@ -33,6 +33,7 @@ ProjectUISoundController="*uid://cc37235kj4384"
 SceneTransition="*uid://cec4jkbrtthg3"
 LoadingScreen="*uid://rncmc7smqy2"
 RockDistractionOverlay="*uid://danyj7nt81p62"
+_mcp_game_helper="*res://addons/godot_ai/runtime/game_helper.gd"
 
 [display]
 
@@ -46,7 +47,7 @@ version_control/autoload_on_startup=true
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/GDQuest_GDScript_formatter/plugin.cfg", "res://addons/Quick-Add-Menu/plugin.cfg", "res://addons/kanban_tasks/plugin.cfg", "res://addons/proton_scatter/plugin.cfg", "res://addons/script-ide/plugin.cfg", "res://addons/terrain_3d/plugin.cfg")
+enabled=PackedStringArray("res://addons/GDQuest_GDScript_formatter/plugin.cfg", "res://addons/Quick-Add-Menu/plugin.cfg", "res://addons/godot_ai/plugin.cfg", "res://addons/kanban_tasks/plugin.cfg", "res://addons/proton_scatter/plugin.cfg", "res://addons/script-ide/plugin.cfg", "res://addons/terrain_3d/plugin.cfg")
 
 [gui]
 
