@@ -1,13 +1,19 @@
 [gd_scene format=3 uid="uid://0m4an2nc7ymj"]
 
 [ext_resource type="Script" uid="uid://b17tgq04a6nd3" path="res://Menu/main_menu.gd" id="1_06t4h"]
-[ext_resource type="Texture2D" uid="uid://docpfa777wcv1" path="res://Menu/BgMainMenu.jpeg" id="2_8qtwp"]
-[ext_resource type="Texture2D" uid="uid://bm8rptss0ictx" path="res://Menu/PlanetRion.png" id="3_dy7ct"]
+[ext_resource type="Shader" uid="uid://4wimc8bdject" path="res://Menu/BGMenu.gdshader" id="2_218iu"]
+[ext_resource type="Texture2D" uid="uid://dbw816txom5b8" path="res://Menu/Background.png" id="2_vv7ca"]
+[ext_resource type="Texture2D" uid="uid://bl3waa4wnsuft" path="res://Menu/PlanetNew.png" id="3_vv7ca"]
 [ext_resource type="Texture2D" uid="uid://f1iskpkgcldc" path="res://Menu/FrameMainMenu.png" id="4_vv7ca"]
 [ext_resource type="Texture2D" uid="uid://d1rladtgy4jtv" path="res://Menu/MEMORion+Logo.png" id="5_0k4wn"]
-[ext_resource type="Texture2D" uid="uid://shh448vpfc48" path="res://Menu/MEMORion+Text.png" id="6_j5v2v"]
+[ext_resource type="Texture2D" uid="uid://dw2cc4vgfyuto" path="res://Menu/MEMORion+Text.png" id="6_ywk15"]
 [ext_resource type="Texture2D" uid="uid://bhbj0j31scnvg" path="res://Menu/BgMenu.png" id="7_218iu"]
 [ext_resource type="FontFile" uid="uid://dyxn1yfr773n7" path="res://Fonts/Spaceship-Regular.0ca0d7b75eeb787f95484d.48c7b07b57e867b5081887e1b194309f.ttf" id="8_w44g7"]
+[ext_resource type="FontFile" uid="uid://ctnm2q1fg78u6" path="res://Fonts/telegraf_regular_fix7340951357143627189..44096e48-3548-42c1-bd8a-c4745e9.ttf" id="10_ywk15"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ywk15"]
+shader = ExtResource("2_218iu")
+shader_parameter/saturation = 1.4
 
 [sub_resource type="AtlasTexture" id="AtlasTexture_c6lqs"]
 atlas = ExtResource("7_218iu")
@@ -25,20 +31,21 @@ grow_vertical = 2
 script = ExtResource("1_06t4h")
 
 [node name="BackgroundMenu" type="TextureRect" parent="." unique_id=26583062]
+material = SubResource("ShaderMaterial_ywk15")
 layout_mode = 1
 anchors_preset = 15
 anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-texture = ExtResource("2_8qtwp")
+texture = ExtResource("2_vv7ca")
 expand_mode = 1
 stretch_mode = 6
 
 [node name="Planet" type="Sprite2D" parent="." unique_id=717844577]
-position = Vector2(1519.5, 623.5)
-scale = Vector2(2, 2)
-texture = ExtResource("3_dy7ct")
+position = Vector2(1680, 475)
+scale = Vector2(0.2, 0.2)
+texture = ExtResource("3_vv7ca")
 
 [node name="FrameMenu" type="TextureRect" parent="." unique_id=872379969]
 layout_mode = 1
@@ -65,11 +72,11 @@ texture = ExtResource("5_0k4wn")
 
 [node name="Logo2" type="TextureRect" parent="." unique_id=1363361362]
 layout_mode = 0
-offset_left = 905.0
+offset_left = 1005.0
 offset_top = 83.0
 offset_right = 1805.0
-offset_bottom = 218.0
-texture = ExtResource("6_j5v2v")
+offset_bottom = 227.0
+texture = ExtResource("6_ywk15")
 expand_mode = 1
 stretch_mode = 4
 
@@ -95,7 +102,7 @@ offset_bottom = -193.0
 grow_vertical = 0
 offset_transform_enabled = true
 
-[node name="NewGameBtn" type="Button" parent="MenuContainer" unique_id=1121382902]
+[node name="MulaiGameBtn" type="Button" parent="MenuContainer" unique_id=1121382902]
 layout_mode = 0
 offset_left = -50.0
 offset_top = 30.0
@@ -109,13 +116,26 @@ theme_override_styles/normal = SubResource("StyleBoxEmpty_glbon")
 text = "Mulai Game"
 flat = true
 
-[node name="LoadGameBtn" type="Button" parent="MenuContainer" unique_id=1758833460]
+[node name="MuatGameBtn" type="Button" parent="MenuContainer" unique_id=1980634320]
 layout_mode = 0
 offset_left = -50.0
 offset_top = 280.0
 offset_right = 450.0
-offset_bottom = 324.0
-theme_override_colors/font_color = Color(1, 1, 1, 1)
+offset_bottom = 324.00003
+theme_override_colors/font_outline_color = Color(0.8509804, 0.27450982, 0.9372549, 1)
+theme_override_fonts/font = ExtResource("8_w44g7")
+theme_override_font_sizes/font_size = 40
+theme_override_styles/normal = SubResource("StyleBoxEmpty_glbon")
+text = "Muat Game"
+flat = true
+
+[node name="LanjutGameBtn" type="Button" parent="MenuContainer" unique_id=1758833460]
+layout_mode = 0
+offset_left = -50.0
+offset_top = 157.0
+offset_right = 450.0
+offset_bottom = 201.0
+theme_override_colors/font_color = Color(0, 0, 0, 1)
 theme_override_colors/font_outline_color = Color(0.8509804, 0.27450982, 0.9372549, 1)
 theme_override_fonts/font = ExtResource("8_w44g7")
 theme_override_font_sizes/font_size = 40
@@ -123,7 +143,7 @@ theme_override_styles/normal = SubResource("StyleBoxEmpty_glbon")
 text = "Lanjutkan"
 flat = true
 
-[node name="OptionsBtn" type="Button" parent="MenuContainer" unique_id=1476508756]
+[node name="PengaturanBtn" type="Button" parent="MenuContainer" unique_id=1476508756]
 layout_mode = 0
 offset_left = -50.0
 offset_top = 410.0
@@ -137,7 +157,7 @@ theme_override_styles/normal = SubResource("StyleBoxEmpty_glbon")
 text = "Pengaturan"
 flat = true
 
-[node name="ExitBtn" type="Button" parent="MenuContainer" unique_id=1123371572]
+[node name="KeluarBtn" type="Button" parent="MenuContainer" unique_id=1123371572]
 layout_mode = 0
 offset_left = -50.0
 offset_top = 535.0
@@ -150,3 +170,28 @@ theme_override_font_sizes/font_size = 40
 theme_override_styles/normal = SubResource("StyleBoxEmpty_glbon")
 text = "Keluar"
 flat = true
+
+[node name="InstagramBtn" type="Button" parent="." unique_id=1059048534]
+layout_mode = 0
+offset_left = 1446.0
+offset_top = 1000.0
+offset_right = 1742.0
+offset_bottom = 1029.0002
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0.8509804, 0.27450982, 0.9372549, 1)
+theme_override_fonts/font = ExtResource("10_ywk15")
+theme_override_font_sizes/font_size = 24
+theme_override_styles/normal = SubResource("StyleBoxEmpty_glbon")
+flat = true
+
+[node name="Label" type="Label" parent="." unique_id=1320352348]
+layout_mode = 0
+offset_left = 127.0
+offset_top = 991.0
+offset_right = 297.0
+offset_bottom = 1015.0
+theme_override_colors/font_color = Color(0.99, 0.99, 0.99, 1)
+theme_override_colors/font_shadow_color = Color(0.75686276, 0.38431373, 0.9882353, 1)
+theme_override_fonts/font = ExtResource("10_ywk15")
+theme_override_font_sizes/font_size = 24
+text = "Halo, Penjelajah Bintang!"

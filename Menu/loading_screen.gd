@@ -6,6 +6,9 @@ extends CanvasLayer
 @onready var loading_label: Label = $Panel/LoadingLabel
 @onready var progress_bar: ProgressBar = $Panel/ProgressBar
 @onready var logo_rect: TextureRect = $Panel/Logo
+@onready var instagram_btn: Button = $Panel/InstagramBtn
+
+const INSTAGRAM_URL: String = "https://www.instagram.com/memorion.plus"
 
 var target_scene: String = ""
 var is_loading_finished: bool = false
@@ -15,6 +18,9 @@ func _ready() -> void:
 	layer = 10
 	fade_rect.color = Color(0, 0, 0, 0)
 	panel.hide()
+	
+	if is_instance_valid(instagram_btn):
+		instagram_btn.pressed.connect(_on_instagram)
 
 func load_scene(scene_path: String) -> void:
 	target_scene = scene_path
@@ -95,3 +101,6 @@ func _on_load_success() -> void:
 func _fade_in() -> void:
 	var tween = create_tween()
 	tween.tween_property(fade_rect, "color:a", 0.0, 0.5)
+
+func _on_instagram() -> void:
+	OS.shell_open(INSTAGRAM_URL)

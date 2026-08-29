@@ -1,23 +1,48 @@
 [gd_scene format=3 uid="uid://rncmc7smqy2"]
 
 [ext_resource type="Script" uid="uid://c7vbfkv5i3wbe" path="res://Menu/loading_screen.gd" id="1_jrdmd"]
-[ext_resource type="Texture2D" uid="uid://docpfa777wcv1" path="res://Menu/BgMainMenu.jpeg" id="2_632gl"]
 [ext_resource type="Texture2D" uid="uid://bmwjd0fpfskmr" path="res://assets/anim/frame0000.png" id="2_qx0w1"]
-[ext_resource type="Texture2D" uid="uid://bm8rptss0ictx" path="res://Menu/PlanetRion.png" id="2_rgwxq"]
+[ext_resource type="Texture2D" uid="uid://dbw816txom5b8" path="res://Menu/Background.png" id="2_xsgea"]
 [ext_resource type="Texture2D" uid="uid://da7qdsbar4cft" path="res://assets/anim/frame0001.png" id="3_a0ihe"]
 [ext_resource type="FontFile" uid="uid://ctnm2q1fg78u6" path="res://Fonts/telegraf_regular_fix7340951357143627189..44096e48-3548-42c1-bd8a-c4745e9.ttf" id="3_rgwxq"]
+[ext_resource type="Texture2D" uid="uid://bl3waa4wnsuft" path="res://Menu/PlanetNew.png" id="3_xsgea"]
 [ext_resource type="Texture2D" uid="uid://55ni0g4a3m32" path="res://assets/anim/frame0002.png" id="4_rgwxq"]
 [ext_resource type="Texture2D" uid="uid://f1iskpkgcldc" path="res://Menu/FrameMainMenu.png" id="4_xsgea"]
 [ext_resource type="Texture2D" uid="uid://d1rladtgy4jtv" path="res://Menu/MEMORion+Logo.png" id="5_bufdl"]
 [ext_resource type="Texture2D" uid="uid://d4nllch3oueui" path="res://assets/anim/frame0003.png" id="5_he51e"]
 [ext_resource type="Texture2D" uid="uid://bu7yjb6fybub6" path="res://assets/anim/frame0004.png" id="6_spc7j"]
-[ext_resource type="Texture2D" uid="uid://shh448vpfc48" path="res://Menu/MEMORion+Text.png" id="6_y2ill"]
+[ext_resource type="Texture2D" uid="uid://dw2cc4vgfyuto" path="res://Menu/MEMORion+Text.png" id="6_xsgea"]
 [ext_resource type="FontFile" uid="uid://bb80gooxacs7q" path="res://Fonts/Telegraf-Bold-fix15408087824949790956.30.2aa1f309-cb96-4ad6-a94f-e5147e9.ttf" id="7_f5yiw"]
 [ext_resource type="Texture2D" uid="uid://cd52fm54bvvr" path="res://assets/anim/frame0005.png" id="7_wpy5q"]
 [ext_resource type="Texture2D" uid="uid://bm8wlelef7nkh" path="res://assets/anim/frame0006.png" id="8_632gl"]
 [ext_resource type="Texture2D" uid="uid://dpjie7ugtb0wn" path="res://assets/anim/frame0007.png" id="9_bufdl"]
 
+[sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_xsgea"]
+
 [sub_resource type="Theme" id="Theme_jrdmd"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_6i6p5"]
+bg_color = Color(0, 0, 0, 0.7058824)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.63529414, 0.60784316, 0.99607843, 1)
+corner_radius_top_left = 50
+corner_radius_top_right = 50
+corner_radius_bottom_right = 50
+corner_radius_bottom_left = 50
+expand_margin_left = 2.0
+expand_margin_top = 2.0
+expand_margin_right = 2.0
+expand_margin_bottom = 2.0
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_yedpf"]
+bg_color = Color(0.76862746, 0.25882354, 0.92156863, 1)
+corner_radius_top_left = 50
+corner_radius_top_right = 50
+corner_radius_bottom_right = 50
+corner_radius_bottom_left = 50
 
 [sub_resource type="LabelSettings" id="LabelSettings_jrdmd"]
 font_size = 42
@@ -81,15 +106,14 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
-texture = ExtResource("2_632gl")
+texture = ExtResource("2_xsgea")
 expand_mode = 1
 stretch_mode = 6
 
-[node name="Planet" type="Sprite2D" parent="Panel" unique_id=211104453]
-position = Vector2(400.5, 623.5)
-rotation = -1.5707964
-scale = Vector2(2, 2)
-texture = ExtResource("2_rgwxq")
+[node name="Planet" type="Sprite2D" parent="Panel" unique_id=1053604983]
+position = Vector2(240, 475)
+scale = Vector2(0.2, 0.2)
+texture = ExtResource("3_xsgea")
 
 [node name="FrameMenu" type="TextureRect" parent="Panel" unique_id=1395079939]
 layout_mode = 1
@@ -114,15 +138,40 @@ offset_right = 260.0
 offset_bottom = 227.0
 texture = ExtResource("5_bufdl")
 
-[node name="Logo2" type="TextureRect" parent="Panel" unique_id=1099883274]
+[node name="Logo2" type="TextureRect" parent="Panel" unique_id=597168728]
 layout_mode = 0
-offset_left = 905.0
+offset_left = 1005.0
 offset_top = 83.0
 offset_right = 1805.0
-offset_bottom = 218.0
-texture = ExtResource("6_y2ill")
+offset_bottom = 227.0
+texture = ExtResource("6_xsgea")
 expand_mode = 1
 stretch_mode = 4
+
+[node name="InstagramBtn" type="Button" parent="Panel" unique_id=1978488724]
+layout_mode = 0
+offset_left = 1446.0
+offset_top = 1000.0
+offset_right = 1742.0
+offset_bottom = 1029.0002
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_outline_color = Color(0.8509804, 0.27450982, 0.9372549, 1)
+theme_override_fonts/font = ExtResource("3_rgwxq")
+theme_override_font_sizes/font_size = 24
+theme_override_styles/normal = SubResource("StyleBoxEmpty_xsgea")
+flat = true
+
+[node name="Label" type="Label" parent="Panel" unique_id=63589109]
+layout_mode = 0
+offset_left = 127.0
+offset_top = 991.0
+offset_right = 392.0
+offset_bottom = 1015.0
+theme_override_colors/font_color = Color(0.99, 0.99, 0.99, 1)
+theme_override_colors/font_shadow_color = Color(0.75686276, 0.38431373, 0.9882353, 1)
+theme_override_fonts/font = ExtResource("3_rgwxq")
+theme_override_font_sizes/font_size = 24
+text = "Halo, Penjelajah Bintang!"
 
 [node name="ProgressBar" type="ProgressBar" parent="Panel" unique_id=1207079108]
 layout_mode = 1
@@ -130,12 +179,17 @@ anchors_preset = 12
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_top = -90.0
+offset_left = 529.0
+offset_top = -107.0
+offset_right = -590.0
+offset_bottom = -40.0
 grow_horizontal = 2
 grow_vertical = 0
 theme = SubResource("Theme_jrdmd")
 theme_override_fonts/font = ExtResource("7_f5yiw")
 theme_override_font_sizes/font_size = 25
+theme_override_styles/background = SubResource("StyleBoxFlat_6i6p5")
+theme_override_styles/fill = SubResource("StyleBoxFlat_yedpf")
 
 [node name="LoadingLabel" type="Label" parent="Panel" unique_id=732355380]
 layout_mode = 0

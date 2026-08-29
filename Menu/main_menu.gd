@@ -6,14 +6,17 @@ extends Control
 @export_group("Scenes")
 @export var game_scene: String = "res://LEV1.tscn"
 
-@onready var new_game_btn: Button = $MenuContainer/NewGameBtn
-@onready var load_btn: Button = $MenuContainer/LoadGameBtn
-@onready var options_btn: Button = $MenuContainer/OptionsBtn
-@onready var exit_btn: Button = $MenuContainer/ExitBtn
+@onready var mulai_game_btn: Button = $MenuContainer/MulaiGameBtn
+@onready var muat_game_btn: Button = $MenuContainer/MuatGameBtn
+@onready var lanjut_game_btn: Button = $MenuContainer/LanjutGameBtn
+@onready var pengaturan_btn: Button = $MenuContainer/PengaturanBtn
+@onready var keluar_btn: Button = $MenuContainer/KeluarBtn
+@onready var instagram_btn: Button = $InstagramBtn
 
 @onready var logo_rect: TextureRect = $Logo
 
 const HOVER_COLOR: Color = Color(0.77, 0.26, 0.92)
+const INSTAGRAM_URL: String = "https://www.instagram.com/memorion.plus"
 
 func _ready() -> void:
 	_start_logo_flip_animation()
@@ -21,15 +24,17 @@ func _ready() -> void:
 	if Engine.is_editor_hint():
 		return
 	
-	var buttons = [new_game_btn, load_btn, options_btn, exit_btn]
+	var buttons = [mulai_game_btn, muat_game_btn, lanjut_game_btn, pengaturan_btn, keluar_btn]
 	for btn in buttons:
 		if btn:
 			_setup_button_hover(btn)
 	
-	new_game_btn.pressed.connect(_on_new_game)
-	load_btn.pressed.connect(_on_load_game)
-	options_btn.pressed.connect(_on_options)
-	exit_btn.pressed.connect(_on_exit)
+	mulai_game_btn.pressed.connect(_on_mulai_game)
+	muat_game_btn.pressed.connect(_on_muat_game)
+	lanjut_game_btn.pressed.connect(_on_lanjut_game)
+	pengaturan_btn.pressed.connect(_on_pengaturan)
+	keluar_btn.pressed.connect(_on_keluar)
+	instagram_btn.pressed.connect(_on_instagram)
 	
 	modulate.a = 0.0
 	var tween = create_tween()
@@ -65,14 +70,20 @@ func _start_logo_flip_animation() -> void:
 	flip_tween.tween_property(logo_rect, "scale:x", 0.0, 0.4).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN)
 	flip_tween.tween_property(logo_rect, "scale:x", 1.0, 0.4).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 
-func _on_new_game() -> void:
+func _on_mulai_game() -> void:
 	LoadingScreen.load_scene(game_scene)
 
-func _on_load_game() -> void:
+func _on_muat_game() -> void:
 	LoadingScreen.load_scene(game_scene)
 
-func _on_options() -> void:
+func _on_lanjut_game() -> void:
+	LoadingScreen.load_scene(game_scene)
+
+func _on_pengaturan() -> void:
 	pass
 
-func _on_exit() -> void:
+func _on_keluar() -> void:
 	get_tree().quit()
+
+func _on_instagram() -> void:
+	OS.shell_open(INSTAGRAM_URL)
