@@ -3,12 +3,12 @@ extends Interactable
 @onready var omni_light_1: OmniLight3D = $OmniLight3D
 @onready var omni_light_2: OmniLight3D = $OmniLight3D2
 	
-@export var flicker_min_energy: float = 0.5
-@export var flicker_max_energy: float = 2.5
+@export var flicker_min_energy: float = 200.0
+@export var flicker_max_energy: float = 500.0
 @export var flicker_speed: float = 0.2
 
 @export var solved_color: Color = Color(0.2, 1.0, 0.3) # Hijau
-@export var solved_energy: float = 1.5
+@export var solved_energy: float = 100.0
 
 var _flicker_timer: float = 0.0
 var _puzzle_solved: bool = false

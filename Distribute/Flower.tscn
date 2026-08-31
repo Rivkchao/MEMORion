@@ -14,8 +14,11 @@ albedo_color = Color(0, 0.94730055, 11.953572, 1)
 albedo_texture = ExtResource("2_voejs")
 metadata/_gltf_primary_texture_coord = 0
 
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_voejs"]
+
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_aehby"]
 resource_name = "Flowers"
+next_pass = SubResource("ShaderMaterial_voejs")
 transparency = 2
 alpha_scissor_threshold = 0.2
 alpha_antialiasing_mode = 0
