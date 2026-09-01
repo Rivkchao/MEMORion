@@ -2,6 +2,7 @@ extends Area3D
 
 @export var marker_inside: Marker3D
 @export var marker_outside: Marker3D
+@export var crusher_room: Node3D
 @export var interact_action: String = "interact"
 
 var current_player: Node3D = null

@@ -2,7 +2,8 @@ extends CanvasLayer
 
 @onready var name_label: Label = $PanelContainer/MarginContainer/VBoxContainer/NameLabel
 @onready var dialogue_label: Label = $PanelContainer/MarginContainer/VBoxContainer/DialogueLabel
-@onready var continue_label: Label = $PanelContainer/ContinueLabel
+@onready var continue_label: Label = $ContinueLabel
+@onready var avatar: TextureRect = $TextureRect
 
 var lines: Array[String] = []
 var current_line: int = 0
@@ -40,11 +41,13 @@ func _apply_magical_typing_effect() -> void:
 		var char_offset = (sin(time_offset + i * 0.5) + 1.0) / 2.0
 		var _char_color = Color(0.9, 0.85, 1.0, 1.0).lerp(Color(1.0, 0.9, 1.0, 1.0), char_offset * 0.2)
 
-func start(dialogue_lines: Array[String], npc_name: String = "") -> void:
+func start(dialogue_lines: Array[String], npc_name: String = "", avatar_texture: Texture2D = null) -> void:
 	lines = dialogue_lines
 	speaker_name = npc_name
 	current_line = 0
 	name_label.text = speaker_name
+	if avatar_texture:
+		avatar.texture = avatar_texture
 	continue_label.hide()
 	show()
 	_show_line()
