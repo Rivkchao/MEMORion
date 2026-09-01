@@ -1,5 +1,7 @@
 extends Node3D
 
+@export var required_rock_size: int = 0
+
 @onready var mesh: MeshInstance3D = $MeshInstance3D
 var occupied_by: Node3D = null
 

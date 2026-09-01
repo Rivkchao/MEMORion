@@ -5,22 +5,23 @@ extends DirectionalLight3D
 
 @export_group("Water Glow")
 @export var water_mesh: MeshInstance3D
-@export var max_water_glow: float = 4.0
+@export var max_water_glow: float = 0.5 
 
 @export_group("Terrain Glow")
 @export var terrain_node: Node3D
 @export var max_path_glow: float = 2.5
+@export var max_grass_glow: float = 1.8
 
 var elapsed: float = 0.0
 var _water_material: ShaderMaterial = null
 var _terrain_material: Resource = null
 
 func _ready() -> void:
-	# Ambil material air 
+	# Ambil material air
 	if water_mesh != null:
 		_water_material = water_mesh.get_active_material(0) as ShaderMaterial
 
-	# Ambil material terrain 
+	# Ambil material Terrain3D
 	if terrain_node != null:
 		_terrain_material = terrain_node.get("material")
 
@@ -61,13 +62,13 @@ func _process(delta: float) -> void:
 	elif t < 0.55:
 		energy = lerpf(0.6, 0.15, (t - 0.50) / 0.05)
 	elif t < 0.95:
-		energy = 0.15
+		energy = 0.55
 	else:
-		energy = lerpf(0.15, 0.3, (t - 0.95) / 0.05)
+		energy = lerpf(0.55, 0.3, (t - 0.95) / 0.05)
 
 	light_energy = energy
 	
-	# Update Pendaran Malam (Air & Jalan)
+	# Update Glow
 	_update_water_glow(t)
 	_update_terrain_glow(t)
 
@@ -76,34 +77,43 @@ func _update_water_glow(t: float) -> void:
 		return
 
 	var glow: float = 0.0
-	
-	if t >= 0.35 and t < 0.60:
-		glow = lerpf(0.0, max_water_glow, (t - 0.35) / 0.25)
-	elif t >= 0.60 and t < 0.95:
+	if t >= 0.25 and t < 0.50:
+		glow = lerpf(0.0, max_water_glow, (t - 0.25) / 0.25)
+	elif t >= 0.50 and t < 0.95:
 		glow = max_water_glow
 	elif t >= 0.95:
 		glow = lerpf(max_water_glow, 0.0, (t - 0.95) / 0.05)
 	else:
 		glow = 0.0
 
-	_water_material.set_shader_parameter("glow_intensity", glow)
+	_water_material.set_shader_parameter("night_glow_strength", glow)
 
 func _update_terrain_glow(t: float) -> void:
 	if _terrain_material == null:
 		return
 
-	var glow: float = 0.0
-	if t >= 0.35 and t < 0.60:
-		glow = lerpf(0.0, max_path_glow, (t - 0.35) / 0.25)
-	elif t >= 0.60 and t < 0.95:
-		glow = max_path_glow
+	var path_glow: float = 0.0
+	var grass_glow: float = 0.0
+
+	# Transisi halus dari sore (0.25) ke malam (0.50 - 0.95)
+	if t >= 0.25 and t < 0.50:
+		var factor: float = (t - 0.25) / 0.25
+		path_glow = lerpf(0.0, max_path_glow, factor)
+		grass_glow = lerpf(0.0, max_grass_glow, factor)
+	elif t >= 0.50 and t < 0.95:
+		path_glow = max_path_glow
+		grass_glow = max_grass_glow
 	elif t >= 0.95:
-		glow = lerpf(max_path_glow, 0.0, (t - 0.95) / 0.05)
+		var factor: float = (t - 0.95) / 0.05
+		path_glow = lerpf(max_path_glow, 0.0, factor)
+		grass_glow = lerpf(max_grass_glow, 0.0, factor)
 	else:
-		glow = 0.0
-		glow = lerpf(max_path_glow, 0.0, (t - 0.95) / 0.05)
+		path_glow = 0.0
+		grass_glow = 0.0
 
 	if _terrain_material.has_method("set_shader_param"):
-		_terrain_material.set_shader_param("path_glow_intensity", glow)
+		_terrain_material.set_shader_param("path_glow_intensity", path_glow)
+		_terrain_material.set_shader_param("grass_glow_intensity", grass_glow)
 	elif _terrain_material is ShaderMaterial:
-		_terrain_material.set_shader_parameter("path_glow_intensity", glow)
+		_terrain_material.set_shader_parameter("path_glow_intensity", path_glow)
+		_terrain_material.set_shader_parameter("grass_glow_intensity", grass_glow)

@@ -11,6 +11,8 @@ func _ready() -> void:
 	panel.custom_minimum_size = Vector2(300, 100)
 	panel.set_anchors_preset(Control.PRESET_CENTER_TOP)
 	panel.position = Vector2((get_viewport().get_visible_rect().size.x - 300) * 0.5, 60)
+	# Jangan blokir klik mouse ke batu 3D di belakangnya
+	panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	
 	label = Label.new()
 	label.set_anchors_preset(Control.PRESET_FULL_RECT)

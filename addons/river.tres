@@ -2,29 +2,60 @@
 
 [ext_resource type="Shader" uid="uid://cv3tpucllqhgc" path="res://addons/river.gdshader" id="1_ekq50"]
 
-[sub_resource type="FastNoiseLite" id="FastNoiseLite_77ry0"]
-frequency = 0.005
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_senlp"]
 
-[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_jtfv3"]
-noise = SubResource("FastNoiseLite_77ry0")
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_rl000"]
+noise = SubResource("FastNoiseLite_senlp")
 seamless = true
+as_normal_map = true
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_ease7"]
+seamless = true
+as_normal_map = true
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_1c2qw"]
+seamless = true
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_p12yd"]
+seamless = true
+
+[sub_resource type="FastNoiseLite" id="FastNoiseLite_lq5la"]
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_ritg6"]
+noise = SubResource("FastNoiseLite_lq5la")
+seamless = true
+as_normal_map = true
+
+[sub_resource type="NoiseTexture2D" id="NoiseTexture2D_rcom5"]
+seamless = true
+as_normal_map = true
 
 [resource]
 render_priority = 0
 shader = ExtResource("1_ekq50")
-shader_parameter/water_color = Color(0.1, 0.4, 0.8, 0.7)
-shader_parameter/shallow_color = Color(0.2, 0.6, 0.9, 0.5)
-shader_parameter/foam_color = Color(1, 1, 1, 1)
-shader_parameter/transparency = 0.61200002907
-shader_parameter/wave_speed = 1.0000000475
-shader_parameter/wave_strength = 0.20000000298023
-shader_parameter/flow_direction = Vector2(0, 1)
-shader_parameter/flow_speed = 0.1530000072675
-shader_parameter/foam_distance = 0.6
-shader_parameter/foam_cutoff = 0.45
-shader_parameter/foam_opacity = 0.2000000095
-shader_parameter/glow_intensity = 0.0
-shader_parameter/night_glow_color = Color(0.039215688, 0.43137255, 0.61960787, 1)
-shader_parameter/fresnel_power = 3.5
-shader_parameter/foam_glow_boost = 2.0
-shader_parameter/foam_noise = SubResource("NoiseTexture2D_jtfv3")
+shader_parameter/absorptioncolour = Color(0.21960784, 0.7411765, 0.972549, 1)
+shader_parameter/absorptionmultiplier = 0.1
+shader_parameter/water_tint = Color(0.1, 0.45, 0.85, 1)
+shader_parameter/night_glow_strength = 0.70000001043084
+shader_parameter/night_glow_color = Color(0.101960786, 0.7411765, 0.8509804, 1)
+shader_parameter/AirIOR = 1.0
+shader_parameter/IOR = 1.33
+shader_parameter/sampler1speed = Vector2(0.05, 0)
+shader_parameter/sampler2speed = Vector2(0.02, 0.03)
+shader_parameter/samplermix = 0.5
+shader_parameter/samplerscale = Vector2(0.05, 0.1)
+shader_parameter/normal1tex = SubResource("NoiseTexture2D_ritg6")
+shader_parameter/normal2tex = SubResource("NoiseTexture2D_rcom5")
+shader_parameter/normalstrength = 0.499999988824
+shader_parameter/height1tex = SubResource("NoiseTexture2D_1c2qw")
+shader_parameter/height2tex = SubResource("NoiseTexture2D_p12yd")
+shader_parameter/heightstrength = 0.12
+shader_parameter/edge1tex = SubResource("NoiseTexture2D_rl000")
+shader_parameter/edge2tex = SubResource("NoiseTexture2D_ease7")
+shader_parameter/simple_refraction_amount = 0.02
+shader_parameter/edge_size = 0.0999999977648
+shader_parameter/foam_or_fade = false
+shader_parameter/ssr_type = 2
+shader_parameter/traced_ssr_far_clip = 50.0
+shader_parameter/traced_ssr_steps = 512
+shader_parameter/ssr_screen_fade = 0.05
