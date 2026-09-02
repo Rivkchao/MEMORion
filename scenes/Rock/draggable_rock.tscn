@@ -3,12 +3,81 @@
 [ext_resource type="Texture2D" uid="uid://csnu2rx1th2lq" path="res://assets/World/Stylized Nature MegaKit[Standard](1)/glTF/Rocks_Diffuse.png" id="1_td71m"]
 [ext_resource type="Script" uid="uid://7yq41b4s7v5l" path="res://scenes/Rock/draggable_rock.gd" id="1_xnnw7"]
 
-[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_5g3cc"]
+[sub_resource type="Shader" id="Shader_jubt6"]
+code = "shader_type spatial;
+render_mode blend_mix, depth_draw_opaque, cull_disabled, diffuse_burley, specular_schlick_ggx;
+
+uniform vec4 albedo : source_color;
+uniform sampler2D texture_albedo : source_color, filter_linear_mipmap, repeat_enable;
+uniform ivec2 albedo_texture_size;
+uniform float point_size : hint_range(0.1, 128.0, 0.1);
+
+//Malam
+uniform vec4 glow_color : source_color = vec4(0.2, 0.6, 1.0, 1.0);
+uniform float night_glow_strength : hint_range(0.0, 5.0, 0.05) = 0.0;
+
+uniform float roughness : hint_range(0.0, 1.0);
+uniform sampler2D texture_metallic : hint_default_white, filter_linear_mipmap, repeat_enable;
+uniform vec4 metallic_texture_channel;
+uniform sampler2D texture_roughness : hint_roughness_r, filter_linear_mipmap, repeat_enable;
+
+uniform float specular : hint_range(0.0, 1.0, 0.01);
+uniform float metallic : hint_range(0.0, 1.0, 0.01);
+
+uniform sampler2D texture_emission : source_color, hint_default_black, filter_linear_mipmap, repeat_enable;
+uniform vec4 emission : source_color;
+uniform float emission_energy : hint_range(0.0, 100.0, 0.01);
+
+uniform vec3 uv1_scale;
+uniform vec3 uv1_offset;
+uniform vec3 uv2_scale;
+uniform vec3 uv2_offset;
+
+void vertex() {
+	UV = UV * uv1_scale.xy + uv1_offset.xy;
+}
+
+void fragment() {
+	vec2 base_uv = UV;
+
+	vec4 albedo_tex = texture(texture_albedo, base_uv);
+	ALBEDO = albedo.rgb * albedo_tex.rgb;
+
+	float metallic_tex = dot(texture(texture_metallic, base_uv), metallic_texture_channel);
+	METALLIC = metallic_tex * metallic;
+	SPECULAR = specular;
+
+	vec4 roughness_texture_channel = vec4(1.0, 0.0, 0.0, 0.0);
+	float roughness_tex = dot(texture(texture_roughness, base_uv), roughness_texture_channel);
+	ROUGHNESS = roughness_tex * roughness;
+
+	// Emission: Enabled
+	vec3 emission_tex = texture(texture_emission, base_uv).rgb;
+	// Emission Operator: Add
+	EMISSION = ALBEDO * glow_color.rgb * night_glow_strength;
+}
+"
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_ds25n"]
 resource_name = "Rocks"
-cull_mode = 2
-albedo_color = Color(0.67499995, 0.61, 1, 1)
-albedo_texture = ExtResource("1_td71m")
-metadata/_gltf_primary_texture_coord = 0
+render_priority = 0
+shader = SubResource("Shader_jubt6")
+shader_parameter/albedo = Color(0.9, 0.758, 1.61, 1)
+shader_parameter/texture_albedo = ExtResource("1_td71m")
+shader_parameter/albedo_texture_size = Vector2i(2048, 2048)
+shader_parameter/point_size = 1.0
+shader_parameter/glow_color = Color(0.2, 0.6, 1, 1)
+shader_parameter/night_glow_strength = 0.0
+shader_parameter/roughness = 1.0
+shader_parameter/metallic_texture_channel = Vector4(1, 0, 0, 0)
+shader_parameter/specular = 0.5
+shader_parameter/metallic = 0.0
+shader_parameter/emission = Color(0, 0, 0, 1)
+shader_parameter/emission_energy = 1.0
+shader_parameter/uv1_scale = Vector3(1, 1, 1)
+shader_parameter/uv1_offset = Vector3(0, 0, 0)
+shader_parameter/uv2_scale = Vector3(1, 1, 1)
+shader_parameter/uv2_offset = Vector3(0, 0, 0)
 
 [sub_resource type="ArrayMesh" id="ArrayMesh_ekma6"]
 _surfaces = [{
@@ -34,7 +103,7 @@ _surfaces = [{
 "index_count": 732,
 "index_data": PackedByteArray("eAACAJsAAgAAAJsAAgADAAAAeACcAAIAeQCcAHgAeQABAJwAFgB6AJ0AFgAUAHoAegCeAJ0AegB7AJ4AewAVAJ4AewCfABUAFQCfABcAFQAXAKAAoAAXABgAegChAHsAewChAKIAegCjAKEAowB6AA4AfACiAKEAfAANAKIAoQCjAKQAoQCkAHwADQB8AKUADQClAKYAfACnAKUApwCmAKUAfACkAKcApwCoAKYAqACnAKkAqACpAH4ApwCkAH0ApwB9AKkAfgCpAH0AfQCkAKMAfgB9AA8AfQAQAA8AfQCjAKoAowAOAKoAfQCrABAAqwB9AKoAEgAQAKsArACqAA4AqwCqAKwAEgCrAKwArAAOABEAEQASAKwAEQATABIABAAFAAYABAB/AAUAfwAIAAUAfwAEAK0ArgAIAH8AfwCtAIAArgB/AIIACACuAIMAggCDAK4ACACDAAkAggAHAIMArQCvAIAACwCAAK8ArQCwAK8ACwCvALEArwCwAIEAsQCvAIEAsQCBALIAsgCBAAoAsgAKAAwAhAAaABsAhACzABoAGQCzAIQAHAAaALMAHAAdABoAtAAcALMAGQC1ALMAtACzALUAHgC0ALUAtQAZALYAHgC1AIUAtQC2AIUAhQC2ALcAhQC3ALgAHwC4ALcAuQCFALgAHwC6ALgAugC7ALgAuQC4ALsAugAgALsAvAC5ALsAIAC8ALsAvAC9ALkAvgC8ACAAvQC8AL4AvQC+AL8AvgAgACEAvwC+ACIAIgC+ACEAIgAhACMAJADAACYAJAAlAMAAJgDAAMEAJgDBAMIAwwDCAMEAwwDBAIYAJgDCAMQAJgDEAMUAxQDEAMYAxQDGACgAxADHAMYAyADEAMIAxwDEAMgAyADCAMMAxwDIACkAKQDIAMkAyQDIAMMAKQDJAMoAiADDAIYAyQDDAIgAiACGACcAygDJAIcAygCHACoAKwDJAIgAhwDJACsAKwCIAMsAywCIACwAywAsAMwAzADNAMsAzAAtAM0AzQArAMsAzQDOACsAzgDNAC4AzgAuAIkAzwCJAC4A0ACJAM8AzwAuAIoA0ADPAIsALwDPAIoALwCLAM8AjwAvAIoAiwAvAIcAiwCHAIwAhwArAIwAKwCNAIwAKwDRAI0A0gDRACsA0gCOANEAjwAxAC8AMgAvADEAMgCQAC8A0wAxAI8A0wCPANQAMwDTANQAMwDUADAA1QA1ANYA1QA0ADUA1gA3ANUA1gA2ADcAOAA5ADoAOAA7ADkAOwDXADkAOwDYANcA2ADZANcA2AA8ANkAPADaANkAPACRANoA2wA/AJIA2wDcAD8A3QDcANsA3QA+ANwA3QDbAD0A3QA9AEAA3gBDAEEA3gCTAEMAkwDeAEQARABCAJMARABFAEIA3wDgAOEARgBHAEgARgBJAEcA4gDjAOQA4gBKAOMA4wBMAOQA4gDkAEwA4wBLAEwA4gBMAE0ATgBPAFAATgDlAE8A5gDlAE4A5gCUAOUA5gBSAJQA5gBTAFIA5gDnAFMA5gBRAOcAUQDoAOcAUQCVAOgAlgBVAFYAlgBUAFUA6QCWAFYA6QBWAFgA6QBYAFcAWQBaAFsAWQBcAFoAWQBbAOoAWQDqAF0A6wDsAGUAYwDrAGUAYwBkAOsA7QBfAO4A7QBhAF8AYADtAO4A7QBgAGIA7QBiAF4AZgBnAGgAZgBpAGcAagBrAGwAbQBuAO8AbQBwAG4A7wBuAHEA7wBxAG8A7wByAG0A8ADvAG8A7wDxAHIA8ADyAO8A8gDwAPMA7wD0APEA7wDyAPQAcgDxAHMA8QD0AHMAcgBzAPUA8gDzAPYA9ADyAPYA9gDzAHYAlwBzAPQA9AD2AJcAlwD3AHMAlwB0APcAlwCYAHQAmACXAPYA9gB2AJkAmAD2AJkAmQB1AJgAmQB3AHUAmgB3AJkAmgD4AHcA"),
 "lods": [0.17269258, PackedByteArray("eAACAAAAAgADAAAAeAABAAIAeQABAHgAFgAUAHoAegAVABYAFQAXABgAFQB7ABcAegB7ABUAegB8AHsAfAANAHsAegAOAHwAfQANAHwAfAAOAH0AfQB+AA0AfgB9AA8AfQAQAA8AEAB9AA4AEAAOABEAEQASABAAEQATABIABAAFAAYABAB/AAUAfwAIAAUAfwAEAIAABACBAIAAggAIAH8ACwCAAIEACwCBAAwADACBAAoACACCAIMAggAHAIMACACDAAkAhAAaABsAHAAaAIQAHAAdABoAHgAcAIQAHgCEAIUAhAAZAIUAhQAZAB8AhQAfACAAhQAgACEAhQAhACIAIgAhACMAJAAlACYAJgAlAIYAJgCGACgAKQAoAIYAhwApAIYAKQCHACoAiACGACcAhwCGAIgAKwCHAIgAKwCIACwALAAtACsALQCJACsAiQAtAC4AigCJAC4AiwCJAIoAiwCHAIwAhwArAIwAKwCNAIwAjgCNACsAiwAvAIcALwCLAIoAjwAvAIoAMgCQAC8AMgAvADEAjwAxAC8AMwAxAI8AMwCPADAANAA1ADYANgA3ADQAOAA5ADoAOAA7ADkAOwA8ADkAPACRADkAkgA+AD8AQAA+AJIAQACSAD0AQQCTAEMAkwBBAEQARABCAJMARABFAEIARgBHAEgARgBJAEcASgBLAEwASgBMAE0ATgBPAFAAUQBPAE4AUQCUAE8AUQBSAJQAUQBTAFIAUQCVAFMAlgBVAFYAlgBUAFUAVwCWAFYAVwBWAFgAWQBaAFsAWQBcAFoAWQBbAF0AXgBfAGAAXgBhAF8AXgBgAGIAYwBkAGUAZgBnAGgAZgBpAGcAagBrAGwAbQBuAG8AbQBwAG4AbwBuAHEAbwByAG0AbwCXAHIAcgCXAHMAlwB0AHMAlwBvAHYAlwCYAHQAmACXAHYAmAB2AJkAmQB1AJgAmQB3AHUAmgB3AJkA"), 0.9630496, PackedByteArray("AAABAAIAAgADAAAABAAFAAYABAAHAAUABwAIAAUACAAHAAkABAAKAAcACwAKAAwADQAOAA8AEAAPAA4AEAAOABEAEQASABAAEQATABIAFAANABUAFAAVABYAFQAXABgAGQAaABsAHAAaABkAHAAdABoAHgAcABkAHgAZAB8AHgAfACAAHgAgACEAHgAhACIAIgAhACMAJAAlACYAJgAlACcAJgAnACgAKQAoACcAKgApACcAKwAqACwALAAtACsAKwAtAC4AKwAvACoAMAArAC4ALwArADAAMAAxAC8AMgAvADEAMwAxADAANAA1ADYANgA3ADQAOAA5ADoAOAA7ADkAOwA8ADkAPQA+AD8AQAA+AD0AQQBCAEMAQgBBAEQARABFAEIARgBHAEgARgBJAEcASgBLAEwASgBMAE0ATgBPAFAAUQBPAE4AUQBSAE8AUQBTAFIAVABVAFYAVwBUAFYAVwBWAFgAWQBaAFsAWQBcAFoAWQBbAF0AXgBfAGAAXgBhAF8AXgBgAGIAYwBkAGUAZgBnAGgAZgBpAGcAagBrAGwAbQBuAG8AbQBwAG4AbwBuAHEAbwByAG0AcgBvAHMAbwB0AHMAdQBvAHYAdgB3AHUA")],
-"material": SubResource("StandardMaterial3D_5g3cc"),
+"material": SubResource("ShaderMaterial_ds25n"),
 "name": "Rocks",
 "primitive": 3,
 "uv_scale": Vector4(0, 0, 0, 0),
@@ -50,7 +119,7 @@ points = PackedVector3Array(-0.33310497, 0.05622669, -1.1591253, -0.19881141, 0.
 [node name="DraggableRock" type="StaticBody3D" unique_id=1877361224]
 script = ExtResource("1_xnnw7")
 
-[node name="Rock_Medium_2" type="MeshInstance3D" parent="." unique_id=654269603]
+[node name="Rock_Medium_2" type="MeshInstance3D" parent="." unique_id=654269603 groups=["glowing_rock"]]
 transform = Transform3D(0.3, 0, 0, 0, 0.3, 0, 0, 0, 0.3, 0, 0, 0)
 mesh = SubResource("ArrayMesh_3u87q")
 

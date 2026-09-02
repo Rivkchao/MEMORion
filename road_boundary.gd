@@ -49,18 +49,15 @@ func _find_curve(node: Node) -> Curve3D:
 
 func generate_boundaries() -> void:
 	if not target_scatter_shape:
-		print("[%s] Error: target_scatter_shape belum di-assign!" % name)
 		return
 
 	var curve := _find_curve(target_scatter_shape)
 
 	if not curve:
-		print("[%s] Error: Tidak menemukan Curve3D di '%s'!" % [name, target_scatter_shape.name])
 		return
 
 	var points := curve.get_baked_points()
 	if points.size() < 2:
-		print("[%s] Error: Curve pada '%s' tidak punya cukup titik!" % [name, target_scatter_shape.name])
 		return
 
 	# Bersihkan child lama
@@ -79,8 +76,6 @@ func generate_boundaries() -> void:
 
 	if first_point.distance_to(last_point) > 0.05:
 		_create_wall(last_point, first_point, points.size())
-
-	print("[%s] Berhasil generate boundary untuk '%s' (%d titik)." % [name, target_scatter_shape.name, points.size()])
 
 func _create_wall(a: Vector3, b: Vector3, index: int) -> void:
 	var direction := b - a

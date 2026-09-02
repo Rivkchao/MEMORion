@@ -1,7 +1,12 @@
 extends DirectionalLight3D
 
 @export_group("Cycle Settings")
-@export var cycle_duration: float = 100.0
+@export var cycle_duration: float = 70.0
+
+@export_group("Environment Fill")
+@export var world_environment: WorldEnvironment
+@export var min_ambient_energy: float = 0.55  # Batas kegelapan malam agar tidak siluet
+@export var max_ambient_energy: float = 0.65
 
 @export_group("Water Glow")
 @export var water_mesh: MeshInstance3D
@@ -9,21 +14,31 @@ extends DirectionalLight3D
 
 @export_group("Terrain Glow")
 @export var terrain_node: Node3D
-@export var max_path_glow: float = 2.5
-@export var max_grass_glow: float = 1.8
+@export var max_path_glow: float = 1.5
+@export var max_grass_glow: float = 1.1
+
+@export_group("Rock Glow")
+@export var max_rock_glow: float = 0.4
+
 
 var elapsed: float = 0.0
 var _water_material: ShaderMaterial = null
 var _terrain_material: Resource = null
+var _rock_materials: Array[ShaderMaterial] = []
 
 func _ready() -> void:
-	# Ambil material air
 	if water_mesh != null:
 		_water_material = water_mesh.get_active_material(0) as ShaderMaterial
 
-	# Ambil material Terrain3D
 	if terrain_node != null:
 		_terrain_material = terrain_node.get("material")
+
+	var rocks = get_tree().get_nodes_in_group("glowing_rock")
+	for r in rocks:
+		if r is MeshInstance3D:
+			var mat = r.get_active_material(0) as ShaderMaterial
+			if mat:
+				_rock_materials.append(mat)
 
 func _process(delta: float) -> void:
 	elapsed += delta
@@ -68,9 +83,24 @@ func _process(delta: float) -> void:
 
 	light_energy = energy
 	
-	# Update Glow
+	_update_ambient_light(t)
 	_update_water_glow(t)
 	_update_terrain_glow(t)
+	_update_rock_glow(t)
+
+func _update_ambient_light(t: float) -> void:
+	if world_environment == null or world_environment.environment == null:
+		return
+	
+	var amb_energy: float = max_ambient_energy
+	if t >= 0.45 and t < 0.55:
+		amb_energy = lerpf(max_ambient_energy, min_ambient_energy, (t - 0.45) / 0.10)
+	elif t >= 0.55 and t < 0.90:
+		amb_energy = min_ambient_energy
+	elif t >= 0.90:
+		amb_energy = lerpf(min_ambient_energy, max_ambient_energy, (t - 0.90) / 0.10)
+		
+	world_environment.environment.ambient_light_energy = amb_energy
 
 func _update_water_glow(t: float) -> void:
 	if _water_material == null:
@@ -95,7 +125,6 @@ func _update_terrain_glow(t: float) -> void:
 	var path_glow: float = 0.0
 	var grass_glow: float = 0.0
 
-	# Transisi halus dari sore (0.25) ke malam (0.50 - 0.95)
 	if t >= 0.25 and t < 0.50:
 		var factor: float = (t - 0.25) / 0.25
 		path_glow = lerpf(0.0, max_path_glow, factor)
@@ -117,3 +146,20 @@ func _update_terrain_glow(t: float) -> void:
 	elif _terrain_material is ShaderMaterial:
 		_terrain_material.set_shader_parameter("path_glow_intensity", path_glow)
 		_terrain_material.set_shader_parameter("grass_glow_intensity", grass_glow)
+
+func _update_rock_glow(t: float) -> void:
+	if _rock_materials.is_empty():
+		return
+
+	var glow: float = 0.0
+	if t >= 0.25 and t < 0.50:
+		glow = lerpf(0.0, max_rock_glow, (t - 0.25) / 0.25)
+	elif t >= 0.50 and t < 0.95:
+		glow = max_rock_glow
+	elif t >= 0.95:
+		glow = lerpf(max_rock_glow, 0.0, (t - 0.95) / 0.05)
+	else:
+		glow = 0.0
+
+	for mat in _rock_materials:
+		mat.set_shader_parameter("night_glow_strength", glow)
