@@ -12,7 +12,7 @@ var _api_key: String = ""
 signal emotion_analyzed(detected_emotion: String, npc_reply: String)
 
 # Signal untuk hasil pengecekan jawaban puzzle
-signal answer_checked(npc_reply: String)
+signal answer_checked(npc_reply: String, emotion: String)
 
 func _ready() -> void:
 	_load_api_key()
@@ -129,21 +129,29 @@ func check_answer(question: String, player_answer: String, is_correct: bool, npc
 
 	var status_text = "BENAR" if is_correct else "SALAH"
 
+	# System prompt meminta JSON berisi teks balasan dan emosi (happy/kagum)
 	var system_prompt = """
 Kamu adalah %s dalam game edukasi Memorion+.
 Seorang pemain baru saja menjawab pertanyaan di dalam game.
 
 Konteks:
-- Pertanyaan yang diajukan: "%s"
+- Pertanyaan: "%s"
 - Jawaban pemain: "%s"
-- Status jawaban (dari sistem): %s
+- Status: %s
 
 Tugasmu:
-- Jika jawaban BENAR: Berikan pujian singkat yang antusias dan menyemangati (1-2 kalimat).
-- Jika jawaban SALAH: Berikan dorongan positif dan petunjuk halus mengenai jawaban yang benar, tanpa langsung menyebutkan jawabannya (1-2 kalimat).
+1. Jika BENAR: Berikan pujian hangat/antusias (1-2 kalimat).
+2. Jika SALAH: Berikan dorongan dan petunjuk halus tanpa membocorkan jawaban (1-2 kalimat).
+3. Tentukan mood ekspresi avatar: 
+   - Pilih "kagum" jika jawaban luar biasa, unik, benar sempurna, atau sangat mengejutkan.
+   - Pilih "happy" untuk situasi senang, ramah, atau menyemangati secara umum.
 
-Gunakan bahasa Indonesia yang santai dan ramah. Jangan sebut kata 'BENAR' atau 'SALAH' secara eksplisit.
-Balas HANYA dengan kalimat percakapan Rion saja, tanpa format JSON, tanpa label apapun.
+Aturan Output:
+Balas HANYA format JSON valid:
+{
+	"reply": "<kalimat percakapan>",
+	"emotion": "happy" atau "kagum"
+}
 """ % [npc_role, question, player_answer, status_text]
 
 	var payload = {
@@ -152,8 +160,8 @@ Balas HANYA dengan kalimat percakapan Rion saja, tanpa format JSON, tanpa label 
 			{"role": "system", "content": system_prompt},
 			{"role": "user", "content": player_answer}
 		],
-		"temperature": 0.7,
-		"max_tokens": 100
+		"temperature": 0.5,
+		"response_format": { "type": "json_object" }
 	}
 
 	http_request.request(
@@ -174,7 +182,12 @@ func _on_check_answer_completed(
 
 	if response_code == 200:
 		var json = JSON.parse_string(body.get_string_from_utf8())
-		var reply = json["choices"][0]["message"]["content"].strip_edges()
-		answer_checked.emit(reply)
+		var content_str = json["choices"][0]["message"]["content"]
+		var parsed = JSON.parse_string(content_str)
+
+		var reply = parsed.get("reply", "Kerja bagus!")
+		var emotion = parsed.get("emotion", "happy").to_lower()
+
+		answer_checked.emit(reply, emotion)
 	else:
-		answer_checked.emit("Maaf, koneksi bermasalah. Tapi kamu sudah berusaha!")
+		answer_checked.emit("Maaf, koneksi bermasalah. Tapi kamu sudah berusaha!", "happy")

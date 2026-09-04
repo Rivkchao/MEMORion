@@ -161,20 +161,13 @@ func _handle_movement() -> void:
 	velocity.z = move_dir.z * current_speed
 
 func _handle_jump() -> void:
-	if is_on_floor() and Input.is_action_just_pressed("jump") and not is_jumping_prep:
-		is_jumping_prep = true
+	if is_on_floor() and Input.is_action_just_pressed("jump"):
+		# Berikan daya dorong langsung secara instan
+		velocity.y = jump_force
 		
-		# Picu OneShot request JumpShot
+		# Picu animasi lompat
 		anim_tree.set("parameters/JumpShot/request", AnimationNodeOneShot.ONE_SHOT_REQUEST_FIRE)
 		
-		# Delay fase jongkok sebelum tubuh meluncur ke atas
-		await get_tree().create_timer(jump_delay).timeout
-		
-		if is_on_floor():
-			velocity.y = jump_force
-			
-		is_jumping_prep = false
-
 func _handle_rotation(delta: float) -> void:
 	var move_dir = Vector3(velocity.x, 0, velocity.z)
 	if move_dir.length() > 0.1:

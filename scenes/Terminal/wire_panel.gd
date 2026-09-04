@@ -103,7 +103,7 @@ func setup() -> void:
 	_start_preview_sequence()
 
 func _start_preview_sequence() -> void:
-	await get_tree().create_timer(10.0).timeout
+	await get_tree().create_timer(5.0).timeout
 	if not is_inside_tree() or is_complete:
 		return
 
@@ -301,8 +301,10 @@ func _check_complete() -> void:
 	puzzle_completed.emit(all_correct)
 	
 	if all_correct:
+		StoryManager.dialogue_box.set_avatar_by_emotion("kagum")
 		StoryManager.start_dialogue(["Daya terminal berhasil dipulihkan! Ingatanmu tajam sekali!"], "Rion")
 	else:
+		StoryManager.dialogue_box.set_avatar_by_emotion("happy")
 		StoryManager.start_dialogue(["Ada kabel yang korslet! Coba ingat-ingat lagi polanya ya!"], "Rion")
 	
 	get_parent().hide()

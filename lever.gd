@@ -164,4 +164,8 @@ func complete_lever() -> void:
 			lever_light.visible = false
 		if progress_label:
 			progress_label.visible = false
-)
+	)
+	
+	if StoryManager.dialogue_box != null:
+		StoryManager.dialogue_box.set_avatar_by_emotion("kagum")
+		StoryManager.start_dialogue(["Sistemnya hidup kembali! Kamu berhasil mengaktifkan daya ruangan ini!"], "Rion")

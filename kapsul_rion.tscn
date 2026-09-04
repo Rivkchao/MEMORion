@@ -168,4 +168,5 @@ mesh = SubResource("ArrayMesh_8yhk4")
 shape = SubResource("ConcavePolygonShape3D_e5gda")
 
 [node name="ReflectionProbe" type="ReflectionProbe" parent="." unique_id=312896763]
+enable_shadows = true
 ambient_mode = 0

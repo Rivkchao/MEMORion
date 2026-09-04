@@ -20,6 +20,9 @@ extends DirectionalLight3D
 @export_group("Rock Glow")
 @export var max_rock_glow: float = 0.4
 
+@export_group("Player Night Light")
+@export var player_light: OmniLight3D
+@export var max_player_light_energy: float = 0.8
 
 var elapsed: float = 0.0
 var _water_material: ShaderMaterial = null
@@ -87,6 +90,7 @@ func _process(delta: float) -> void:
 	_update_water_glow(t)
 	_update_terrain_glow(t)
 	_update_rock_glow(t)
+	_update_player_light(t)
 
 func _update_ambient_light(t: float) -> void:
 	if world_environment == null or world_environment.environment == null:
@@ -163,3 +167,26 @@ func _update_rock_glow(t: float) -> void:
 
 	for mat in _rock_materials:
 		mat.set_shader_parameter("night_glow_strength", glow)
+
+func _update_player_light(t: float) -> void:
+	if player_light == null:
+		return
+
+	var target_energy: float = 0.0
+
+	# Sore mulai redup ke malam (t: 0.25 - 0.50) -> lampu perlahan menyala
+	if t >= 0.25 and t < 0.50:
+		var factor: float = (t - 0.25) / 0.25
+		target_energy = lerpf(0.0, max_player_light_energy, factor)
+	# Malam penuh (t: 0.50 - 0.95) -> lampu menyala stabil
+	elif t >= 0.50 and t < 0.95:
+		target_energy = max_player_light_energy
+	# Fajar menjelang pagi (t: 0.95 - 1.0) -> lampu perlahan mati
+	elif t >= 0.95:
+		var factor: float = (t - 0.95) / 0.05
+		target_energy = lerpf(max_player_light_energy, 0.0, factor)
+	else:
+		target_energy = 0.0
+
+	player_light.light_energy = target_energy
+	player_light.visible = target_energy > 0.01

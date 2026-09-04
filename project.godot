@@ -33,6 +33,7 @@ ProjectUISoundController="*uid://cc37235kj4384"
 SceneTransition="*uid://cec4jkbrtthg3"
 LoadingScreen="*uid://rncmc7smqy2"
 RockDistractionOverlay="*uid://danyj7nt81p62"
+_mcp_game_helper="*res://addons/godot_ai/runtime/game_helper.gd"
 
 [display]
 
@@ -46,11 +47,7 @@ version_control/autoload_on_startup=true
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/GDQuest_GDScript_formatter/plugin.cfg", "res://addons/proton_scatter/plugin.cfg", "res://addons/terrain_3d/plugin.cfg")
-
-[gui]
-
-theme/custom="res://addons/maaacks_menus_template/examples/resources/themes/lab.tres"
+enabled=PackedStringArray("res://addons/GDQuest_GDScript_formatter/plugin.cfg", "res://addons/godot_ai/plugin.cfg", "res://addons/proton_scatter/plugin.cfg", "res://addons/terrain_3d/plugin.cfg")
 
 [input]
 
@@ -96,10 +93,6 @@ sprint={
 ]
 }
 
-[internationalization]
-
-locale/translations=PackedStringArray("res://addons/maaacks_menus_template/base/translations/menus_translations.en.translation", "res://addons/maaacks_menus_template/base/translations/menus_translations.fr.translation")
-
 [layer_names]
 
 3d_physics/layer_1="World"
@@ -123,7 +116,7 @@ textures/canvas_textures/default_texture_filter=2
 rendering_device/driver.windows="d3d12"
 renderer/rendering_method="gl_compatibility"
 renderer/rendering_method.mobile="gl_compatibility"
-anti_aliasing/quality/screen_space_aa=1
+anti_aliasing/quality/msaa_3d=1
 
 [terraBrush]
 

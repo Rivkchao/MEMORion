@@ -4,42 +4,39 @@ extends CanvasLayer
 @onready var dialogue_label: Label = $PanelContainer/MarginContainer/VBoxContainer/DialogueLabel
 @onready var continue_label: Label = $ContinueLabel
 @onready var avatar: TextureRect = $TextureRect
+@export var avatar_happy: Texture2D
+@export var avatar_kagum: Texture2D
+
+const MAX_LINES: int = 4
 
 var lines: Array[String] = []
 var current_line: int = 0
 var is_typing: bool = false
-var full_text: String = ""
 var speaker_name: String = ""
 
-@export var type_speed: float = 0.03
+# Menggunakan tween agar kecepatan ketik stabil
+var _type_tween: Tween
+
+@export var char_per_second: float = 35.0 # Kecepatan ketik (35 huruf per detik)
 
 var magic_time: float = 0.0
+signal dialogue_finished
 
 func _ready() -> void:
 	hide()
+	dialogue_label.max_lines_visible = MAX_LINES
+	dialogue_label.lines_skipped = 0
 
 func _process(delta: float) -> void:
 	if visible:
 		magic_time += delta
-		# Magical shimmer effect for name label
 		var shimmer = (sin(magic_time * 3.0) + 1.0) / 2.0
 		var base_color = Color(0.8, 0.6, 1, 1)
 		var shimmer_color = Color(1.0, 0.8, 1.0, 1)
 		name_label.modulate = base_color.lerp(shimmer_color, shimmer * 0.3)
 		
-		# Subtle glow for dialogue label
 		var glow = (sin(magic_time * 2.0) + 1.0) / 2.0
 		dialogue_label.modulate = Color(1.0, 0.95, 1.0, 1.0).lerp(Color(0.9, 0.85, 1.0, 1.0), glow * 0.2)
-		
-		# Magical typing effect - each character slightly varies in color
-		if is_typing:
-			_apply_magical_typing_effect()
-
-func _apply_magical_typing_effect() -> void:
-	var time_offset = magic_time * 5.0
-	for i in range(dialogue_label.text.length()):
-		var char_offset = (sin(time_offset + i * 0.5) + 1.0) / 2.0
-		var _char_color = Color(0.9, 0.85, 1.0, 1.0).lerp(Color(1.0, 0.9, 1.0, 1.0), char_offset * 0.2)
 
 func start(dialogue_lines: Array[String], npc_name: String = "", avatar_texture: Texture2D = null) -> void:
 	lines = dialogue_lines
@@ -53,35 +50,69 @@ func start(dialogue_lines: Array[String], npc_name: String = "", avatar_texture:
 	_show_line()
 
 func _show_line() -> void:
-	full_text = lines[current_line]
-	dialogue_label.text = ""
+	dialogue_label.lines_skipped = 0
+	dialogue_label.text = lines[current_line]
+	_start_typewriter_for_current_view()
+
+func _start_typewriter_for_current_view() -> void:
+	if _type_tween and _type_tween.is_valid():
+		_type_tween.kill()
+
 	is_typing = true
 	continue_label.hide()
-	_type_next_char()
+	dialogue_label.visible_ratio = 0.0
 
-func _type_next_char() -> void:
-	if dialogue_label.text.length() < full_text.length():
-		dialogue_label.text += full_text[dialogue_label.text.length()]
-		await get_tree().create_timer(type_speed).timeout
-		_type_next_char()
-	else:
-		is_typing = false
-		continue_label.show()
-signal dialogue_finished
+	# Hitung durasi mengetik berdasarkan panjang teks
+	var text_len = dialogue_label.text.length()
+	var duration = text_len / char_per_second
+
+	_type_tween = create_tween()
+	_type_tween.tween_property(dialogue_label, "visible_ratio", 1.0, duration)
+	_type_tween.finished.connect(_on_typing_done)
+
+func _on_typing_done() -> void:
+	is_typing = false
+	dialogue_label.visible_ratio = 1.0
+	continue_label.show()
 
 func next() -> void:
+	# 1. Jika teks sedang mengetik: instan tuntaskan tampilan
 	if is_typing:
-		dialogue_label.text = full_text
+		if _type_tween and _type_tween.is_valid():
+			_type_tween.kill()
+		_on_typing_done()
+		return
+	
+	# 2. Jika masih ada baris sisa di bawahnya:
+	var total_lines = dialogue_label.get_line_count()
+	if dialogue_label.lines_skipped + MAX_LINES < total_lines:
+		dialogue_label.lines_skipped += MAX_LINES
+		# Langsung tampilkan penuh halaman sambungan tanpa jeda mengetik ulang
+		dialogue_label.visible_ratio = 1.0
 		is_typing = false
 		continue_label.show()
 		return
 	
+	# 3. Pindah ke dialog/orang berikutnya (efek tik jalan kembali dari awal)
 	current_line += 1
 	if current_line < lines.size():
 		_show_line()
 	else:
 		hide()
 		dialogue_finished.emit()
+
+func set_avatar_by_emotion(emotion_name: String) -> void:
+	match emotion_name.to_lower():
+		"kagum":
+			if avatar_kagum:
+				avatar.texture = avatar_kagum
+		"happy", "senang":
+			if avatar_happy:
+				avatar.texture = avatar_happy
+		_:
+			# Default fallback ke happy
+			if avatar_happy:
+				avatar.texture = avatar_happy
 
 func is_active() -> bool:
 	return visible
