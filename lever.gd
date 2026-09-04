@@ -45,6 +45,19 @@ func _ready() -> void:
 	if not door_node:
 		print_rich("[color=yellow][LEVER WARNING][/color] 'door_node' belum dimasukkan di Inspector!")
 
+	var lever_id := get_parent().name + "_" + name
+	if GameManager.solved_levers.get(lever_id, false):
+		completed = true
+		progress = 1.0
+		if lever_handle:
+			lever_handle.rotation_degrees.z = initial_rot_z + target_down_angle
+		if lever_light:
+			lever_light.visible = false
+		if progress_label:
+			progress_label.visible = false
+		if door_node and "is_room_unlocked" in door_node:
+			door_node.is_room_unlocked = true
+
 
 func _process(delta: float) -> void:
 	# Cek apakah ruangan sudah terbuka
@@ -142,6 +155,8 @@ func complete_lever() -> void:
 	completed = true
 	holding = false
 	progress = 1.0
+	var lever_id := get_parent().name + "_" + name
+	GameManager.solved_levers[lever_id] = true
 	print_rich("[color=green][LEVER SELESAI][/color] 100%% tercapai! Menyalakan lampu...")
 
 	if progress_label:

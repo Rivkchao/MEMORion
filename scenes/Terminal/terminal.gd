@@ -17,6 +17,14 @@ func _ready() -> void:
 	super._ready()
 	interact_label = "Gunakan Terminal"
 	StoryManager.wire_puzzle_completed.connect(_on_wire_puzzle_completed)
+	
+	if GameManager.terminal_puzzle_done:
+		_puzzle_solved = true
+		omni_light_1.light_color = solved_color
+		omni_light_1.light_energy = solved_energy
+		omni_light_2.light_color = solved_color
+		omni_light_2.light_energy = solved_energy
+		interact_label = ""
 
 func _process(delta: float) -> void:
 	if _puzzle_solved:
@@ -36,6 +44,7 @@ func interact() -> void:
 func _on_wire_puzzle_completed(is_correct: bool) -> void:
 	if is_correct:
 		_puzzle_solved = true
+		GameManager.terminal_puzzle_done = true
 		omni_light_1.light_color = solved_color
 		omni_light_1.light_energy = solved_energy
 		omni_light_2.light_color = solved_color

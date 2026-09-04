@@ -10,6 +10,12 @@ var spawn_override_scene: String = "LEV1"
 var has_spawn_override: bool = false
 var rock_puzzle_done: bool = false
 
+# State R1 (Bengkel & Ruangan)
+var solved_levers: Dictionary = {}
+var terminal_puzzle_done: bool = false
+var unpacking_rak1_done: bool = false
+var unpacking_completed: bool = false
+
 func set_spawn_override(pos: Vector3, for_scene_name: String = "LEV1") -> void:
 	spawn_override_position = pos
 	spawn_override_scene = for_scene_name

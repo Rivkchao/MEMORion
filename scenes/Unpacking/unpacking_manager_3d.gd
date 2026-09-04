@@ -29,7 +29,13 @@ func _ready() -> void:
 	if StoryManager.has_signal("dialogue_finished"):
 		StoryManager.dialogue_finished.connect(_on_story_dialogue_finished)
 
-	_setup_phase(1)
+	if GameManager.unpacking_completed:
+		_restore_all_completed()
+	elif GameManager.unpacking_rak1_done:
+		_restore_rak1_completed()
+		_setup_phase(2)
+	else:
+		_setup_phase(1)
 
 func _on_story_dialogue_finished() -> void:
 	if current_phase == 1 and waiting_for_dialog:
@@ -399,17 +405,16 @@ func _check_phase_finish() -> void:
 		# Tandai sedang menunggu dialog
 		waiting_for_dialog = true
 
+		GameManager.unpacking_rak1_done = true
 
 		# Signal
 		rak1_completed.emit()
-
 
 		# TAMPILKAN DIALOG
 		StoryManager.start_dialogue(
 			[rak1_complete_dialogue],
 			speaker_name
 		)
-
 
 	# RAK 2 SELESAI
 	elif current_phase == 2:
@@ -419,12 +424,11 @@ func _check_phase_finish() -> void:
 			false
 		)
 
-
 		waiting_for_dialog = true
 
+		GameManager.unpacking_completed = true
 
 		all_completed.emit()
-
 
 		StoryManager.start_dialogue(
 			[rak2_complete_dialogue],
@@ -435,3 +439,45 @@ func continue_to_next_phase() -> void:
 	if current_phase == 1 and waiting_for_dialog:
 		waiting_for_dialog = false
 		_setup_phase(2)
+
+func _restore_rak1_completed() -> void:
+	if rak1_container:
+		_snap_container_items_instantly(rak1_container)
+		_set_container_interaction(rak1_container, false)
+
+func _restore_all_completed() -> void:
+	phase_completed = true
+	if rak1_container:
+		_snap_container_items_instantly(rak1_container)
+		_set_container_interaction(rak1_container, false)
+	if rak2_container:
+		_snap_container_items_instantly(rak2_container)
+		_set_container_interaction(rak2_container, false)
+
+func _snap_container_items_instantly(container: Node3D) -> void:
+	if container == null:
+		return
+	container.visible = true
+	var items = container.find_children("", "UnpackItem3D", true, false)
+	var slots = container.find_children("", "UnpackingSlot3D", true, false)
+
+	for slot in slots:
+		var unpack_slot := slot as UnpackingSlot3D
+		if unpack_slot == null:
+			continue
+		for item in items:
+			var unpack_item := item as UnpackItem3D
+			if unpack_item == null or unpack_item.is_placed:
+				continue
+			if unpack_item.item_type == unpack_slot.accepts_item_type:
+				unpack_item.is_placed = true
+				unpack_slot.occupied = true
+				unpack_item.visible = true
+				unpack_item.global_position = unpack_slot.global_position
+				unpack_item.global_rotation = unpack_slot.global_rotation
+				var col = unpack_item.find_child("CollisionShape3D", true, false) as CollisionShape3D
+				if col:
+					col.disabled = true
+				if unpack_slot.preview_mesh:
+					unpack_slot.preview_mesh.visible = false
+				break
