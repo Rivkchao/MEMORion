@@ -8,6 +8,7 @@ var objective_item: String = "bintang"
 var spawn_override_position: Vector3 = Vector3.ZERO
 var spawn_override_scene: String = "LEV1"
 var has_spawn_override: bool = false
+var rock_puzzle_done: bool = false
 
 func set_spawn_override(pos: Vector3, for_scene_name: String = "LEV1") -> void:
 	spawn_override_position = pos

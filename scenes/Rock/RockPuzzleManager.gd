@@ -20,19 +20,62 @@ var original_camera_target: Node3D = null
 var puzzle_camera_position: Vector3 = Vector3.ZERO
 
 func register_slot(slot: Node3D) -> void:
+	slots = slots.filter(func(s): return is_instance_valid(s))
 	if not slots.has(slot):
 		slots.append(slot)
+	_check_and_restore_if_done()
 
 func register_rock(rock: Node3D) -> void:
+	rocks = rocks.filter(func(r): return is_instance_valid(r))
 	if not rocks.has(rock):
 		rocks.append(rock)
+	_check_and_restore_if_done()
+
+func _check_and_restore_if_done() -> void:
+	if not GameManager.rock_puzzle_done:
+		return
+	# Jika semua slot dan batu baru sudah terdaftar
+	if slots.size() >= 5 and rocks.size() >= 5:
+		call_deferred("_restore_solved_state")
+
+func _restore_solved_state() -> void:
+	is_puzzle_done = true
+	is_puzzle_active = false
+	
+	for rock in rocks:
+		if not is_instance_valid(rock):
+			continue
+		rock.is_solved = true
+		rock.input_ray_pickable = false
+		
+		# Cocokkan ukuran batu dengan ukuran slot
+		var r_size = rock.get("rock_size")
+		var target_slot: Node3D = null
+		for slot in slots:
+			if is_instance_valid(slot) and slot.get("required_rock_size") == r_size:
+				target_slot = slot
+				break
+		
+		if target_slot != null:
+			rock.global_position = target_slot.global_position + Vector3(0, 0.1, 0)
+			rock.global_rotation = target_slot.global_rotation
+			rock.original_position = rock.global_position
+			rock.original_rotation = rock.global_rotation
+			if "current_slot" in rock:
+				rock.current_slot = target_slot
+			if "occupied_by" in target_slot:
+				target_slot.occupied_by = rock
+	
+	for slot in slots:
+		if is_instance_valid(slot) and slot.has_method("hide_slot"):
+			slot.hide_slot()
 
 func setup_camera(cam_rig: Node3D, puzzle_pos: Vector3) -> void:
 	camera_rig = cam_rig
 	puzzle_camera_position = puzzle_pos
 
 func start_puzzle() -> void:
-	if is_puzzle_active or is_puzzle_done:
+	if is_puzzle_active or GameManager.rock_puzzle_done:
 		return
 	is_puzzle_active = true
 	has_triggered_distraction = false
@@ -156,6 +199,7 @@ func _on_wrong_step(slot: Node3D, rock: Node3D) -> void:
 func _on_complete() -> void:
 	is_puzzle_active = false
 	is_puzzle_done = true
+	GameManager.rock_puzzle_done = true
 	puzzle_completed.emit()
 
 	for slot in slots:

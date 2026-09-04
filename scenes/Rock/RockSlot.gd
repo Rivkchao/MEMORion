@@ -43,6 +43,8 @@ func _ready() -> void:
 	
 	mesh.material_override = mat_submerged
 	mesh.visible = false
+	if GameManager.rock_puzzle_done:
+		mesh.visible = false
 
 func is_occupied() -> bool:
 	return occupied_by != null
