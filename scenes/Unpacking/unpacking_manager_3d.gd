@@ -39,7 +39,14 @@ func _ready() -> void:
 
 func _on_story_dialogue_finished() -> void:
 	if current_phase == 1 and waiting_for_dialog:
+		waiting_for_dialog = false
+		if not GameManager.collected_fragments.get("unpacking_rak1", false):
+			await FragmentBox.show_fragment("unpacking_rak1")
 		continue_to_next_phase()
+	elif current_phase == 2 and waiting_for_dialog:
+		waiting_for_dialog = false
+		if not GameManager.collected_fragments.get("unpacking_rak2", false):
+			await FragmentBox.show_fragment("unpacking_rak2")
 		
 func _setup_phase(phase: int) -> void:
 	current_phase = phase
@@ -436,7 +443,7 @@ func _check_phase_finish() -> void:
 		)
 
 func continue_to_next_phase() -> void:
-	if current_phase == 1 and waiting_for_dialog:
+	if current_phase == 1:
 		waiting_for_dialog = false
 		_setup_phase(2)
 

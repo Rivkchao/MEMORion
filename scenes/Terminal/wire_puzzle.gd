@@ -14,3 +14,5 @@ func start() -> void:
 		
 func _on_puzzle_completed(is_correct: bool) -> void:
 	puzzle_completed.emit(is_correct)
+	if StoryManager.has_signal("wire_puzzle_completed"):
+		StoryManager.wire_puzzle_completed.emit(is_correct)

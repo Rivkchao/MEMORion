@@ -17,6 +17,7 @@ func _ready() -> void:
 	_start_logo_flip_animation()
 	layer = 10
 	fade_rect.color = Color(0, 0, 0, 0)
+	fade_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	panel.hide()
 	
 	if is_instance_valid(instagram_btn):

@@ -1,0 +1,211 @@
+[gd_scene format=3 uid="uid://cg7bp7473wv8s"]
+
+[ext_resource type="Script" uid="uid://ccjt4ru703i6w" path="res://scenes/ui/FragmentBox.gd" id="1_fragscript"]
+[ext_resource type="FontFile" uid="uid://bb80gooxacs7q" path="res://Fonts/Telegraf-Bold-fix15408087824949790956.30.2aa1f309-cb96-4ad6-a94f-e5147e9.ttf" id="2_tbold"]
+[ext_resource type="FontFile" uid="uid://ctnm2q1fg78u6" path="res://Fonts/telegraf_regular_fix7340951357143627189..44096e48-3548-42c1-bd8a-c4745e9.ttf" id="3_treg"]
+[ext_resource type="Texture2D" uid="uid://bsj8clscek18f" path="res://assets/StoneImage/Shining.png" id="4_shine"]
+[ext_resource type="Texture2D" uid="uid://cmidh64s5fmhf" path="res://assets/StoneImage/Uranium.png" id="5_cristal"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_3qkb3"]
+bg_color = Color(0.6, 0.6, 0.6, 0)
+
+[sub_resource type="Gradient" id="Gradient_glow"]
+offsets = PackedFloat32Array(0, 0.4, 0.75, 1)
+colors = PackedColorArray(1, 1, 1, 0.85, 0.4, 0.8, 1, 0.5, 0.2, 0.5, 1, 0.18, 0, 0, 0, 0)
+
+[sub_resource type="GradientTexture2D" id="GradientTexture2D_glow"]
+gradient = SubResource("Gradient_glow")
+width = 256
+height = 256
+fill = 1
+fill_from = Vector2(0.5, 0.5)
+fill_to = Vector2(0.5, 0)
+
+[sub_resource type="StyleBoxLine" id="StyleBoxLine_sep"]
+color = Color(0.35, 0.8, 1, 0.35)
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_normal"]
+bg_color = Color(0.22, 0.12, 0.5, 0.9)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.4, 0.85, 1, 0.8)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+shadow_color = Color(0.35, 0.85, 1, 0.25)
+shadow_size = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_pressed"]
+bg_color = Color(0.15, 0.08, 0.35, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.3, 0.7, 0.9, 0.9)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_hover"]
+bg_color = Color(0.32, 0.18, 0.7, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.7, 1, 1, 1)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+shadow_color = Color(0.4, 0.9, 1, 0.5)
+shadow_size = 18
+
+[node name="FragmentBox" type="CanvasLayer" unique_id=2053857135]
+process_mode = 3
+layer = 25
+script = ExtResource("1_fragscript")
+
+[node name="Backdrop" type="ColorRect" parent="." unique_id=776339219]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.035, 0.02, 0.085, 0.8)
+
+[node name="CardContainer" type="Control" parent="." unique_id=1001001]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="Card" type="PanelContainer" parent="CardContainer" unique_id=1001002]
+custom_minimum_size = Vector2(580, 680)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -290.0
+offset_top = -340.0
+offset_right = 290.0
+offset_bottom = 340.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_3qkb3")
+
+[node name="Margin" type="MarginContainer" parent="CardContainer/Card" unique_id=1001003]
+layout_mode = 2
+theme_override_constants/margin_left = 36
+theme_override_constants/margin_top = 32
+theme_override_constants/margin_right = 36
+theme_override_constants/margin_bottom = 32
+
+[node name="VBox" type="VBoxContainer" parent="CardContainer/Card/Margin" unique_id=1001004]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="HeaderLabel" type="Label" parent="CardContainer/Card/Margin/VBox" unique_id=1145898232]
+layout_mode = 2
+theme_override_colors/font_color = Color(0, 1, 1, 1)
+theme_override_fonts/font = ExtResource("2_tbold")
+theme_override_font_sizes/font_size = 18
+text = "✦ FRAGMEN MEMORI DITEMUKAN ✦"
+horizontal_alignment = 1
+
+[node name="StoneContainer" type="Control" parent="CardContainer/Card/Margin/VBox" unique_id=1001005]
+custom_minimum_size = Vector2(0, 250)
+layout_mode = 2
+
+[node name="PulseFX" type="Sprite2D" parent="CardContainer/Card/Margin/VBox/StoneContainer" unique_id=1982653214]
+position = Vector2(254, 125)
+scale = Vector2(1.6, 1.6)
+texture = SubResource("GradientTexture2D_glow")
+
+[node name="ShineFX" type="Sprite2D" parent="CardContainer/Card/Margin/VBox/StoneContainer" unique_id=72329401]
+position = Vector2(254, 125)
+scale = Vector2(0.9, 0.9)
+texture = ExtResource("4_shine")
+
+[node name="GlowTexture" type="TextureRect" parent="CardContainer/Card/Margin/VBox/StoneContainer" unique_id=1001006]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -110.0
+offset_top = -110.0
+offset_right = 110.0
+offset_bottom = 110.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(110, 110)
+texture = SubResource("GradientTexture2D_glow")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="StoneTexture" type="TextureRect" parent="CardContainer/Card/Margin/VBox/StoneContainer" unique_id=919048023]
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -85.0
+offset_top = -85.0
+offset_right = 85.0
+offset_bottom = 85.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(85, 85)
+texture = ExtResource("5_cristal")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="NameLabel" type="Label" parent="CardContainer/Card/Margin/VBox" unique_id=1642640229]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("2_tbold")
+theme_override_font_sizes/font_size = 28
+text = "Fragmen Kristal Aliran"
+horizontal_alignment = 1
+
+[node name="HSeparator" type="HSeparator" parent="CardContainer/Card/Margin/VBox" unique_id=1001007]
+layout_mode = 2
+theme_override_styles/separator = SubResource("StyleBoxLine_sep")
+
+[node name="DescLabel" type="Label" parent="CardContainer/Card/Margin/VBox" unique_id=1001008]
+custom_minimum_size = Vector2(0, 90)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.88, 0.9, 0.95, 1)
+theme_override_fonts/font = ExtResource("3_treg")
+theme_override_font_sizes/font_size = 17
+text = "Kristal murni yang terbentuk dari formasi aliran sungai. Mengembalikan kejernihan memori dan membuka jalan baru."
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+
+[node name="Spacer" type="Control" parent="CardContainer/Card/Margin/VBox" unique_id=1001009]
+layout_mode = 2
+size_flags_vertical = 3
+
+[node name="ClaimButton" type="Button" parent="CardContainer/Card/Margin/VBox" unique_id=1001010]
+custom_minimum_size = Vector2(0, 54)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_hover_color = Color(0.85, 1, 1, 1)
+theme_override_fonts/font = ExtResource("2_tbold")
+theme_override_font_sizes/font_size = 20
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn_normal")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_btn_pressed")
+theme_override_styles/hover = SubResource("StyleBoxFlat_btn_hover")
+text = "Simpan Fragmen"

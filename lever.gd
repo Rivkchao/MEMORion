@@ -181,6 +181,13 @@ func complete_lever() -> void:
 			progress_label.visible = false
 	)
 	
+	var is_crusher := "crusher" in get_parent().name.to_lower()
+	var frag_key := "lever_crusher" if is_crusher else "lever_onaprogram"
+	var dialogue_text := "Daya Ruang Crusher aktif kembali! Mesin-mesin mulai menyala!" if is_crusher else "Ruang Program Ona telah aktif! Sistem komputer mulai membaca data!"
+
 	if StoryManager.dialogue_box != null:
 		StoryManager.dialogue_box.set_avatar_by_emotion("kagum")
-		StoryManager.start_dialogue(["Sistemnya hidup kembali! Kamu berhasil mengaktifkan daya ruangan ini!"], "Rion")
+		StoryManager.start_dialogue([dialogue_text], "Rion")
+		await StoryManager.dialogue_finished
+		if not GameManager.collected_fragments.get(frag_key, false):
+			await FragmentBox.show_fragment(frag_key)

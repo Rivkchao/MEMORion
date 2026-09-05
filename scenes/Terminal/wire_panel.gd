@@ -303,11 +303,14 @@ func _check_complete() -> void:
 	if all_correct:
 		StoryManager.dialogue_box.set_avatar_by_emotion("kagum")
 		StoryManager.start_dialogue(["Daya terminal berhasil dipulihkan! Ingatanmu tajam sekali!"], "Rion")
+		get_parent().hide()
+		await StoryManager.dialogue_finished
+		if not GameManager.collected_fragments.get("terminal", false):
+			await FragmentBox.show_fragment("terminal")
 	else:
 		StoryManager.dialogue_box.set_avatar_by_emotion("happy")
 		StoryManager.start_dialogue(["Ada kabel yang korslet! Coba ingat-ingat lagi polanya ya!"], "Rion")
-	
-	get_parent().hide()
+		get_parent().hide()
 
 func _on_close_pressed() -> void:
 	get_parent().hide()

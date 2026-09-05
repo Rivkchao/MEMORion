@@ -207,6 +207,15 @@ func _on_complete() -> void:
 
 	_restore_camera()
 
+	# Alur: Dialog Rion -> Dialog Selesai -> FragmentBox Muncul
+	await get_tree().create_timer(0.8).timeout
+	if StoryManager.dialogue_box != null:
+		StoryManager.dialogue_box.set_avatar_by_emotion("kagum")
+		StoryManager.start_dialogue(["Luar biasa! Kamu berhasil menyusun batu-batu itu dengan sempurna!"], "Rion")
+		await StoryManager.dialogue_finished
+		if not GameManager.collected_fragments.get("batu", false):
+			await FragmentBox.show_fragment("batu")
+
 func _restore_camera() -> void:
 	if camera_rig == null:
 		return

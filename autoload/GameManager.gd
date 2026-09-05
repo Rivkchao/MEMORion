@@ -15,6 +15,7 @@ var solved_levers: Dictionary = {}
 var terminal_puzzle_done: bool = false
 var unpacking_rak1_done: bool = false
 var unpacking_completed: bool = false
+var collected_fragments: Dictionary = {}
 
 func set_spawn_override(pos: Vector3, for_scene_name: String = "LEV1") -> void:
 	spawn_override_position = pos
