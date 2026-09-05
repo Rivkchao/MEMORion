@@ -34,6 +34,7 @@ SceneTransition="*uid://cec4jkbrtthg3"
 LoadingScreen="*uid://rncmc7smqy2"
 RockDistractionOverlay="*uid://danyj7nt81p62"
 FragmentBox="*res://scenes/ui/FragmentBox.tscn"
+SaveManager="*uid://b2kcq24apw81h"
 
 [display]
 

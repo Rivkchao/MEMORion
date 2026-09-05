@@ -1,0 +1,98 @@
+[gd_scene format=3 uid="uid://3puyofxj2gx3"]
+
+[ext_resource type="Script" uid="uid://dsu1bnbtaewcx" path="res://Menu/auth_screen.gd" id="1_epkrd"]
+[ext_resource type="Texture2D" uid="uid://d1rladtgy4jtv" path="res://Menu/MEMORion+Logo.png" id="2_cy2ne"]
+
+[sub_resource type="LabelSettings" id="LabelSettings_nmnnx"]
+font_size = 8
+
+[sub_resource type="LabelSettings" id="LabelSettings_o5mqi"]
+font_size = 8
+
+[node name="AuthScreen" type="CanvasLayer" unique_id=210841209]
+script = ExtResource("1_epkrd")
+
+[node name="CenterContainer" type="CenterContainer" parent="." unique_id=686475220]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="PanelContainer" type="PanelContainer" parent="CenterContainer" unique_id=376675963]
+custom_minimum_size = Vector2(280, 0)
+layout_mode = 2
+
+[node name="MarginContainer" type="MarginContainer" parent="CenterContainer/PanelContainer" unique_id=701037406]
+layout_mode = 2
+theme_override_constants/margin_left = 40
+theme_override_constants/margin_top = 40
+theme_override_constants/margin_right = 40
+theme_override_constants/margin_bottom = 70
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer/PanelContainer/MarginContainer" unique_id=1253675467]
+layout_mode = 2
+theme_override_constants/separation = 20
+
+[node name="Logo" type="TextureRect" parent="CenterContainer/PanelContainer/MarginContainer/VBoxContainer" unique_id=82374017]
+layout_mode = 2
+texture = ExtResource("2_cy2ne")
+
+[node name="TabContainer" type="TabContainer" parent="CenterContainer/PanelContainer/MarginContainer/VBoxContainer" unique_id=316294774]
+custom_minimum_size = Vector2(0, 180)
+layout_mode = 2
+current_tab = 0
+tab_0/title = "Masuk"
+tab_1/title = "Daftar"
+
+[node name="LoginTab" type="VBoxContainer" parent="CenterContainer/PanelContainer/MarginContainer/VBoxContainer/TabContainer" unique_id=142057639]
+layout_mode = 2
+theme_override_constants/separation = 12
+metadata/_tab_index = 0
+metadata/_tab_name = "Masuk"
+
+[node name="UsernameField" type="LineEdit" parent="CenterContainer/PanelContainer/MarginContainer/VBoxContainer/TabContainer/LoginTab" unique_id=539558955]
+layout_mode = 2
+
+[node name="PasswordField" type="LineEdit" parent="CenterContainer/PanelContainer/MarginContainer/VBoxContainer/TabContainer/LoginTab" unique_id=330099567]
+layout_mode = 2
+
+[node name="LoginBtn" type="Button" parent="CenterContainer/PanelContainer/MarginContainer/VBoxContainer/TabContainer/LoginTab" unique_id=131961818]
+custom_minimum_size = Vector2(0, 45)
+layout_mode = 2
+
+[node name="FeedbackLabel" type="Label" parent="CenterContainer/PanelContainer/MarginContainer/VBoxContainer/TabContainer/LoginTab" unique_id=843164943]
+custom_minimum_size = Vector2(0, 20)
+layout_mode = 2
+label_settings = SubResource("LabelSettings_nmnnx")
+horizontal_alignment = 1
+vertical_alignment = 1
+text_overrun_behavior = 1
+
+[node name="RegisterTab" type="VBoxContainer" parent="CenterContainer/PanelContainer/MarginContainer/VBoxContainer/TabContainer" unique_id=1711364246]
+visible = false
+layout_mode = 2
+theme_override_constants/separation = 12
+metadata/_tab_index = 1
+metadata/_tab_name = "Daftar"
+
+[node name="UsernameField" type="LineEdit" parent="CenterContainer/PanelContainer/MarginContainer/VBoxContainer/TabContainer/RegisterTab" unique_id=1440858728]
+layout_mode = 2
+
+[node name="PasswordField" type="LineEdit" parent="CenterContainer/PanelContainer/MarginContainer/VBoxContainer/TabContainer/RegisterTab" unique_id=1714491176]
+layout_mode = 2
+
+[node name="RegisterBtn" type="Button" parent="CenterContainer/PanelContainer/MarginContainer/VBoxContainer/TabContainer/RegisterTab" unique_id=313299581]
+custom_minimum_size = Vector2(0, 45)
+layout_mode = 2
+
+[node name="FeedbackLabel" type="Label" parent="CenterContainer/PanelContainer/MarginContainer/VBoxContainer/TabContainer/RegisterTab" unique_id=177525018]
+custom_minimum_size = Vector2(0, 20)
+layout_mode = 2
+label_settings = SubResource("LabelSettings_o5mqi")
+horizontal_alignment = 1
+vertical_alignment = 1
+text_overrun_behavior = 1
+
+[node name="LoadingIndicator" type="Label" parent="CenterContainer/PanelContainer/MarginContainer/VBoxContainer" unique_id=821437132]
+layout_mode = 2

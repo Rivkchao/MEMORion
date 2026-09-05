@@ -96,7 +96,7 @@ func _on_register_success() -> void:
 	reg_feedback.modulate = Color.GREEN
 	# Langsung masuk game
 	await get_tree().create_timer(1.0).timeout
-	LoadingScreen.load_scene("res://scenes/main/Main.tscn")
+	LoadingScreen.load_scene("res://LEV1.tscn")
 
 func _on_register_failed(reason: String) -> void:
 	_set_loading(false)
