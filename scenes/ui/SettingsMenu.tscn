@@ -1,0 +1,399 @@
+[gd_scene format=3 uid="uid://bw72wx457hqq7"]
+
+[ext_resource type="Script" path="res://scenes/ui/settings_menu.gd" id="1_script"]
+[ext_resource type="FontFile" uid="uid://dyxn1yfr773n7" path="res://Fonts/Spaceship-Regular.0ca0d7b75eeb787f95484d.48c7b07b57e867b5081887e1b194309f.ttf" id="2_spaceship"]
+[ext_resource type="FontFile" uid="uid://bb80gooxacs7q" path="res://Fonts/Telegraf-Bold-fix15408087824949790956.30.2aa1f309-cb96-4ad6-a94f-e5147e9.ttf" id="3_telegraf_bold"]
+[ext_resource type="FontFile" uid="uid://ctnm2q1fg78u6" path="res://Fonts/telegraf_regular_fix7340951357143627189..44096e48-3548-42c1-bd8a-c4745e9.ttf" id="4_telegraf_reg"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
+content_margin_left = 28.0
+content_margin_top = 24.0
+content_margin_right = 28.0
+content_margin_bottom = 24.0
+bg_color = Color(0.09, 0.08, 0.15, 0.95)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.77, 0.26, 0.92, 0.85)
+corner_radius_top_left = 18
+corner_radius_top_right = 18
+corner_radius_bottom_right = 18
+corner_radius_bottom_left = 18
+shadow_color = Color(0.77, 0.26, 0.92, 0.25)
+shadow_size = 20
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_save"]
+content_margin_left = 20.0
+content_margin_top = 10.0
+content_margin_right = 20.0
+content_margin_bottom = 10.0
+bg_color = Color(0.77, 0.26, 0.92, 0.8)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.3, 0.8, 1.0, 0.9)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_normal"]
+content_margin_left = 16.0
+content_margin_top = 10.0
+content_margin_right = 16.0
+content_margin_bottom = 10.0
+bg_color = Color(0.16, 0.15, 0.25, 0.8)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.5, 0.5, 0.65, 0.6)
+corner_radius_top_left = 10
+corner_radius_top_right = 10
+corner_radius_bottom_right = 10
+corner_radius_bottom_left = 10
+
+[sub_resource type="StyleBoxLine" id="StyleBoxLine_separator"]
+color = Color(0.77, 0.26, 0.92, 0.4)
+thickness = 2
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_close_btn"]
+bg_color = Color(0.2, 0.15, 0.25, 0.6)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.8, 0.3, 0.3, 0.8)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+
+[node name="SettingsMenu" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+script = ExtResource("1_script")
+
+[node name="DimOverlay" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.04, 0.04, 0.08, 0.8)
+
+[node name="CenterContainer" type="CenterContainer" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+
+[node name="PanelContainer" type="PanelContainer" parent="CenterContainer"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(620, 540)
+layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
+
+[node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer/PanelContainer"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="Header" type="HBoxContainer" parent="CenterContainer/PanelContainer/VBoxContainer"]
+layout_mode = 2
+
+[node name="Titles" type="VBoxContainer" parent="CenterContainer/PanelContainer/VBoxContainer/Header"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 2
+
+[node name="TitleLabel" type="Label" parent="CenterContainer/PanelContainer/VBoxContainer/Header/Titles"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_colors/font_shadow_color = Color(0.77, 0.26, 0.92, 1)
+theme_override_constants/shadow_offset_x = 2
+theme_override_constants/shadow_offset_y = 2
+theme_override_fonts/font = ExtResource("2_spaceship")
+theme_override_font_sizes/font_size = 32
+text = "PENGATURAN"
+
+[node name="SubtitleLabel" type="Label" parent="CenterContainer/PanelContainer/VBoxContainer/Header/Titles"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.7, 0.75, 0.9, 1)
+theme_override_fonts/font = ExtResource("4_telegraf_reg")
+theme_override_font_sizes/font_size = 14
+text = "Sesuaikan tampilan layar, tata suara, dan kontrol"
+
+[node name="CloseBtn" type="Button" parent="CenterContainer/PanelContainer/VBoxContainer/Header"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(38, 38)
+layout_mode = 2
+size_flags_vertical = 0
+theme_override_fonts/font = ExtResource("3_telegraf_bold")
+theme_override_font_sizes/font_size = 16
+theme_override_styles/normal = SubResource("StyleBoxFlat_close_btn")
+text = "✕"
+
+[node name="HSeparator1" type="HSeparator" parent="CenterContainer/PanelContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_styles/separator = SubResource("StyleBoxLine_separator")
+
+[node name="ScrollContainer" type="ScrollContainer" parent="CenterContainer/PanelContainer/VBoxContainer"]
+layout_mode = 2
+size_flags_vertical = 3
+horizontal_scroll_mode = 0
+
+[node name="ContentVBox" type="VBoxContainer" parent="CenterContainer/PanelContainer/VBoxContainer/ScrollContainer"]
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_constants/separation = 16
+
+[node name="TampilanSection" type="VBoxContainer" parent="CenterContainer/PanelContainer/VBoxContainer/ScrollContainer/ContentVBox"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="SectionTitle" type="Label" parent="CenterContainer/PanelContainer/VBoxContainer/ScrollContainer/ContentVBox/TampilanSection"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.3, 0.8, 1, 1)
+theme_override_fonts/font = ExtResource("3_telegraf_bold")
+theme_override_font_sizes/font_size = 17
+text = "✦ TAMPILAN (DISPLAY)"
+
+[node name="BrightnessRow" type="HBoxContainer" parent="CenterContainer/PanelContainer/VBoxContainer/ScrollContainer/ContentVBox/TampilanSection"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="CenterContainer/PanelContainer/VBoxContainer/ScrollContainer/ContentVBox/TampilanSection/BrightnessRow"]
+custom_minimum_size = Vector2(180, 0)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("4_telegraf_reg")
+theme_override_font_sizes/font_size = 15
+text = "Kecerahan (Brightness):"
+
+[node name="BrightnessSlider" type="HSlider" parent="CenterContainer/PanelContainer/VBoxContainer/ScrollContainer/ContentVBox/TampilanSection/BrightnessRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+min_value = 0.5
+max_value = 1.5
+step = 0.05
+value = 1.0
+
+[node name="BrightnessValue" type="Label" parent="CenterContainer/PanelContainer/VBoxContainer/ScrollContainer/ContentVBox/TampilanSection/BrightnessRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(60, 0)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("3_telegraf_bold")
+theme_override_font_sizes/font_size = 15
+text = "100%"
+horizontal_alignment = 2
+
+[node name="WindowModeRow" type="HBoxContainer" parent="CenterContainer/PanelContainer/VBoxContainer/ScrollContainer/ContentVBox/TampilanSection"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="CenterContainer/PanelContainer/VBoxContainer/ScrollContainer/ContentVBox/TampilanSection/WindowModeRow"]
+custom_minimum_size = Vector2(180, 0)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("4_telegraf_reg")
+theme_override_font_sizes/font_size = 15
+text = "Mode Layar:"
+
+[node name="WindowModeOption" type="OptionButton" parent="CenterContainer/PanelContainer/VBoxContainer/ScrollContainer/ContentVBox/TampilanSection/WindowModeRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_fonts/font = ExtResource("4_telegraf_reg")
+theme_override_font_sizes/font_size = 14
+
+[node name="ResolutionRow" type="HBoxContainer" parent="CenterContainer/PanelContainer/VBoxContainer/ScrollContainer/ContentVBox/TampilanSection"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="CenterContainer/PanelContainer/VBoxContainer/ScrollContainer/ContentVBox/TampilanSection/ResolutionRow"]
+custom_minimum_size = Vector2(180, 0)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("4_telegraf_reg")
+theme_override_font_sizes/font_size = 15
+text = "Resolusi Layar:"
+
+[node name="ResolutionOption" type="OptionButton" parent="CenterContainer/PanelContainer/VBoxContainer/ScrollContainer/ContentVBox/TampilanSection/ResolutionRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_fonts/font = ExtResource("4_telegraf_reg")
+theme_override_font_sizes/font_size = 14
+
+[node name="HSeparator2" type="HSeparator" parent="CenterContainer/PanelContainer/VBoxContainer/ScrollContainer/ContentVBox"]
+layout_mode = 2
+theme_override_styles/separator = SubResource("StyleBoxLine_separator")
+
+[node name="AudioSection" type="VBoxContainer" parent="CenterContainer/PanelContainer/VBoxContainer/ScrollContainer/ContentVBox"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="SectionTitle" type="Label" parent="CenterContainer/PanelContainer/VBoxContainer/ScrollContainer/ContentVBox/AudioSection"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.85, 0.45, 1, 1)
+theme_override_fonts/font = ExtResource("3_telegraf_bold")
+theme_override_font_sizes/font_size = 17
+text = "✦ TATA SUARA (AUDIO)"
+
+[node name="VolGeneralRow" type="HBoxContainer" parent="CenterContainer/PanelContainer/VBoxContainer/ScrollContainer/ContentVBox/AudioSection"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="CenterContainer/PanelContainer/VBoxContainer/ScrollContainer/ContentVBox/AudioSection/VolGeneralRow"]
+custom_minimum_size = Vector2(180, 0)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("4_telegraf_reg")
+theme_override_font_sizes/font_size = 15
+text = "Volume Utama (General):"
+
+[node name="VolGeneralSlider" type="HSlider" parent="CenterContainer/PanelContainer/VBoxContainer/ScrollContainer/ContentVBox/AudioSection/VolGeneralRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+max_value = 1.0
+step = 0.01
+value = 0.8
+
+[node name="VolGeneralValue" type="Label" parent="CenterContainer/PanelContainer/VBoxContainer/ScrollContainer/ContentVBox/AudioSection/VolGeneralRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(60, 0)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("3_telegraf_bold")
+theme_override_font_sizes/font_size = 15
+text = "80%"
+horizontal_alignment = 2
+
+[node name="VolBgmRow" type="HBoxContainer" parent="CenterContainer/PanelContainer/VBoxContainer/ScrollContainer/ContentVBox/AudioSection"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="CenterContainer/PanelContainer/VBoxContainer/ScrollContainer/ContentVBox/AudioSection/VolBgmRow"]
+custom_minimum_size = Vector2(180, 0)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("4_telegraf_reg")
+theme_override_font_sizes/font_size = 15
+text = "Musik Latar (BGM):"
+
+[node name="VolBgmSlider" type="HSlider" parent="CenterContainer/PanelContainer/VBoxContainer/ScrollContainer/ContentVBox/AudioSection/VolBgmRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+max_value = 1.0
+step = 0.01
+value = 0.8
+
+[node name="VolBgmValue" type="Label" parent="CenterContainer/PanelContainer/VBoxContainer/ScrollContainer/ContentVBox/AudioSection/VolBgmRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(60, 0)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("3_telegraf_bold")
+theme_override_font_sizes/font_size = 15
+text = "80%"
+horizontal_alignment = 2
+
+[node name="VolSfxRow" type="HBoxContainer" parent="CenterContainer/PanelContainer/VBoxContainer/ScrollContainer/ContentVBox/AudioSection"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="CenterContainer/PanelContainer/VBoxContainer/ScrollContainer/ContentVBox/AudioSection/VolSfxRow"]
+custom_minimum_size = Vector2(180, 0)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("4_telegraf_reg")
+theme_override_font_sizes/font_size = 15
+text = "Efek Suara (SFX):"
+
+[node name="VolSfxSlider" type="HSlider" parent="CenterContainer/PanelContainer/VBoxContainer/ScrollContainer/ContentVBox/AudioSection/VolSfxRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 4
+max_value = 1.0
+step = 0.01
+value = 0.8
+
+[node name="VolSfxValue" type="Label" parent="CenterContainer/PanelContainer/VBoxContainer/ScrollContainer/ContentVBox/AudioSection/VolSfxRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(60, 0)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("3_telegraf_bold")
+theme_override_font_sizes/font_size = 15
+text = "80%"
+horizontal_alignment = 2
+
+[node name="HSeparator3" type="HSeparator" parent="CenterContainer/PanelContainer/VBoxContainer/ScrollContainer/ContentVBox"]
+layout_mode = 2
+theme_override_styles/separator = SubResource("StyleBoxLine_separator")
+
+[node name="ControlsSection" type="VBoxContainer" parent="CenterContainer/PanelContainer/VBoxContainer/ScrollContainer/ContentVBox"]
+layout_mode = 2
+theme_override_constants/separation = 10
+
+[node name="SectionTitle" type="Label" parent="CenterContainer/PanelContainer/VBoxContainer/ScrollContainer/ContentVBox/ControlsSection"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.85, 0.3, 1)
+theme_override_fonts/font = ExtResource("3_telegraf_bold")
+theme_override_font_sizes/font_size = 17
+text = "✦ KONTROL (CONTROLS)"
+
+[node name="MobileModeRow" type="HBoxContainer" parent="CenterContainer/PanelContainer/VBoxContainer/ScrollContainer/ContentVBox/ControlsSection"]
+layout_mode = 2
+
+[node name="Label" type="Label" parent="CenterContainer/PanelContainer/VBoxContainer/ScrollContainer/ContentVBox/ControlsSection/MobileModeRow"]
+custom_minimum_size = Vector2(180, 0)
+layout_mode = 2
+theme_override_fonts/font = ExtResource("4_telegraf_reg")
+theme_override_font_sizes/font_size = 15
+text = "Kontrol Layar Sentuh:"
+
+[node name="MobileModeOption" type="OptionButton" parent="CenterContainer/PanelContainer/VBoxContainer/ScrollContainer/ContentVBox/ControlsSection/MobileModeRow"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+theme_override_fonts/font = ExtResource("4_telegraf_reg")
+theme_override_font_sizes/font_size = 14
+
+[node name="HSeparatorFooter" type="HSeparator" parent="CenterContainer/PanelContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_styles/separator = SubResource("StyleBoxLine_separator")
+
+[node name="FooterButtons" type="HBoxContainer" parent="CenterContainer/PanelContainer/VBoxContainer"]
+layout_mode = 2
+theme_override_constants/separation = 14
+
+[node name="ResetBtn" type="Button" parent="CenterContainer/PanelContainer/VBoxContainer/FooterButtons"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_fonts/font = ExtResource("4_telegraf_reg")
+theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn_normal")
+text = "Reset Bawaan"
+
+[node name="Spacer" type="Control" parent="CenterContainer/PanelContainer/VBoxContainer/FooterButtons"]
+layout_mode = 2
+size_flags_horizontal = 3
+
+[node name="CancelBtn" type="Button" parent="CenterContainer/PanelContainer/VBoxContainer/FooterButtons"]
+layout_mode = 2
+theme_override_fonts/font = ExtResource("4_telegraf_reg")
+theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn_normal")
+text = "Batal"
+
+[node name="SaveBtn" type="Button" parent="CenterContainer/PanelContainer/VBoxContainer/FooterButtons"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_fonts/font = ExtResource("3_telegraf_bold")
+theme_override_font_sizes/font_size = 15
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn_save")
+text = "Simpan & Tutup"
+
+[connection signal="pressed" from="CenterContainer/PanelContainer/VBoxContainer/FooterButtons/CancelBtn" to="." method="_on_close_pressed"]

@@ -76,10 +76,18 @@ autowrap_mode = 2
 
 [node name="ContinueLabel" type="Label" parent="." unique_id=1803768271]
 z_index = 2
-offset_left = 1822.0
-offset_top = 1036.0
-offset_right = 1905.0
-offset_bottom = 1064.0
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -120.0
+offset_top = -48.0
+offset_right = -25.0
+offset_bottom = -16.0
+grow_horizontal = 0
+grow_vertical = 0
 size_flags_horizontal = 8
 size_flags_vertical = 8
 theme_override_colors/font_color = Color(0.7, 0.7, 0.7, 1)
@@ -91,10 +99,15 @@ vertical_alignment = 1
 
 [node name="TextureRect" type="TextureRect" parent="." unique_id=1853842550]
 material = SubResource("ShaderMaterial_bjuha")
-offset_left = 1.0
-offset_top = 866.0
-offset_right = 193.0
-offset_bottom = 1079.0
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
+offset_left = 12.0
+offset_top = -215.0
+offset_right = 204.0
+offset_bottom = -2.0
+grow_vertical = 0
 texture = SubResource("AtlasTexture_c6lqs")
 expand_mode = 1
 stretch_mode = 3

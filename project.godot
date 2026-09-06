@@ -35,12 +35,16 @@ LoadingScreen="*uid://rncmc7smqy2"
 RockDistractionOverlay="*uid://danyj7nt81p62"
 FragmentBox="*res://scenes/ui/FragmentBox.tscn"
 SaveManager="*uid://b2kcq24apw81h"
+_mcp_game_helper="*res://addons/godot_ai/runtime/game_helper.gd"
+SettingsManager="*res://autoload/SettingsManager.gd"
 
 [display]
 
 window/size/viewport_width=1920
 window/size/viewport_height=1080
+window/size/mode=3
 window/stretch/mode="canvas_items"
+window/stretch/aspect="expand"
 
 [editor]
 
@@ -93,6 +97,10 @@ sprint={
 "events": [Object(InputEventKey,"resource_local_to_scene":false,"resource_name":"","device":-1,"window_id":0,"alt_pressed":false,"shift_pressed":false,"ctrl_pressed":false,"meta_pressed":false,"pressed":false,"keycode":0,"physical_keycode":4194325,"key_label":0,"unicode":0,"location":0,"echo":false,"script":null)
 ]
 }
+
+[input_devices]
+
+pointing/emulate_touch_from_mouse=true
 
 [layer_names]
 

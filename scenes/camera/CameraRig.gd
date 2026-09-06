@@ -151,3 +151,14 @@ func _physics_process(delta: float) -> void:
 	
 	if global_position.distance_squared_to(focus_point) > 0.01:
 		look_at(focus_point, Vector3.UP)
+
+## Helper untuk kontrol kamera dari layar sentuh / mobile
+func rotate_camera(relative_delta: Vector2) -> void:
+	yaw -= deg_to_rad(relative_delta.x * orbit_sensitivity)
+	pitch -= relative_delta.y * orbit_sensitivity
+	pitch = clamp(pitch, min_pitch, max_pitch)
+	orbit_cooldown = 1.0
+
+func zoom_camera(delta_zoom: float) -> void:
+	zoom_distance = clamp(zoom_distance + delta_zoom, min_zoom, max_zoom)
+

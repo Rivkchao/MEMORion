@@ -80,7 +80,7 @@ func _on_lanjut_game() -> void:
 	LoadingScreen.load_scene(game_scene)
 
 func _on_pengaturan() -> void:
-	pass
+	SettingsManager.open_settings_dialog(self)
 
 func _on_keluar() -> void:
 	get_tree().quit()

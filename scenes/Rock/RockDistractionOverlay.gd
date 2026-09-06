@@ -25,6 +25,8 @@ func _ready() -> void:
 
 func show_distraction() -> void:
 	visible = true
+	var vp_size = get_viewport().get_visible_rect().size
+	panel.position = Vector2((vp_size.x - panel.size.x) * 0.5, 60)
 	# Generate soal angka cepat acak
 	var a = randi_range(3, 15)
 	var b = randi_range(2, 9)

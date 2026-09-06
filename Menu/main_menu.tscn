@@ -71,11 +71,15 @@ offset_bottom = 227.0
 texture = ExtResource("5_0k4wn")
 
 [node name="Logo2" type="TextureRect" parent="." unique_id=1363361362]
-layout_mode = 0
-offset_left = 1005.0
+layout_mode = 1
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -915.0
 offset_top = 83.0
-offset_right = 1805.0
+offset_right = -115.0
 offset_bottom = 227.0
+grow_horizontal = 0
 texture = ExtResource("6_ywk15")
 expand_mode = 1
 stretch_mode = 4
@@ -172,11 +176,18 @@ text = "Keluar"
 flat = true
 
 [node name="InstagramBtn" type="Button" parent="." unique_id=1059048534]
-layout_mode = 0
-offset_left = 1446.0
-offset_top = 1000.0
-offset_right = 1742.0
-offset_bottom = 1029.0002
+layout_mode = 1
+anchors_preset = 3
+anchor_left = 1.0
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -474.0
+offset_top = -80.0
+offset_right = -178.0
+offset_bottom = -51.0
+grow_horizontal = 0
+grow_vertical = 0
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_colors/font_outline_color = Color(0.8509804, 0.27450982, 0.9372549, 1)
 theme_override_fonts/font = ExtResource("10_ywk15")
@@ -185,11 +196,15 @@ theme_override_styles/normal = SubResource("StyleBoxEmpty_glbon")
 flat = true
 
 [node name="Label" type="Label" parent="." unique_id=1320352348]
-layout_mode = 0
+layout_mode = 1
+anchors_preset = 2
+anchor_top = 1.0
+anchor_bottom = 1.0
 offset_left = 127.0
-offset_top = 991.0
-offset_right = 297.0
-offset_bottom = 1015.0
+offset_top = -89.0
+offset_right = 360.0
+offset_bottom = -65.0
+grow_vertical = 0
 theme_override_colors/font_color = Color(0.99, 0.99, 0.99, 1)
 theme_override_colors/font_shadow_color = Color(0.75686276, 0.38431373, 0.9882353, 1)
 theme_override_fonts/font = ExtResource("10_ywk15")
