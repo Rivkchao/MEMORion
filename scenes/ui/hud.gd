@@ -9,6 +9,15 @@ func _ready() -> void:
 	GameManager.init(self)
 	
 	if settings_btn:
+		settings_btn.pivot_offset = settings_btn.size / 2.0
+		settings_btn.button_down.connect(func():
+			var tween = create_tween()
+			tween.tween_property(settings_btn, "scale", Vector2(0.9, 0.9), 0.08).set_ease(Tween.EASE_OUT)
+		)
+		settings_btn.button_up.connect(func():
+			var tween = create_tween()
+			tween.tween_property(settings_btn, "scale", Vector2.ONE, 0.12).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+		)
 		settings_btn.pressed.connect(_on_settings_pressed)
 
 func set_objective(text: String) -> void:

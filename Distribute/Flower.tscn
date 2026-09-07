@@ -1,8 +1,8 @@
 [gd_scene format=4 uid="uid://c30bqjelcliiw"]
 
-[ext_resource type="PackedScene" uid="uid://d2p3txuevpkqs" path="res://assets/World/Stylized Nature MegaKit[Standard](1)/glTF/Flower_3_Group.gltf" id="1_7ehbv"]
-[ext_resource type="Texture2D" uid="uid://bv551fedvx1o5" path="res://assets/World/Stylized Nature MegaKit[Standard](1)/glTF/Leaves.png" id="2_voejs"]
-[ext_resource type="Texture2D" uid="uid://dldenupr7iuto" path="res://assets/World/Stylized Nature MegaKit[Standard](1)/glTF/Flowers.png" id="3_c7iq2"]
+[ext_resource type="PackedScene" uid="uid://d2p3txuevpkqs" path="res://assets/World/Stylized Nature MegaKit/glTF/Flower_3_Group.gltf" id="1_7ehbv"]
+[ext_resource type="Texture2D" uid="uid://bv551fedvx1o5" path="res://assets/World/Stylized Nature MegaKit/glTF/Leaves.png" id="2_voejs"]
+[ext_resource type="Texture2D" uid="uid://dldenupr7iuto" path="res://assets/World/Stylized Nature MegaKit/glTF/Flowers.png" id="3_c7iq2"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_ok1r1"]
 resource_name = "Leaves"

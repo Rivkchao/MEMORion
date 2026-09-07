@@ -28,6 +28,13 @@ signal closed
 @onready var panel_container: PanelContainer = %PanelContainer
 
 var _was_paused_before_open: bool = false
+var _initial_brightness: float = 1.0
+var _initial_volume_general: float = 0.8
+var _initial_volume_bgm: float = 0.8
+var _initial_volume_sfx: float = 0.8
+var _initial_window_mode: int = 0
+var _initial_resolution: int = 0
+var _initial_mobile_mode: int = 0
 
 func _ready() -> void:
 	process_mode = Node.PROCESS_MODE_ALWAYS
@@ -160,7 +167,27 @@ func _on_reset_pressed() -> void:
 	_sync_from_manager()
 
 func _on_close_pressed() -> void:
-	SettingsManager.load_settings()
+	if SettingsManager:
+		# Kembalikan pengaturan ke snapshot awal sebelum modal dibuka
+		var display_changed: bool = (SettingsManager.window_mode_index != _initial_window_mode) or (SettingsManager.resolution_index != _initial_resolution)
+		
+		SettingsManager.brightness = _initial_brightness
+		SettingsManager.volume_general = _initial_volume_general
+		SettingsManager.volume_bgm = _initial_volume_bgm
+		SettingsManager.volume_sfx = _initial_volume_sfx
+		SettingsManager.window_mode_index = _initial_window_mode
+		SettingsManager.resolution_index = _initial_resolution
+		SettingsManager.mobile_controls_mode = _initial_mobile_mode
+		
+		SettingsManager._apply_brightness()
+		SettingsManager._apply_bus_volume(SettingsManager._bus_master, _initial_volume_general)
+		SettingsManager._apply_bus_volume(SettingsManager._bus_bgm, _initial_volume_bgm)
+		SettingsManager._apply_bus_volume(SettingsManager._bus_sfx, _initial_volume_sfx)
+		SettingsManager.mobile_controls_toggled.emit(SettingsManager.is_mobile_controls_active())
+		
+		# Hanya terapkan ulang display jika user sempat mengubahnya saat di menu
+		if display_changed:
+			SettingsManager._apply_window_mode()
 	close()
 
 # ----------------------------------------------------
@@ -168,6 +195,15 @@ func _on_close_pressed() -> void:
 # ----------------------------------------------------
 func open() -> void:
 	_was_paused_before_open = get_tree().paused
+	
+	if SettingsManager:
+		_initial_brightness = SettingsManager.brightness
+		_initial_volume_general = SettingsManager.volume_general
+		_initial_volume_bgm = SettingsManager.volume_bgm
+		_initial_volume_sfx = SettingsManager.volume_sfx
+		_initial_window_mode = SettingsManager.window_mode_index
+		_initial_resolution = SettingsManager.resolution_index
+		_initial_mobile_mode = SettingsManager.mobile_controls_mode
 	
 	var current_scene = get_tree().current_scene
 	if current_scene != null and current_scene.name != "MainMenu":

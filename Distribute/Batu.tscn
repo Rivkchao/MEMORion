@@ -1,6 +1,6 @@
 [gd_scene format=4 uid="uid://cnmosh7k4tsqa"]
 
-[ext_resource type="Texture2D" uid="uid://csnu2rx1th2lq" path="res://assets/World/Stylized Nature MegaKit[Standard](1)/glTF/Rocks_Diffuse.png" id="2_k16mp"]
+[ext_resource type="Texture2D" uid="uid://csnu2rx1th2lq" path="res://assets/World/Stylized Nature MegaKit/glTF/Rocks_Diffuse.png" id="2_k16mp"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_lgbpg"]
 resource_name = "Rocks"

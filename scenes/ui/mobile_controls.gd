@@ -2,8 +2,8 @@
 extends CanvasLayer
 class_name MobileControls
 
-@export var max_joystick_radius: float = 75.0
-@export var deadzone: float = 0.15
+@export var max_joystick_radius: float = 80.0
+@export var deadzone: float = 0.12
 
 # Node References
 @onready var joystick_area: Control = $JoystickZone
@@ -16,23 +16,24 @@ class_name MobileControls
 @onready var btn_interact: Button = $ActionButtons/InteractBtn
 @onready var btn_drop: Button = $ActionButtons/DropBtn
 
-@onready var btn_pause: Button = $TopBar/PauseBtn
 @onready var touch_camera_area: Control = $TouchCameraArea
 
 # State Joystick
 var _joystick_touch_id: int = -1
 var _joystick_center: Vector2 = Vector2.ZERO
 var _joystick_input: Vector2 = Vector2.ZERO
-var _base_default_pos: Vector2 = Vector2(160, 880)
+var _base_default_pos: Vector2 = Vector2.ZERO
+var _is_mouse_joystick: bool = false
 
 # State Kamera
 var _camera_touches: Dictionary = {} # touch_id -> Vector2 pos
 var _prev_pinch_dist: float = 0.0
 
-# State Tombol
+# State Tombol & Player
 var is_sprint_toggled: bool = false
 var _player: Node3D = null
 var _camera_rig: Node3D = null
+var _pulse_time: float = 0.0
 
 func _ready() -> void:
 	layer = 20 # Di bawah dialog box dan popup settings
@@ -58,13 +59,28 @@ func _ready() -> void:
 	btn_drop.pressed.connect(_on_drop_pressed)
 	btn_drop.visible = false
 	
-	btn_pause.pressed.connect(_on_pause_pressed)
-	
-	# Style tombol agar berpenampilan modern
-	_style_buttons()
+	# Setup press animation feedback untuk setiap tombol
+	_setup_button_feedback(btn_jump)
+	_setup_button_feedback(btn_sprint)
+	_setup_button_feedback(btn_interact)
+	_setup_button_feedback(btn_drop)
 	
 	get_viewport().size_changed.connect(_apply_responsive_layout)
 	_apply_responsive_layout()
+
+func _setup_button_feedback(btn: Button) -> void:
+	if btn == null:
+		return
+	btn.pivot_offset = btn.size / 2.0
+	btn.mouse_filter = Control.MOUSE_FILTER_PASS
+	btn.button_down.connect(func():
+		var tween = create_tween()
+		tween.tween_property(btn, "scale", Vector2(0.9, 0.9), 0.08).set_ease(Tween.EASE_OUT)
+	)
+	btn.button_up.connect(func():
+		var tween = create_tween()
+		tween.tween_property(btn, "scale", Vector2.ONE, 0.12).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+	)
 
 func _apply_responsive_layout() -> void:
 	if not is_inside_tree():
@@ -76,19 +92,19 @@ func _apply_responsive_layout() -> void:
 		var left_margin = max(0.0, float(safe_area.position.x))
 		var right_margin = max(0.0, float(screen_size.x - safe_area.end.x))
 		if left_margin > 10.0 and joystick_area:
-			joystick_area.offset_left = 50.0 + left_margin
+			joystick_area.offset_left = 40.0 + left_margin
 		if right_margin > 10.0 and action_buttons_container:
 			action_buttons_container.offset_right = -right_margin
 
 func _on_mobile_controls_toggled(active: bool) -> void:
 	visible = active
 
-func _process(_delta: float) -> void:
+func _process(delta: float) -> void:
 	if not visible:
 		return
 	
 	_find_player_and_camera()
-	_update_ui_state()
+	_update_ui_state(delta)
 	
 	# Terapkan input sprint terus-menerus jika sedang aktif
 	if is_sprint_toggled:
@@ -105,31 +121,39 @@ func _find_player_and_camera() -> void:
 		if _camera_rig == null:
 			_camera_rig = get_tree().root.find_child("CameraRig", true, false)
 
-func _update_ui_state() -> void:
-	# Cek apakah UI lain (dialog, puzzle) sedang aktif
+func _update_ui_state(delta: float) -> void:
 	var ui_blocking = _is_ui_blocking()
-	var target_alpha: float = 0.3 if ui_blocking else 1.0
+	var target_alpha: float = 0.25 if ui_blocking else 1.0
 	if joystick_area:
-		joystick_area.modulate.a = target_alpha
+		joystick_area.modulate.a = lerpf(joystick_area.modulate.a, target_alpha, 10.0 * delta)
 	if action_buttons_container:
-		action_buttons_container.modulate.a = target_alpha
+		action_buttons_container.modulate.a = lerpf(action_buttons_container.modulate.a, target_alpha, 10.0 * delta)
 	
 	if _player != null:
 		# Update tombol lepas benda
 		if "held_item" in _player and _player.held_item != null:
-			btn_drop.visible = true
+			if not btn_drop.visible:
+				btn_drop.visible = true
+				btn_drop.scale = Vector2(0.5, 0.5)
+				var tween = create_tween()
+				tween.tween_property(btn_drop, "scale", Vector2.ONE, 0.15).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 		else:
 			btn_drop.visible = false
 		
 		# Efek visual tombol interaksi jika ada objek interaktif di dekatnya
 		if "current_interactable" in _player and _player.current_interactable != null:
-			btn_interact.modulate = Color(0.3, 1.0, 0.6, 1.0) # Hijau neon menyala
+			_pulse_time += delta * 4.0
+			var pulse_scale = 1.0 + sin(_pulse_time) * 0.05
+			btn_interact.scale = Vector2(pulse_scale, pulse_scale)
+			btn_interact.modulate = Color(0.4, 1.0, 0.7, 1.0)
+			
 			if _player.current_interactable.has_method("get_label"):
-				var lbl = _player.current_interactable.get_label()
-				btn_interact.text = "[E]\n" + (lbl if lbl.length() < 10 else "AKSI")
+				var lbl: String = _player.current_interactable.get_label()
+				btn_interact.text = "✦\n" + (lbl if lbl.length() <= 8 else "AKSI")
 		else:
-			btn_interact.modulate = Color(1.0, 1.0, 1.0, 0.9)
-			btn_interact.text = "[E]\nINTERAKSI"
+			btn_interact.scale = Vector2.ONE
+			btn_interact.modulate = Color(1.0, 1.0, 1.0, 0.92)
+			btn_interact.text = "✦\nAKSI"
 
 func _is_ui_blocking() -> bool:
 	if StoryManager != null:
@@ -142,24 +166,24 @@ func _is_ui_blocking() -> bool:
 	return false
 
 # ----------------------------------------------------
-# Multi-touch Input Handler
+# Multi-touch & Mouse Input Handler
 # ----------------------------------------------------
 func _input(event: InputEvent) -> void:
 	if not visible:
 		return
 	
 	var viewport_rect = get_viewport().get_visible_rect()
-	var half_width = viewport_rect.size.x * 0.45
+	var half_width = viewport_rect.size.x * 0.48
 	
-	# Handle Screen Touch
+	# 1. SCREEN TOUCH
 	if event is InputEventScreenTouch:
 		if event.pressed:
-			# Touch di area joystick (kiri bawah)
-			if event.position.x < half_width and event.position.y > viewport_rect.size.y * 0.25:
+			# Touch di area kiri layar (Floating Joystick)
+			if event.position.x < half_width and event.position.y > viewport_rect.size.y * 0.2:
 				if _joystick_touch_id == -1:
 					_start_joystick(event.index, event.position)
 			else:
-				# Touch di area kanan (kamera swipe / pinch)
+				# Touch di area kanan (Kamera Swipe / Pinch)
 				if not _is_touching_action_buttons(event.position):
 					_camera_touches[event.index] = event.position
 					if _camera_touches.size() == 2:
@@ -173,42 +197,61 @@ func _input(event: InputEvent) -> void:
 				_camera_touches.erase(event.index)
 				_prev_pinch_dist = 0.0
 	
-	# Handle Screen Drag
+	# 2. SCREEN DRAG
 	elif event is InputEventScreenDrag:
 		if event.index == _joystick_touch_id:
 			_update_joystick(event.position)
 		elif _camera_touches.has(event.index):
 			_camera_touches[event.index] = event.position
 			
-			# Jika 1 jari di area kamera: Orbit / Rotate Kamera
 			if _camera_touches.size() == 1:
 				if _camera_rig and _camera_rig.has_method("rotate_camera"):
 					_camera_rig.rotate_camera(event.relative)
-			# Jika 2 jari di area kamera: Pinch to Zoom
 			elif _camera_touches.size() == 2:
 				var keys = _camera_touches.keys()
 				var new_dist = _camera_touches[keys[0]].distance_to(_camera_touches[keys[1]])
 				if _prev_pinch_dist > 0.0:
-					var delta = (_prev_pinch_dist - new_dist) * 0.02
+					var pinch_delta = (_prev_pinch_dist - new_dist) * 0.025
 					if _camera_rig and _camera_rig.has_method("zoom_camera"):
-						_camera_rig.zoom_camera(delta)
+						_camera_rig.zoom_camera(pinch_delta)
 				_prev_pinch_dist = new_dist
+	
+	# 3. MOUSE SUPPORT (Untuk kenyamanan testing di PC)
+	elif event is InputEventMouseButton:
+		if event.button_index == MOUSE_BUTTON_LEFT:
+			if event.pressed:
+				if event.position.x < half_width and event.position.y > viewport_rect.size.y * 0.2:
+					_is_mouse_joystick = true
+					_start_joystick(999, event.position)
+			else:
+				if _is_mouse_joystick:
+					_is_mouse_joystick = false
+					_release_joystick()
+	elif event is InputEventMouseMotion:
+		if _is_mouse_joystick:
+			_update_joystick(event.position)
 
 func _is_touching_action_buttons(touch_pos: Vector2) -> bool:
-	var buttons = [btn_jump, btn_sprint, btn_interact, btn_drop, btn_pause]
+	var buttons = [btn_jump, btn_sprint, btn_interact, btn_drop]
 	for btn in buttons:
 		if btn and btn.is_visible_in_tree() and btn.get_global_rect().has_point(touch_pos):
 			return true
 	return false
 
 # ----------------------------------------------------
-# Logika Virtual Joystick
+# Logika Virtual Joystick Dinamis
 # ----------------------------------------------------
 func _start_joystick(touch_id: int, touch_pos: Vector2) -> void:
 	_joystick_touch_id = touch_id
-	# Tempatkan joystick base tepat di bawah jempol pemain
-	var clamped_pos = touch_pos - (_joystick_center)
-	joystick_base.position = clamped_pos
+	
+	# Pindahkan joystick base tepat ke bawah jari jempol
+	var local_pos = (touch_pos - joystick_area.global_position) - _joystick_center
+	
+	# Batasi agar base tidak keluar dari batas area joystick zone
+	local_pos.x = clampf(local_pos.x, 0.0, maxf(0.0, joystick_area.size.x - joystick_base.size.x))
+	local_pos.y = clampf(local_pos.y, 0.0, maxf(0.0, joystick_area.size.y - joystick_base.size.y))
+	
+	joystick_base.position = local_pos
 	_update_joystick(touch_pos)
 
 func _update_joystick(touch_pos: Vector2) -> void:
@@ -219,7 +262,7 @@ func _update_joystick(touch_pos: Vector2) -> void:
 	if dist > max_joystick_radius:
 		offset = offset.normalized() * max_joystick_radius
 	
-	# Pindahkan knob
+	# Geser knob secara presisi
 	joystick_knob.position = (_joystick_center + offset) - (joystick_knob.size / 2.0)
 	
 	# Normalisasi vektor input (-1.0 s/d 1.0)
@@ -236,12 +279,12 @@ func _release_joystick() -> void:
 	_joystick_input = Vector2.ZERO
 	_feed_input_to_player(Vector2.ZERO)
 	
-	# Animasi halus kembalikan base dan knob ke posisi semula
+	# Animasi halus kembalikan base dan knob ke posisi asal
 	var tween = create_tween().set_parallel(true)
-	tween.tween_property(joystick_base, "position", _base_default_pos, 0.2)\
+	tween.tween_property(joystick_base, "position", _base_default_pos, 0.25)\
 		.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
-	tween.tween_property(joystick_knob, "position", _joystick_center - (joystick_knob.size / 2.0), 0.15)\
-		.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+	tween.tween_property(joystick_knob, "position", _joystick_center - (joystick_knob.size / 2.0), 0.18)\
+		.set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 
 func _feed_input_to_player(vec: Vector2) -> void:
 	if _player and "joystick_input" in _player:
@@ -280,10 +323,12 @@ func _on_jump_up() -> void:
 func _on_sprint_pressed() -> void:
 	is_sprint_toggled = not is_sprint_toggled
 	if is_sprint_toggled:
-		btn_sprint.modulate = Color(1.0, 0.85, 0.2, 1.0) # Kuning menyala
+		btn_sprint.text = "⚡\nLARI ON"
+		btn_sprint.modulate = Color(1.0, 0.9, 0.3, 1.0)
 		Input.action_press("sprint")
 	else:
-		btn_sprint.modulate = Color(1.0, 1.0, 1.0, 0.85)
+		btn_sprint.text = "⚡\nLARI"
+		btn_sprint.modulate = Color(1.0, 1.0, 1.0, 0.9)
 		Input.action_release("sprint")
 
 func _on_interact_down() -> void:
@@ -298,15 +343,3 @@ func _on_drop_pressed() -> void:
 	else:
 		Input.action_press("ui_cancel")
 		Input.action_release("ui_cancel")
-
-func _on_pause_pressed() -> void:
-	SettingsManager.open_settings_dialog(self)
-
-# ----------------------------------------------------
-# Styling Tombol Mobile
-# ----------------------------------------------------
-func _style_buttons() -> void:
-	var buttons = [btn_jump, btn_sprint, btn_interact, btn_drop, btn_pause]
-	for btn in buttons:
-		if btn:
-			btn.mouse_filter = Control.MOUSE_FILTER_PASS

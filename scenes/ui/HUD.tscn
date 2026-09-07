@@ -6,16 +6,32 @@
 [ext_resource type="PackedScene" path="res://scenes/ui/MobileControls.tscn" id="3_mobile"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hud_settings"]
-bg_color = Color(0.1, 0.08, 0.18, 0.7)
+bg_color = Color(0.12, 0.08, 0.24, 0.75)
 border_width_left = 2
 border_width_top = 2
 border_width_right = 2
 border_width_bottom = 2
-border_color = Color(0.77, 0.26, 0.92, 0.8)
-corner_radius_top_left = 25
-corner_radius_top_right = 25
-corner_radius_bottom_right = 25
-corner_radius_bottom_left = 25
+border_color = Color(0.75, 0.4, 0.95, 0.85)
+corner_radius_top_left = 999
+corner_radius_top_right = 999
+corner_radius_bottom_right = 999
+corner_radius_bottom_left = 999
+shadow_color = Color(0.7, 0.35, 0.95, 0.35)
+shadow_size = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_hud_settings_pressed"]
+bg_color = Color(0.75, 0.4, 0.95, 0.85)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 999
+corner_radius_top_right = 999
+corner_radius_bottom_right = 999
+corner_radius_bottom_left = 999
+shadow_color = Color(0.7, 0.35, 0.95, 0.6)
+shadow_size = 16
 
 [node name="HUD" type="CanvasLayer" unique_id=818947581]
 script = ExtResource("1_atyv1")
@@ -54,16 +70,20 @@ layout_mode = 2
 [node name="WirePuzzle" parent="." unique_id=746694349 instance=ExtResource("2_ig75s")]
 
 [node name="SettingsBtn" type="Button" parent="."]
-custom_minimum_size = Vector2(50, 50)
+custom_minimum_size = Vector2(54, 54)
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -75.0
-offset_top = 25.0
-offset_right = -25.0
-offset_bottom = 75.0
+offset_left = -78.0
+offset_top = 24.0
+offset_right = -24.0
+offset_bottom = 78.0
 grow_horizontal = 0
+pivot_offset = Vector2(27, 27)
+mouse_default_cursor_shape = 2
 theme_override_font_sizes/font_size = 22
+theme_override_styles/hover = SubResource("StyleBoxFlat_hud_settings")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_hud_settings_pressed")
 theme_override_styles/normal = SubResource("StyleBoxFlat_hud_settings")
 text = "⚙"
 

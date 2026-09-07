@@ -159,13 +159,15 @@ func _apply_resolution() -> void:
 	if not OS.has_feature("mobile") and not OS.has_feature("web"):
 		var win = get_tree().root
 		if win:
-			if win.mode != Window.MODE_WINDOWED:
-				win.mode = Window.MODE_WINDOWED
-			
-			win.size = target_size
-			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
-			DisplayServer.window_set_size(target_size)
-			_center_window(win, target_size)
+			var current_mode = DisplayServer.window_get_mode()
+			var current_size = DisplayServer.window_get_size()
+			if current_mode != DisplayServer.WINDOW_MODE_WINDOWED or current_size != target_size:
+				if win.mode != Window.MODE_WINDOWED:
+					win.mode = Window.MODE_WINDOWED
+				DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
+				win.size = target_size
+				DisplayServer.window_set_size(target_size)
+				_center_window(win, target_size)
 
 func _apply_window_mode() -> void:
 	if OS.has_feature("mobile") or OS.has_feature("web"):
@@ -175,21 +177,27 @@ func _apply_window_mode() -> void:
 	if win == null:
 		return
 	
+	var current_mode = DisplayServer.window_get_mode()
+	var res = RESOLUTIONS[resolution_index]
+	var target_size = Vector2i(res["width"], res["height"])
+	var current_size = DisplayServer.window_get_size()
+	
 	match window_mode_index:
 		0: # Windowed
-			win.mode = Window.MODE_WINDOWED
-			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
-			var res = RESOLUTIONS[resolution_index]
-			var target_size = Vector2i(res["width"], res["height"])
-			win.size = target_size
-			DisplayServer.window_set_size(target_size)
-			_center_window(win, target_size)
+			if current_mode != DisplayServer.WINDOW_MODE_WINDOWED or current_size != target_size:
+				win.mode = Window.MODE_WINDOWED
+				DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_WINDOWED)
+				win.size = target_size
+				DisplayServer.window_set_size(target_size)
+				_center_window(win, target_size)
 		1: # Fullscreen
-			win.mode = Window.MODE_FULLSCREEN
-			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
+			if current_mode != DisplayServer.WINDOW_MODE_FULLSCREEN:
+				win.mode = Window.MODE_FULLSCREEN
+				DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_FULLSCREEN)
 		2: # Maximized
-			win.mode = Window.MODE_MAXIMIZED
-			DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_MAXIMIZED)
+			if current_mode != DisplayServer.WINDOW_MODE_MAXIMIZED:
+				win.mode = Window.MODE_MAXIMIZED
+				DisplayServer.window_set_mode(DisplayServer.WINDOW_MODE_MAXIMIZED)
 
 func _center_window(win: Window, target_size: Vector2i) -> void:
 	var screen_id = win.current_screen
@@ -237,7 +245,7 @@ func save_settings() -> void:
 	else:
 		push_warning("[SettingsManager] Gagal menyimpan pengaturan: %d" % err)
 
-func load_settings() -> void:
+func load_settings(apply_display: bool = true) -> void:
 	var config = ConfigFile.new()
 	var err = config.load(CONFIG_PATH)
 	
@@ -262,7 +270,8 @@ func load_settings() -> void:
 	_apply_bus_volume(_bus_master, volume_general)
 	_apply_bus_volume(_bus_bgm, volume_bgm)
 	_apply_bus_volume(_bus_sfx, volume_sfx)
-	_apply_window_mode()
+	if apply_display:
+		_apply_window_mode()
 	mobile_controls_toggled.emit(is_mobile_controls_active())
 
 func reset_to_defaults() -> void:

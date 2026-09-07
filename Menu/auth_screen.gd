@@ -34,6 +34,12 @@ func _ready() -> void:
 	login_btn.pressed.connect(_on_login)
 	reg_btn.pressed.connect(_on_register)
 	
+	# Shortcut Enter untuk submit
+	login_username.text_submitted.connect(func(_t): login_password.grab_focus())
+	login_password.text_submitted.connect(func(_t): _on_login())
+	reg_username.text_submitted.connect(func(_t): reg_password.grab_focus())
+	reg_password.text_submitted.connect(func(_t): _on_register())
+	
 	# Connect SaveManager signals
 	SaveManager.login_success.connect(_on_login_success)
 	SaveManager.login_failed.connect(_on_login_failed)
@@ -41,10 +47,15 @@ func _ready() -> void:
 	SaveManager.register_failed.connect(_on_register_failed)
 	SaveManager.load_success.connect(_on_load_success)
 	
-	# Animasi fade in di CenterContainer
+	# Animasi fade in & pop di PanelContainer
+	var card = $CenterContainer/PanelContainer
+	card.scale = Vector2(0.85, 0.85)
+	card.pivot_offset = card.size * 0.5
 	$CenterContainer.modulate.a = 0.0
-	var tween = create_tween()
-	tween.tween_property($CenterContainer, "modulate:a", 1.0, 0.8)
+	
+	var tween = create_tween().set_parallel(true)
+	tween.tween_property($CenterContainer, "modulate:a", 1.0, 0.5).set_ease(Tween.EASE_OUT)
+	tween.tween_property(card, "scale", Vector2.ONE, 0.5).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 
 func _on_login() -> void:
 	var username = login_username.text.strip_edges()
@@ -84,6 +95,8 @@ func _on_login_success() -> void:
 	_set_loading(false)
 	login_feedback.text = "Berhasil masuk! Memuat data..."
 	login_feedback.modulate = Color.GREEN
+	await get_tree().create_timer(1.0).timeout
+	LoadingScreen.load_scene("res://LEV1.tscn")
 
 func _on_login_failed(reason: String) -> void:
 	_set_loading(false)

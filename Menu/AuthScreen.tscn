@@ -1,16 +1,183 @@
-[gd_scene format=3 uid="uid://3puyofxj2gx3"]
+﻿[gd_scene format=3 uid="uid://3puyofxj2gx3"]
 
-[ext_resource type="Script" uid="uid://dsu1bnbtaewcx" path="res://Menu/auth_screen.gd" id="1_epkrd"]
-[ext_resource type="Texture2D" uid="uid://d1rladtgy4jtv" path="res://Menu/MEMORion+Logo.png" id="2_cy2ne"]
+[ext_resource type="Script" path="res://Menu/auth_screen.gd" id="1_epkrd"]
+[ext_resource type="Shader" path="res://Menu/BGMenu.gdshader" id="2_bgshader"]
+[ext_resource type="Texture2D" path="res://Menu/Background.png" id="3_bgtex"]
+[ext_resource type="Texture2D" uid="uid://d1rladtgy4jtv" path="res://Menu/MEMORion+Logo.png" id="4_cy2ne"]
+[ext_resource type="FontFile" uid="uid://bb80gooxacs7q" path="res://Fonts/Telegraf-Bold-fix15408087824949790956.30.2aa1f309-cb96-4ad6-a94f-e5147e9.ttf" id="5_tbold"]
+[ext_resource type="FontFile" uid="uid://ctnm2q1fg78u6" path="res://Fonts/telegraf_regular_fix7340951357143627189..44096e48-3548-42c1-bd8a-c4745e9.ttf" id="6_treg"]
 
-[sub_resource type="LabelSettings" id="LabelSettings_nmnnx"]
-font_size = 8
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_bg"]
+shader = ExtResource("2_bgshader")
+shader_parameter/saturation = 1.3
 
-[sub_resource type="LabelSettings" id="LabelSettings_o5mqi"]
-font_size = 8
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_panel"]
+bg_color = Color(0.075, 0.048, 0.155, 0.95)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.55, 0.32, 0.95, 0.8)
+corner_radius_top_left = 24
+corner_radius_top_right = 24
+corner_radius_bottom_right = 24
+corner_radius_bottom_left = 24
+shadow_color = Color(0.4, 0.12, 0.85, 0.38)
+shadow_size = 38
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tab_selected"]
+content_margin_left = 24.0
+content_margin_top = 10.0
+content_margin_right = 24.0
+content_margin_bottom = 10.0
+bg_color = Color(0.32, 0.16, 0.68, 0.95)
+border_width_bottom = 3
+border_color = Color(0.4, 0.9, 1, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tab_hovered"]
+content_margin_left = 24.0
+content_margin_top = 10.0
+content_margin_right = 24.0
+content_margin_bottom = 10.0
+bg_color = Color(0.2, 0.1, 0.42, 0.8)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tab_unselected"]
+content_margin_left = 24.0
+content_margin_top = 10.0
+content_margin_right = 24.0
+content_margin_bottom = 10.0
+bg_color = Color(0.09, 0.05, 0.18, 0.6)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_tab_panel"]
+content_margin_left = 20.0
+content_margin_top = 24.0
+content_margin_right = 20.0
+content_margin_bottom = 20.0
+bg_color = Color(0.05, 0.03, 0.11, 0.55)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.32, 0.18, 0.55, 0.5)
+corner_radius_top_left = 16
+corner_radius_top_right = 16
+corner_radius_bottom_right = 16
+corner_radius_bottom_left = 16
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_input_normal"]
+content_margin_left = 16.0
+content_margin_top = 12.0
+content_margin_right = 16.0
+content_margin_bottom = 12.0
+bg_color = Color(0.11, 0.07, 0.22, 0.85)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.35, 0.22, 0.62, 0.6)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_input_focus"]
+content_margin_left = 16.0
+content_margin_top = 12.0
+content_margin_right = 16.0
+content_margin_bottom = 12.0
+bg_color = Color(0.14, 0.09, 0.28, 0.95)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.45, 0.85, 1, 1)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+shadow_color = Color(0.4, 0.85, 1, 0.25)
+shadow_size = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_normal"]
+bg_color = Color(0.32, 0.16, 0.72, 0.95)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.5, 0.9, 1, 0.85)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_right = 14
+corner_radius_bottom_left = 14
+shadow_color = Color(0.38, 0.15, 0.85, 0.35)
+shadow_size = 14
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_hover"]
+bg_color = Color(0.42, 0.24, 0.88, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.8, 1, 1, 1)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_right = 14
+corner_radius_bottom_left = 14
+shadow_color = Color(0.45, 0.9, 1, 0.45)
+shadow_size = 20
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_pressed"]
+bg_color = Color(0.22, 0.1, 0.5, 1)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.35, 0.75, 0.9, 0.9)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_right = 14
+corner_radius_bottom_left = 14
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_disabled"]
+bg_color = Color(0.18, 0.12, 0.3, 0.6)
+border_width_left = 1
+border_width_top = 1
+border_width_right = 1
+border_width_bottom = 1
+border_color = Color(0.3, 0.2, 0.45, 0.4)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_right = 14
+corner_radius_bottom_left = 14
 
 [node name="AuthScreen" type="CanvasLayer" unique_id=210841209]
+layer = 30
 script = ExtResource("1_epkrd")
+
+[node name="Background" type="TextureRect" parent="." unique_id=1010101]
+material = SubResource("ShaderMaterial_bg")
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+texture = ExtResource("3_bgtex")
+expand_mode = 1
+stretch_mode = 6
+
+[node name="BackdropDim" type="ColorRect" parent="." unique_id=1010102]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.035, 0.02, 0.085, 0.78)
 
 [node name="CenterContainer" type="CenterContainer" parent="." unique_id=686475220]
 anchors_preset = 15
@@ -20,79 +187,168 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="PanelContainer" type="PanelContainer" parent="CenterContainer" unique_id=376675963]
-custom_minimum_size = Vector2(280, 0)
+custom_minimum_size = Vector2(490, 0)
 layout_mode = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
 
 [node name="MarginContainer" type="MarginContainer" parent="CenterContainer/PanelContainer" unique_id=701037406]
 layout_mode = 2
-theme_override_constants/margin_left = 40
-theme_override_constants/margin_top = 40
-theme_override_constants/margin_right = 40
-theme_override_constants/margin_bottom = 70
+theme_override_constants/margin_left = 38
+theme_override_constants/margin_top = 36
+theme_override_constants/margin_right = 38
+theme_override_constants/margin_bottom = 36
 
 [node name="VBoxContainer" type="VBoxContainer" parent="CenterContainer/PanelContainer/MarginContainer" unique_id=1253675467]
 layout_mode = 2
-theme_override_constants/separation = 20
+theme_override_constants/separation = 18
 
 [node name="Logo" type="TextureRect" parent="CenterContainer/PanelContainer/MarginContainer/VBoxContainer" unique_id=82374017]
+custom_minimum_size = Vector2(100, 100)
 layout_mode = 2
-texture = ExtResource("2_cy2ne")
+texture = ExtResource("4_cy2ne")
+expand_mode = 1
+stretch_mode = 5
+
+[node name="SubTitle" type="Label" parent="CenterContainer/PanelContainer/MarginContainer/VBoxContainer" unique_id=1010103]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.4, 0.85, 1, 1)
+theme_override_colors/font_shadow_color = Color(0.5, 0.15, 0.9, 0.5)
+theme_override_constants/shadow_offset_y = 2
+theme_override_fonts/font = ExtResource("5_tbold")
+theme_override_font_sizes/font_size = 18
+text = "✦ PORTAL PENJELAJAH ✦"
+horizontal_alignment = 1
 
 [node name="TabContainer" type="TabContainer" parent="CenterContainer/PanelContainer/MarginContainer/VBoxContainer" unique_id=316294774]
-custom_minimum_size = Vector2(0, 180)
+custom_minimum_size = Vector2(0, 260)
 layout_mode = 2
+theme_override_colors/font_selected_color = Color(1, 1, 1, 1)
+theme_override_colors/font_hovered_color = Color(0.85, 0.9, 1, 1)
+theme_override_colors/font_unselected_color = Color(0.65, 0.65, 0.8, 1)
+theme_override_fonts/font = ExtResource("5_tbold")
+theme_override_font_sizes/font_size = 17
+theme_override_styles/tab_selected = SubResource("StyleBoxFlat_tab_selected")
+theme_override_styles/tab_hovered = SubResource("StyleBoxFlat_tab_hovered")
+theme_override_styles/tab_unselected = SubResource("StyleBoxFlat_tab_unselected")
+theme_override_styles/panel = SubResource("StyleBoxFlat_tab_panel")
 current_tab = 0
-tab_0/title = "Masuk"
-tab_1/title = "Daftar"
+tab_0/title = "  Masuk  "
+tab_1/title = "  Daftar  "
 
 [node name="LoginTab" type="VBoxContainer" parent="CenterContainer/PanelContainer/MarginContainer/VBoxContainer/TabContainer" unique_id=142057639]
 layout_mode = 2
-theme_override_constants/separation = 12
+theme_override_constants/separation = 14
 metadata/_tab_index = 0
-metadata/_tab_name = "Masuk"
+metadata/_tab_name = "  Masuk  "
 
 [node name="UsernameField" type="LineEdit" parent="CenterContainer/PanelContainer/MarginContainer/VBoxContainer/TabContainer/LoginTab" unique_id=539558955]
+custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
+theme_override_colors/font_placeholder_color = Color(0.5, 0.5, 0.7, 0.75)
+theme_override_colors/font_color = Color(0.95, 0.95, 1, 1)
+theme_override_fonts/font = ExtResource("6_treg")
+theme_override_font_sizes/font_size = 16
+theme_override_styles/focus = SubResource("StyleBoxFlat_input_focus")
+theme_override_styles/normal = SubResource("StyleBoxFlat_input_normal")
+placeholder_text = "Nama panggilanmu..."
+clear_button_enabled = true
 
 [node name="PasswordField" type="LineEdit" parent="CenterContainer/PanelContainer/MarginContainer/VBoxContainer/TabContainer/LoginTab" unique_id=330099567]
+custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
+theme_override_colors/font_placeholder_color = Color(0.5, 0.5, 0.7, 0.75)
+theme_override_colors/font_color = Color(0.95, 0.95, 1, 1)
+theme_override_fonts/font = ExtResource("6_treg")
+theme_override_font_sizes/font_size = 16
+theme_override_styles/focus = SubResource("StyleBoxFlat_input_focus")
+theme_override_styles/normal = SubResource("StyleBoxFlat_input_normal")
+placeholder_text = "Password..."
+secret = true
+clear_button_enabled = true
 
 [node name="LoginBtn" type="Button" parent="CenterContainer/PanelContainer/MarginContainer/VBoxContainer/TabContainer/LoginTab" unique_id=131961818]
-custom_minimum_size = Vector2(0, 45)
+custom_minimum_size = Vector2(0, 52)
 layout_mode = 2
+mouse_default_cursor_shape = 2
+theme_override_colors/font_hover_color = Color(0.85, 1, 1, 1)
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("5_tbold")
+theme_override_font_sizes/font_size = 18
+theme_override_styles/disabled = SubResource("StyleBoxFlat_btn_disabled")
+theme_override_styles/hover = SubResource("StyleBoxFlat_btn_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_btn_pressed")
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn_normal")
+text = "MASUK KE PETUALANGAN"
 
 [node name="FeedbackLabel" type="Label" parent="CenterContainer/PanelContainer/MarginContainer/VBoxContainer/TabContainer/LoginTab" unique_id=843164943]
-custom_minimum_size = Vector2(0, 20)
+custom_minimum_size = Vector2(0, 24)
 layout_mode = 2
-label_settings = SubResource("LabelSettings_nmnnx")
+theme_override_fonts/font = ExtResource("6_treg")
+theme_override_font_sizes/font_size = 14
 horizontal_alignment = 1
 vertical_alignment = 1
-text_overrun_behavior = 1
+autowrap_mode = 2
 
 [node name="RegisterTab" type="VBoxContainer" parent="CenterContainer/PanelContainer/MarginContainer/VBoxContainer/TabContainer" unique_id=1711364246]
 visible = false
 layout_mode = 2
-theme_override_constants/separation = 12
+theme_override_constants/separation = 14
 metadata/_tab_index = 1
-metadata/_tab_name = "Daftar"
+metadata/_tab_name = "  Daftar  "
 
 [node name="UsernameField" type="LineEdit" parent="CenterContainer/PanelContainer/MarginContainer/VBoxContainer/TabContainer/RegisterTab" unique_id=1440858728]
+custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
+theme_override_colors/font_placeholder_color = Color(0.5, 0.5, 0.7, 0.75)
+theme_override_colors/font_color = Color(0.95, 0.95, 1, 1)
+theme_override_fonts/font = ExtResource("6_treg")
+theme_override_font_sizes/font_size = 16
+theme_override_styles/focus = SubResource("StyleBoxFlat_input_focus")
+theme_override_styles/normal = SubResource("StyleBoxFlat_input_normal")
+placeholder_text = "Pilih nama unikmu..."
+clear_button_enabled = true
 
 [node name="PasswordField" type="LineEdit" parent="CenterContainer/PanelContainer/MarginContainer/VBoxContainer/TabContainer/RegisterTab" unique_id=1714491176]
+custom_minimum_size = Vector2(0, 50)
 layout_mode = 2
+theme_override_colors/font_placeholder_color = Color(0.5, 0.5, 0.7, 0.75)
+theme_override_colors/font_color = Color(0.95, 0.95, 1, 1)
+theme_override_fonts/font = ExtResource("6_treg")
+theme_override_font_sizes/font_size = 16
+theme_override_styles/focus = SubResource("StyleBoxFlat_input_focus")
+theme_override_styles/normal = SubResource("StyleBoxFlat_input_normal")
+placeholder_text = "Buat password (min. 6 karakter)..."
+secret = true
+clear_button_enabled = true
 
 [node name="RegisterBtn" type="Button" parent="CenterContainer/PanelContainer/MarginContainer/VBoxContainer/TabContainer/RegisterTab" unique_id=313299581]
-custom_minimum_size = Vector2(0, 45)
+custom_minimum_size = Vector2(0, 52)
 layout_mode = 2
+mouse_default_cursor_shape = 2
+theme_override_colors/font_hover_color = Color(0.85, 1, 1, 1)
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("5_tbold")
+theme_override_font_sizes/font_size = 18
+theme_override_styles/disabled = SubResource("StyleBoxFlat_btn_disabled")
+theme_override_styles/hover = SubResource("StyleBoxFlat_btn_hover")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_btn_pressed")
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn_normal")
+text = "BUAT AKUN BARU"
 
 [node name="FeedbackLabel" type="Label" parent="CenterContainer/PanelContainer/MarginContainer/VBoxContainer/TabContainer/RegisterTab" unique_id=177525018]
-custom_minimum_size = Vector2(0, 20)
+custom_minimum_size = Vector2(0, 24)
 layout_mode = 2
-label_settings = SubResource("LabelSettings_o5mqi")
+theme_override_fonts/font = ExtResource("6_treg")
+theme_override_font_sizes/font_size = 14
 horizontal_alignment = 1
 vertical_alignment = 1
-text_overrun_behavior = 1
+autowrap_mode = 2
 
 [node name="LoadingIndicator" type="Label" parent="CenterContainer/PanelContainer/MarginContainer/VBoxContainer" unique_id=821437132]
+visible = false
 layout_mode = 2
+theme_override_colors/font_color = Color(0.45, 0.9, 1, 1)
+theme_override_fonts/font = ExtResource("5_tbold")
+theme_override_font_sizes/font_size = 15
+text = "Menghubungkan ke server..."
+horizontal_alignment = 1

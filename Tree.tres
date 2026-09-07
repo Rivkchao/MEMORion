@@ -1,8 +1,8 @@
 [gd_resource type="ArrayMesh" format=4 uid="uid://colb2o3wtqj3a"]
 
-[ext_resource type="Texture2D" uid="uid://bwkvrheqt6jie" path="res://assets/World/Stylized Nature MegaKit[Standard](1)/glTF/Bark_NormalTree.png" id="1_6ksqm"]
-[ext_resource type="Texture2D" uid="uid://dtsic8stagvea" path="res://assets/World/Stylized Nature MegaKit[Standard](1)/glTF/Bark_NormalTree_Normal.png" id="2_1nsn4"]
-[ext_resource type="Texture2D" uid="uid://bqdqw3hc4fhgq" path="res://assets/World/Stylized Nature MegaKit[Standard](1)/glTF/Leaves_NormalTree_C.png" id="3_v74e3"]
+[ext_resource type="Texture2D" uid="uid://bwkvrheqt6jie" path="res://assets/World/Stylized Nature MegaKit/glTF/Bark_NormalTree.png" id="1_6ksqm"]
+[ext_resource type="Texture2D" uid="uid://dtsic8stagvea" path="res://assets/World/Stylized Nature MegaKit/glTF/Bark_NormalTree_Normal.png" id="2_1nsn4"]
+[ext_resource type="Texture2D" uid="uid://bqdqw3hc4fhgq" path="res://assets/World/Stylized Nature MegaKit/glTF/Leaves_NormalTree_C.png" id="3_v74e3"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_bpw06"]
 resource_name = "Bark_NormalTree"

@@ -1,6 +1,6 @@
 [gd_scene format=4 uid="uid://beijg8hskf5ev"]
 
-[ext_resource type="Texture2D" uid="uid://csnu2rx1th2lq" path="res://assets/World/Stylized Nature MegaKit[Standard](1)/glTF/Rocks_Diffuse.png" id="1_td71m"]
+[ext_resource type="Texture2D" uid="uid://csnu2rx1th2lq" path="res://assets/World/Stylized Nature MegaKit/glTF/Rocks_Diffuse.png" id="1_td71m"]
 [ext_resource type="Script" uid="uid://7yq41b4s7v5l" path="res://scenes/Rock/draggable_rock.gd" id="1_xnnw7"]
 
 [sub_resource type="Shader" id="Shader_jubt6"]

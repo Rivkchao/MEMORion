@@ -1,85 +1,167 @@
 [gd_scene format=3 uid="uid://ddapyrr5evfnt"]
 
-[ext_resource type="Script" path="res://scenes/ui/mobile_controls.gd" id="1_mobile"]
+[ext_resource type="Script" uid="uid://d3810vm6draae" path="res://scenes/ui/mobile_controls.gd" id="1_mobile"]
 [ext_resource type="FontFile" uid="uid://bb80gooxacs7q" path="res://Fonts/Telegraf-Bold-fix15408087824949790956.30.2aa1f309-cb96-4ad6-a94f-e5147e9.ttf" id="2_font"]
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_base"]
-bg_color = Color(0.08, 0.08, 0.16, 0.45)
-border_width_left = 3
-border_width_top = 3
-border_width_right = 3
-border_width_bottom = 3
-border_color = Color(0.77, 0.26, 0.92, 0.75)
-corner_radius_top_left = 80
-corner_radius_top_right = 80
-corner_radius_bottom_right = 80
-corner_radius_bottom_left = 80
+bg_color = Color(0.06, 0.05, 0.14, 0.45)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.35, 0.85, 1, 0.5)
+corner_radius_top_left = 999
+corner_radius_top_right = 999
+corner_radius_bottom_right = 999
+corner_radius_bottom_left = 999
+shadow_color = Color(0.3, 0.8, 1, 0.15)
+shadow_size = 15
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_center_dot"]
+bg_color = Color(0.35, 0.85, 1, 0.4)
+corner_radius_top_left = 999
+corner_radius_top_right = 999
+corner_radius_bottom_right = 999
+corner_radius_bottom_left = 999
 
 [sub_resource type="StyleBoxFlat" id="StyleBoxFlat_knob"]
-bg_color = Color(0.2, 0.75, 1.0, 0.7)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(1, 1, 1, 0.9)
-corner_radius_top_left = 32
-corner_radius_top_right = 32
-corner_radius_bottom_right = 32
-corner_radius_bottom_left = 32
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_normal"]
-bg_color = Color(0.12, 0.1, 0.22, 0.6)
-border_width_left = 2
-border_width_top = 2
-border_width_right = 2
-border_width_bottom = 2
-border_color = Color(0.77, 0.26, 0.92, 0.8)
-corner_radius_top_left = 40
-corner_radius_top_right = 40
-corner_radius_bottom_right = 40
-corner_radius_bottom_left = 40
-
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_pressed"]
-bg_color = Color(0.77, 0.26, 0.92, 0.6)
+bg_color = Color(0.22, 0.82, 1, 0.85)
 border_width_left = 3
 border_width_top = 3
 border_width_right = 3
 border_width_bottom = 3
-border_color = Color(0.2, 0.8, 1.0, 1)
-corner_radius_top_left = 40
-corner_radius_top_right = 40
-corner_radius_bottom_right = 40
-corner_radius_bottom_left = 40
+border_color = Color(1, 1, 1, 0.95)
+corner_radius_top_left = 999
+corner_radius_top_right = 999
+corner_radius_bottom_right = 999
+corner_radius_bottom_left = 999
+shadow_color = Color(0.2, 0.85, 1, 0.55)
+shadow_size = 18
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_sprint"]
-bg_color = Color(0.12, 0.1, 0.22, 0.6)
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_knob_inner"]
+bg_color = Color(1, 1, 1, 0.6)
+corner_radius_top_left = 999
+corner_radius_top_right = 999
+corner_radius_bottom_right = 999
+corner_radius_bottom_left = 999
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jump_normal"]
+bg_color = Color(0.08, 0.16, 0.28, 0.65)
 border_width_left = 2
 border_width_top = 2
 border_width_right = 2
 border_width_bottom = 2
-border_color = Color(0.9, 0.75, 0.2, 0.8)
-corner_radius_top_left = 35
-corner_radius_top_right = 35
-corner_radius_bottom_right = 35
-corner_radius_bottom_left = 35
+border_color = Color(0.25, 0.8, 1, 0.85)
+corner_radius_top_left = 999
+corner_radius_top_right = 999
+corner_radius_bottom_right = 999
+corner_radius_bottom_left = 999
+shadow_color = Color(0.2, 0.8, 1, 0.25)
+shadow_size = 12
 
-[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_pause"]
-bg_color = Color(0.1, 0.1, 0.18, 0.65)
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_jump_pressed"]
+bg_color = Color(0.25, 0.8, 1, 0.75)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 999
+corner_radius_top_right = 999
+corner_radius_bottom_right = 999
+corner_radius_bottom_left = 999
+shadow_color = Color(0.3, 0.85, 1, 0.6)
+shadow_size = 18
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_sprint_normal"]
+bg_color = Color(0.25, 0.18, 0.06, 0.65)
 border_width_left = 2
 border_width_top = 2
 border_width_right = 2
 border_width_bottom = 2
-border_color = Color(0.3, 0.8, 1.0, 0.8)
-corner_radius_top_left = 24
-corner_radius_top_right = 24
-corner_radius_bottom_right = 24
-corner_radius_bottom_left = 24
+border_color = Color(0.95, 0.75, 0.15, 0.85)
+corner_radius_top_left = 999
+corner_radius_top_right = 999
+corner_radius_bottom_right = 999
+corner_radius_bottom_left = 999
+shadow_color = Color(0.95, 0.75, 0.15, 0.2)
+shadow_size = 10
 
-[node name="MobileControls" type="CanvasLayer"]
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_sprint_pressed"]
+bg_color = Color(0.95, 0.75, 0.15, 0.75)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 999
+corner_radius_top_right = 999
+corner_radius_bottom_right = 999
+corner_radius_bottom_left = 999
+shadow_color = Color(0.95, 0.75, 0.15, 0.5)
+shadow_size = 16
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_interact_normal"]
+bg_color = Color(0.06, 0.22, 0.14, 0.65)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.2, 0.9, 0.55, 0.85)
+corner_radius_top_left = 999
+corner_radius_top_right = 999
+corner_radius_bottom_right = 999
+corner_radius_bottom_left = 999
+shadow_color = Color(0.2, 0.9, 0.55, 0.25)
+shadow_size = 14
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_interact_pressed"]
+bg_color = Color(0.2, 0.9, 0.55, 0.75)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 999
+corner_radius_top_right = 999
+corner_radius_bottom_right = 999
+corner_radius_bottom_left = 999
+shadow_color = Color(0.2, 0.9, 0.55, 0.6)
+shadow_size = 20
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_drop_normal"]
+bg_color = Color(0.25, 0.08, 0.12, 0.65)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.95, 0.35, 0.45, 0.85)
+corner_radius_top_left = 999
+corner_radius_top_right = 999
+corner_radius_bottom_right = 999
+corner_radius_bottom_left = 999
+shadow_color = Color(0.95, 0.35, 0.45, 0.25)
+shadow_size = 10
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_drop_pressed"]
+bg_color = Color(0.95, 0.35, 0.45, 0.75)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(1, 1, 1, 1)
+corner_radius_top_left = 999
+corner_radius_top_right = 999
+corner_radius_bottom_right = 999
+corner_radius_bottom_left = 999
+shadow_color = Color(0.95, 0.35, 0.45, 0.55)
+shadow_size = 16
+
+[node name="MobileControls" type="CanvasLayer" unique_id=157865520]
 layer = 20
 script = ExtResource("1_mobile")
 
-[node name="TouchCameraArea" type="Control" parent="."]
+[node name="TouchCameraArea" type="Control" parent="." unique_id=1681611516]
 layout_mode = 3
 anchors_preset = 15
 anchor_right = 1.0
@@ -88,154 +170,184 @@ grow_horizontal = 2
 grow_vertical = 2
 mouse_filter = 2
 
-[node name="JoystickZone" type="Control" parent="."]
+[node name="JoystickZone" type="Control" parent="." unique_id=1417522257]
 layout_mode = 3
 anchors_preset = 2
 anchor_top = 1.0
 anchor_bottom = 1.0
-offset_left = 50.0
-offset_top = -350.0
-offset_right = 450.0
-offset_bottom = -50.0
+offset_left = 40.0
+offset_top = -460.0
+offset_right = 500.0
+offset_bottom = -20.0
 grow_vertical = 0
 mouse_filter = 2
 
-[node name="Base" type="Panel" parent="JoystickZone"]
-custom_minimum_size = Vector2(160, 160)
+[node name="Base" type="Panel" parent="JoystickZone" unique_id=420244691]
+custom_minimum_size = Vector2(180, 180)
 layout_mode = 0
-offset_left = 50.0
-offset_top = 50.0
-offset_right = 210.0
-offset_bottom = 210.0
+offset_left = 70.0
+offset_top = 190.0
+offset_right = 250.0
+offset_bottom = 370.0
+pivot_offset = Vector2(90, 90)
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_base")
 
-[node name="Knob" type="Panel" parent="JoystickZone/Base"]
-custom_minimum_size = Vector2(64, 64)
-layout_mode = 0
-offset_left = 48.0
-offset_top = 48.0
-offset_right = 112.0
-offset_bottom = 112.0
+[node name="CenterDot" type="Panel" parent="JoystickZone/Base" unique_id=701372457]
+custom_minimum_size = Vector2(12, 12)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -6.0
+offset_top = -6.0
+offset_right = 6.0
+offset_bottom = 6.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_center_dot")
+
+[node name="Knob" type="Panel" parent="JoystickZone/Base" unique_id=795398323]
+custom_minimum_size = Vector2(74, 74)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -37.0
+offset_top = -37.0
+offset_right = 37.0
+offset_bottom = 37.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(37, 37)
 mouse_filter = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_knob")
 
-[node name="ActionButtons" type="Control" parent="."]
+[node name="Inner" type="Panel" parent="JoystickZone/Base/Knob" unique_id=889041887]
+custom_minimum_size = Vector2(24, 24)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -12.0
+offset_top = -12.0
+offset_right = 12.0
+offset_bottom = 12.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+theme_override_styles/panel = SubResource("StyleBoxFlat_knob_inner")
+
+[node name="ActionButtons" type="Control" parent="." unique_id=428291941]
 layout_mode = 3
 anchors_preset = 3
 anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -450.0
-offset_top = -450.0
+offset_left = -460.0
+offset_top = -460.0
 grow_horizontal = 0
 grow_vertical = 0
 mouse_filter = 2
 
-[node name="JumpBtn" type="Button" parent="ActionButtons"]
-custom_minimum_size = Vector2(86, 86)
+[node name="JumpBtn" type="Button" parent="ActionButtons" unique_id=1811573764]
+custom_minimum_size = Vector2(94, 94)
 layout_mode = 1
 anchors_preset = 3
 anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -140.0
-offset_top = -140.0
-offset_right = -54.0
-offset_bottom = -54.0
+offset_left = -150.0
+offset_top = -150.0
+offset_right = -56.0
+offset_bottom = -56.0
 grow_horizontal = 0
 grow_vertical = 0
+pivot_offset = Vector2(47, 47)
+mouse_default_cursor_shape = 2
 theme_override_fonts/font = ExtResource("2_font")
 theme_override_font_sizes/font_size = 15
-theme_override_styles/normal = SubResource("StyleBoxFlat_btn_normal")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_btn_pressed")
-text = "▲\nLOMPAT"
+theme_override_styles/normal = SubResource("StyleBoxFlat_jump_normal")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_jump_pressed")
+theme_override_styles/hover = SubResource("StyleBoxFlat_jump_normal")
+text = "LOMPAT"
 
-[node name="SprintBtn" type="Button" parent="ActionButtons"]
-custom_minimum_size = Vector2(76, 76)
+[node name="SprintBtn" type="Button" parent="ActionButtons" unique_id=262671330]
+custom_minimum_size = Vector2(80, 80)
 layout_mode = 1
 anchors_preset = 3
 anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -245.0
-offset_top = -115.0
-offset_right = -169.0
-offset_bottom = -39.0
+offset_left = -260.0
+offset_top = -120.0
+offset_right = -180.0
+offset_bottom = -40.0
 grow_horizontal = 0
 grow_vertical = 0
+pivot_offset = Vector2(40, 40)
+mouse_default_cursor_shape = 2
 theme_override_fonts/font = ExtResource("2_font")
 theme_override_font_sizes/font_size = 14
-theme_override_styles/normal = SubResource("StyleBoxFlat_btn_sprint")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_btn_pressed")
-text = "⚡\nLARI"
+theme_override_styles/normal = SubResource("StyleBoxFlat_sprint_normal")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_sprint_pressed")
+theme_override_styles/hover = SubResource("StyleBoxFlat_sprint_normal")
+text = "LARI"
 
-[node name="InteractBtn" type="Button" parent="ActionButtons"]
-custom_minimum_size = Vector2(86, 86)
+[node name="InteractBtn" type="Button" parent="ActionButtons" unique_id=1823367774]
+custom_minimum_size = Vector2(94, 94)
 layout_mode = 1
 anchors_preset = 3
 anchor_left = 1.0
 anchor_top = 1.0
 anchor_right = 1.0
 anchor_bottom = 1.0
-offset_left = -140.0
-offset_top = -255.0
-offset_right = -54.0
-offset_bottom = -169.0
+offset_left = -150.0
+offset_top = -270.0
+offset_right = -56.0
+offset_bottom = -176.0
 grow_horizontal = 0
 grow_vertical = 0
-theme_override_fonts/font = ExtResource("2_font")
-theme_override_font_sizes/font_size = 13
-theme_override_styles/normal = SubResource("StyleBoxFlat_btn_normal")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_btn_pressed")
-text = "[E]\nINTERAKSI"
-
-[node name="DropBtn" type="Button" parent="ActionButtons"]
-custom_minimum_size = Vector2(76, 76)
-layout_mode = 1
-anchors_preset = 3
-anchor_left = 1.0
-anchor_top = 1.0
-anchor_right = 1.0
-anchor_bottom = 1.0
-offset_left = -245.0
-offset_top = -225.0
-offset_right = -169.0
-offset_bottom = -149.0
-grow_horizontal = 0
-grow_vertical = 0
+pivot_offset = Vector2(47, 47)
+mouse_default_cursor_shape = 2
 theme_override_fonts/font = ExtResource("2_font")
 theme_override_font_sizes/font_size = 14
-theme_override_styles/normal = SubResource("StyleBoxFlat_btn_normal")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_btn_pressed")
-text = "▼\nLEPAS"
+theme_override_styles/normal = SubResource("StyleBoxFlat_interact_normal")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_interact_pressed")
+theme_override_styles/hover = SubResource("StyleBoxFlat_interact_normal")
+text = "AKSI"
 
-[node name="TopBar" type="Control" parent="."]
-layout_mode = 3
-anchors_preset = 1
-anchor_left = 1.0
-anchor_right = 1.0
-offset_left = -200.0
-offset_bottom = 100.0
-grow_horizontal = 0
-mouse_filter = 2
-
-[node name="PauseBtn" type="Button" parent="TopBar"]
-custom_minimum_size = Vector2(52, 52)
+[node name="DropBtn" type="Button" parent="ActionButtons" unique_id=885613868]
+visible = false
+custom_minimum_size = Vector2(80, 80)
 layout_mode = 1
-anchors_preset = 1
+anchors_preset = 3
 anchor_left = 1.0
+anchor_top = 1.0
 anchor_right = 1.0
-offset_left = -80.0
-offset_top = 28.0
-offset_right = -28.0
-offset_bottom = 80.0
+anchor_bottom = 1.0
+offset_left = -260.0
+offset_top = -240.0
+offset_right = -180.0
+offset_bottom = -160.0
 grow_horizontal = 0
+grow_vertical = 0
+pivot_offset = Vector2(40, 40)
+mouse_default_cursor_shape = 2
 theme_override_fonts/font = ExtResource("2_font")
-theme_override_font_sizes/font_size = 22
-theme_override_styles/normal = SubResource("StyleBoxFlat_btn_pause")
-theme_override_styles/pressed = SubResource("StyleBoxFlat_btn_pressed")
-text = "⚙"
+theme_override_font_sizes/font_size = 14
+theme_override_styles/normal = SubResource("StyleBoxFlat_drop_normal")
+theme_override_styles/pressed = SubResource("StyleBoxFlat_drop_pressed")
+theme_override_styles/hover = SubResource("StyleBoxFlat_drop_normal")
+text = "▼
+LEPAS"
