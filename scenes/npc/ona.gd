@@ -11,11 +11,23 @@ signal point_5_finished
 var current_waypoint := 0
 var is_moving := false
 var is_dialogue := false
+var is_following_player := false
+var reflection_dialog: CanvasLayer = null
 
 func _ready():
 	if fade_rect:
 		fade_rect.modulate.a = 0.0
 		fade_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+
+	# Inisialisasi ReflectionDialog UI jika belum ada
+	var existing_dialog = get_parent().find_child("ReflectionDialog", true, false)
+	if existing_dialog:
+		reflection_dialog = existing_dialog
+	else:
+		var dialog_scene = load("res://scenes/ui/ReflectionDialog.tscn")
+		if dialog_scene:
+			reflection_dialog = dialog_scene.instantiate()
+			get_parent().add_child.call_deferred(reflection_dialog)
 
 	var storypoints = get_parent().get_node_or_null("Storypoints")
 	if storypoints:
@@ -43,6 +55,13 @@ func _physics_process(_delta):
 		velocity.z = 0.0
 		move_and_slide()
 		play_animation("idle")
+		return
+
+	# ==========================================
+	# ONA MENGIKUTI RION DI SEKITAR POINT 9
+	# ==========================================
+	if is_following_player:
+		_process_follow_player(_delta)
 		return
 
 	# ==========================================
@@ -138,13 +157,31 @@ func waypoint_reached():
 		return
 
 	# ==========================================
-	# POINT 6 → SAMPAI DI POINT 6 (TEPI SUNGAI)
+	# POINT 6 → DIALOG SUNGAI DERAS & RUTE
 	# ==========================================
 	if current_waypoint == 5:
+		await point_6_reached()
+		return
+
+	# ==========================================
+	# POINT 7 → DEPAN SUNGAI / KONSOL BATU
+	# ==========================================
+	if current_waypoint == 6:
 		is_moving = false
 		velocity = Vector3.ZERO
 		play_animation("idle")
-		print("Ona dan Rion telah sampai di Point 6 (Tepi Sungai)!")
+		print("Ona telah sampai di Point 7 (Depan Konsol Batu)!")
+		look_at(global_position + Vector3(-1, 0, 0), Vector3.UP)
+		var rock_area = get_parent().find_child("RockArea", true, false)
+		if rock_area and rock_area.has_method("check_trigger"):
+			rock_area.check_trigger()
+		return
+
+	# ==========================================
+	# POINT 9 → DEPAN BENGKEL LABORATORIUM
+	# ==========================================
+	if current_waypoint == 8:
+		await point_9_reached()
 		return
 
 	# ==========================================
@@ -334,3 +371,244 @@ func fade_in():
 		tween.tween_property(fade_rect, "modulate:a", 0.0, 0.5)
 		await tween.finished
 		fade_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+
+func point_6_reached():
+	is_moving = false
+	velocity = Vector3.ZERO
+	play_animation("idle")
+	print("Ona telah sampai di Point 6!")
+
+	var player = get_parent().find_child("Player", true, false)
+	if player:
+		var dir_to_rion = player.global_position - global_position
+		dir_to_rion.y = 0
+		if dir_to_rion.length() > 0.1:
+			look_at(global_position + dir_to_rion, Vector3.UP)
+
+	await point_6_dialog()
+
+	var hud = get_parent().find_child("HUD", true, false)
+	if hud and hud.has_method("set_objective"):
+		hud.set_objective("Maju bersama Ona mendekati konsol batu di tepi sungai")
+
+	# Lanjut maju ke Point 7 di depan konsol batu sungai
+	if waypoints.size() > 6 and waypoints[6]:
+		speed = 6.0
+		current_waypoint = 6
+		go_to_next_waypoint()
+
+func point_6_dialog() -> void:
+	is_dialogue = true
+	velocity.x = 0.0
+	velocity.z = 0.0
+	play_animation("idle")
+
+	var dialogue_lines: Array[String] = [
+		"Rion: Wah, arusnya deras banget! Tapi... tunggu dulu. Ona, mana jalannya? Gak ada jembatan sama sekali di sini!",
+		"Ona: Jembatannya tidak hilang, Rion. Ini adalah Batu Pijakan Resonansi. Sistem di planet ini menyembunyikannya di bawah air. Batunya baru akan muncul ke permukaan kalau kita mengaktifkan urutan batunya dengan tepat.",
+		"Rion: Mengaktifkan urutan batu? Gimana caranya?",
+		"Ona: Perhatikan baik-baik. Ayo kita maju lagi kedepan. Konsol pemancar akan segera menampilkan kuncinya."
+	]
+
+	StoryManager.start_dialogue(dialogue_lines, "Rion")
+	await StoryManager.dialogue_finished
+	is_dialogue = false
+
+func teleport_to_point_8():
+	if waypoints.size() <= 7 or waypoints[7] == null:
+		return
+	await fade_out()
+	global_position = waypoints[7].global_position
+	look_at(global_position + Vector3(-1, 0, 0), Vector3.UP)
+	print("Ona telah diteleportasikan ke Point 8 (Seberang Sungai)!")
+	await fade_in()
+
+	# Jalankan rangkaian peristiwa Point 8
+	await point_8_sequence()
+
+func point_8_sequence() -> void:
+	is_dialogue = true
+	velocity = Vector3.ZERO
+	play_animation("idle")
+
+	var player = get_parent().find_child("Player", true, false)
+	if player:
+		var dir_to_rion = player.global_position - global_position
+		dir_to_rion.y = 0
+		if dir_to_rion.length() > 0.1:
+			look_at(global_position + dir_to_rion, Vector3.UP)
+
+	# 1. Ona menanyakan perasaan Rion
+	var initial_dialogue: Array[String] = [
+		"Ona: Kita sudah sampai di seberang dengan selamat, Rion. Bagaimana perasaanmu setelah berhasil melewati rintangan sungai tadi?"
+	]
+	StoryManager.start_dialogue(initial_dialogue, "Ona")
+	await StoryManager.dialogue_finished
+
+	# 2. Kotak Input Refleksi Diri
+	if reflection_dialog == null:
+		var existing_dialog = get_parent().find_child("ReflectionDialog", true, false)
+		if existing_dialog:
+			reflection_dialog = existing_dialog
+		else:
+			var dialog_scene = load("res://scenes/ui/ReflectionDialog.tscn")
+			if dialog_scene:
+				reflection_dialog = dialog_scene.instantiate()
+				get_parent().add_child(reflection_dialog)
+
+	var detected_sentiment := "positif"
+	if reflection_dialog and reflection_dialog.has_method("show_reflection_prompt"):
+		reflection_dialog.show_reflection_prompt()
+		detected_sentiment = await reflection_dialog.reflection_submitted
+
+	print("[Ona] Hasil sentimen refleksi Rion: ", detected_sentiment)
+
+	# 3. Percabangan Berdasarkan Sentimen
+	if detected_sentiment == "positif":
+		var branch_a: Array[String] = [
+			"Rion: Awalnya kelihatan susah, tapi ternyata pas aku coba... aku bisa melewatinya!",
+			"Ona: Analisis emosi terdeteksi: Percaya diri meningkat! Rasa itu wajar kamu rasakan, Rion. Kamu berhasil karena mau memberi kesempatan pada dirimu sendiri untuk memperhatikan polanya.",
+			"Rion: Iya ya! Waktu aku sabar nonton preview kedipan lampunya sampai selesai, menyusun batunya jadi terasa jauh lebih gampang. Gak seseram yang aku bayangin di awal!",
+			"Ona: Tepat sekali. Otakmu merespons instruksi visual dengan sangat baik saat kamu tidak terburu-buru."
+		]
+		StoryManager.start_dialogue(branch_a, "Rion")
+		await StoryManager.dialogue_finished
+	else:
+		var branch_b: Array[String] = [
+			"Rion: Capek... dan agak kesel. Tadi aku sempat salah dan batunya langsung tenggelam lagi ke air. Rasanya pengen nyerah aja.",
+			"Ona: Analisis emosi terdeteksi: Kelelahan dan frustrasi. Emosi itu sepenuhnya valid, Rion. Beradaptasi dengan hal yang baru memang membutuhkan energi mental yang sangat besar.",
+			"Rion: Aku ngerasa bersalah tiap kali batunya reset... Kayak aku gak bisa apa-apa.",
+			"Ona: Reset sistem bukan berarti kamu gagal, Rion. Itu adalah fitur pengaman sungai agar kita bisa mencoba lagi dengan aman.",
+			"Ona: Yang terpenting, kamu tidak berhenti saat batunya tenggelam. Kamu menarik napas, mencoba lagi, dan buktinya... sekarang kakimu sudah menapak di tanah seberang ini.",
+			"Rion: (Tersenyum tipis) Makasih, Ona. Mendengarnya bikin dadaku terasa lebih lega."
+		]
+		StoryManager.start_dialogue(branch_b, "Rion")
+		await StoryManager.dialogue_finished
+
+	# 4. Pop-up Keterampilan Tercatat (Badge)
+	if reflection_dialog and reflection_dialog.has_method("show_badge_popup"):
+		reflection_dialog.show_badge_popup()
+		await reflection_dialog.badge_closed
+
+	# 5. Dialog Ajakan Melanjutkan Perjalanan
+	var proceed_dialogue: Array[String] = [
+		"Ona: Yuk Rion kita lanjutkan perjalanannya, sedikit lagi kita sampai."
+	]
+	StoryManager.start_dialogue(proceed_dialogue, "Ona")
+	await StoryManager.dialogue_finished
+
+	is_dialogue = false
+
+	# 6. Update HUD dan Ona Berjalan ke Point 9
+	var hud = get_parent().find_child("HUD", true, false)
+	if hud and hud.has_method("set_objective"):
+		hud.set_objective("Ikuti Ona menuju Bengkel Laboratorium Antariksa")
+
+	if waypoints.size() > 8 and waypoints[8]:
+		speed = 8.0
+		current_waypoint = 8
+		go_to_next_waypoint()
+
+func point_9_reached() -> void:
+	is_moving = false
+	velocity = Vector3.ZERO
+	play_animation("idle")
+	print("Ona telah sampai di Point 9 (Depan Bengkel Laboratorium)!")
+
+	# Tunggu Rion mendekat jika masih jauh
+	var player = get_parent().find_child("Player", true, false)
+	while player and global_position.distance_to(player.global_position) > 8.0:
+		await get_tree().create_timer(0.5).timeout
+
+	if player:
+		var dir_to_rion = player.global_position - global_position
+		dir_to_rion.y = 0
+		if dir_to_rion.length() > 0.1:
+			look_at(global_position + dir_to_rion, Vector3.UP)
+
+	# Mainkan percakapan 19-line di Point 9
+	await point_9_dialog()
+
+	# Set objective pintu bengkel
+	var hud = get_parent().find_child("HUD", true, false)
+	if hud and hud.has_method("set_objective"):
+		hud.set_objective("Masuk ke dalam Bengkel Laboratorium Antariksa (Tekan E di Pintu)")
+
+	# Aktifkan Ona mengikuti Rion di sekitar Point 9
+	is_following_player = true
+	print("Ona sekarang dalam mode mengikuti Rion di sekitar Point 9.")
+
+func point_9_dialog() -> void:
+	is_dialogue = true
+	velocity = Vector3.ZERO
+	play_animation("idle")
+
+	var dialogue_lines: Array[String] = [
+		"Ona: Kita sudah sampai di depan Bengkel Laboratorium Antariksa. Tuan Rallux ada di dalam.",
+		"Rion: (Langkah kakinya melambat, lalu berhenti sepenuhnya. Matanya menatap pintu bengkel yang besar dengan cemas) Ona... tunggu.",
+		"Ona: Ada apa, Rion? Sensor motormu mendeteksi penurunan kecepatan secara drastis.",
+		"Rion: Aku... aku takut.",
+		"Ona: Takut? Pemindaian lingkungan: Bebas bahaya. Tidak ada radiasi liar atau monster antariksa di sekitar sini.",
+		"Rion: Bukan monster, Ona! Tapi... Tuan Rallux. Aku gak kenal beliau. Gimana kalau orangnya galak? Gimana kalau beliau marah karena kapsulku jatuh di planet ini? Atau... gimana kalau beliau malah mengusirku karena aku ngerepotin?",
+		"Ona: Analisis biometrik: Telapak tanganmu dingin dan ritme napasmu tidak beraturan. Pola emosi: Cemas menghadapi orang asing (Sosial-Anxiety).",
+		"Rion: Rasanya tenggorokanku kering, Ona... Kakiku mendadak berat banget buat melangkah ke pintu itu.",
+		"Ona: Rion, dengarkan aku. Merasa cemas saat akan bertemu orang baru adalah respons yang sangat wajar bagi otak organik.",
+		"Ona: Tapi perlu kamu ketahui: Database Bengkel mencatat bahwa Tuan Rallux adalah orang yang merancang protokol pertolonganku.",
+		"Ona: Beliau sangat menyukai penjelajah antariksa dan sudah terbiasa memperbaiki hal-hal yang rusak—termasuk membantu memulihkan memorimu.",
+		"Rion: Tapi... kalau nanti aku gak bisa jawab pertanyaannya gimana? Kalau aku kelihatan aneh atau bodoh di depan beliau?",
+		"Ona: Kamu tidak harus langsung bercerita banyak hal, Rion.",
+		"Ona: Kita bisa masuk pelan-pelan. Aku akan terus berdiri tepat di sampingmu. Kalau suasananya terasa terlalu ramai atau membuatmu kewalahan, kamu boleh memberitahuku kapan saja, dan kita bisa melangkah mundur untuk istirahat sejenak di luar.",
+		"Rion: Jadi... aku gak harus memaksakan diri kalau merasa gak nyaman?",
+		"Ona: Tentu saja tidak. Kamu selalu punya kendali atas langkahmu sendiri. Tapi kamu tidak akan sendirian. Aku bersamamu.",
+		"Rion: (Menghela napas panjang, meremas jemarinya perlahan lalu menatap Ona) Oke... Berdiri di sampingku terus ya, Ona? Jangan tinggalin aku.",
+		"Ona: Dipahami. Protokol Pendampingan Penuh aktif. Aku tidak akan ke mana-mana.",
+		"Ona: Saat kamu sudah merasa siap, ayo kita buka pintunya dan melangkah masuk bersama-sama."
+	]
+
+	StoryManager.start_dialogue(dialogue_lines, "Ona")
+	await StoryManager.dialogue_finished
+	is_dialogue = false
+
+func _process_follow_player(_delta: float) -> void:
+	var player = get_parent().find_child("Player", true, false)
+	if player == null or not is_instance_valid(player):
+		velocity.x = 0.0
+		velocity.z = 0.0
+		move_and_slide()
+		play_animation("idle")
+		return
+
+	var dist = global_position.distance_to(player.global_position)
+	# Jarak target follow sekitar 2.2 - 2.8 meter
+	if dist > 2.8:
+		navigation_agent.target_position = player.global_position
+		var next_pos = navigation_agent.get_next_path_position()
+		var dir = global_position.direction_to(next_pos)
+		dir.y = 0.0
+
+		if dir.length() <= 0.01:
+			dir = global_position.direction_to(player.global_position)
+			dir.y = 0.0
+
+		if dir.length() > 0.01:
+			dir = dir.normalized()
+			var follow_speed = clamp(dist * 2.0, 3.5, 7.5)
+			velocity.x = dir.x * follow_speed
+			velocity.z = dir.z * follow_speed
+			look_at(global_position + Vector3(dir.x, 0, dir.z), Vector3.UP)
+			play_animation("walk" if follow_speed < 5.5 else "run")
+		else:
+			velocity.x = 0.0
+			velocity.z = 0.0
+			play_animation("idle")
+	else:
+		# Dekat dengan player: berhenti dan tatap player
+		velocity.x = 0.0
+		velocity.z = 0.0
+		play_animation("idle")
+		var dir_to_player = player.global_position - global_position
+		dir_to_player.y = 0.0
+		if dir_to_player.length() > 0.2:
+			look_at(global_position + dir_to_player, Vector3.UP)
+
+	move_and_slide()

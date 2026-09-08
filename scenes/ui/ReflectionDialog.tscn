@@ -1,0 +1,241 @@
+﻿[gd_scene format=3 uid="uid://b23reflectiondlg"]
+
+[ext_resource type="Script" path="res://scenes/ui/ReflectionDialog.gd" id="1_refscript"]
+[ext_resource type="FontFile" uid="uid://bb80gooxacs7q" path="res://Fonts/Telegraf-Bold-fix15408087824949790956.30.2aa1f309-cb96-4ad6-a94f-e5147e9.ttf" id="2_tbold"]
+[ext_resource type="FontFile" uid="uid://ctnm2q1fg78u6" path="res://Fonts/telegraf_regular_fix7340951357143627189..44096e48-3548-42c1-bd8a-c4745e9.ttf" id="3_treg"]
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_card"]
+bg_color = Color(0.08, 0.06, 0.16, 0.94)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.45, 0.75, 1.0, 0.8)
+corner_radius_top_left = 20
+corner_radius_top_right = 20
+corner_radius_bottom_right = 20
+corner_radius_bottom_left = 20
+shadow_color = Color(0.3, 0.6, 1.0, 0.35)
+shadow_size = 20
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_input"]
+bg_color = Color(0.14, 0.1, 0.26, 0.95)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.6, 0.4, 0.95, 0.8)
+corner_radius_top_left = 12
+corner_radius_top_right = 12
+corner_radius_bottom_right = 12
+corner_radius_bottom_left = 12
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_normal"]
+bg_color = Color(0.24, 0.16, 0.52, 0.95)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.45, 0.85, 1.0, 0.8)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_right = 14
+corner_radius_bottom_left = 14
+shadow_color = Color(0.35, 0.85, 1.0, 0.3)
+shadow_size = 8
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_btn_hover"]
+bg_color = Color(0.34, 0.22, 0.72, 1.0)
+border_width_left = 2
+border_width_top = 2
+border_width_right = 2
+border_width_bottom = 2
+border_color = Color(0.7, 1.0, 1.0, 1.0)
+corner_radius_top_left = 14
+corner_radius_top_right = 14
+corner_radius_bottom_right = 14
+corner_radius_bottom_left = 14
+shadow_color = Color(0.4, 0.9, 1.0, 0.5)
+shadow_size = 14
+
+[sub_resource type="StyleBoxFlat" id="StyleBoxFlat_badge_card"]
+bg_color = Color(0.09, 0.07, 0.18, 0.96)
+border_width_left = 3
+border_width_top = 3
+border_width_right = 3
+border_width_bottom = 3
+border_color = Color(1.0, 0.82, 0.2, 0.9)
+corner_radius_top_left = 22
+corner_radius_top_right = 22
+corner_radius_bottom_right = 22
+corner_radius_bottom_left = 22
+shadow_color = Color(1.0, 0.8, 0.2, 0.4)
+shadow_size = 24
+
+[node name="ReflectionDialog" type="CanvasLayer"]
+process_mode = 3
+layer = 30
+script = ExtResource("1_refscript")
+
+[node name="Backdrop" type="ColorRect" parent="."]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.02, 0.015, 0.05, 0.82)
+
+[node name="CardContainer" type="Control" parent="."]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 2
+
+[node name="ReflectionCard" type="PanelContainer" parent="CardContainer"]
+custom_minimum_size = Vector2(620, 330)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -310.0
+offset_top = -165.0
+offset_right = 310.0
+offset_bottom = 165.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(310, 165)
+theme_override_styles/panel = SubResource("StyleBoxFlat_card")
+
+[node name="Margin" type="MarginContainer" parent="CardContainer/ReflectionCard"]
+layout_mode = 2
+theme_override_constants/margin_left = 32
+theme_override_constants/margin_top = 28
+theme_override_constants/margin_right = 32
+theme_override_constants/margin_bottom = 28
+
+[node name="VBox" type="VBoxContainer" parent="CardContainer/ReflectionCard/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="HeaderLabel" type="Label" parent="CardContainer/ReflectionCard/Margin/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.4, 0.85, 1.0, 1.0)
+theme_override_fonts/font = ExtResource("2_tbold")
+theme_override_font_sizes/font_size = 18
+text = "✦ REFLEKSI DIRI BERSAMA ONA ✦"
+horizontal_alignment = 1
+
+[node name="QuestionLabel" type="Label" parent="CardContainer/ReflectionCard/Margin/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.92, 0.94, 1.0, 1.0)
+theme_override_fonts/font = ExtResource("3_treg")
+theme_override_font_sizes/font_size = 18
+text = "Bagaimana perasaanmu setelah berhasil melewati rintangan sungai tadi?"
+horizontal_alignment = 1
+autowrap_mode = 3
+
+[node name="InputContainer" type="VBoxContainer" parent="CardContainer/ReflectionCard/Margin/VBox"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="ReflectionInput" type="LineEdit" parent="CardContainer/ReflectionCard/Margin/VBox/InputContainer"]
+custom_minimum_size = Vector2(0, 52)
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("3_treg")
+theme_override_font_sizes/font_size = 16
+theme_override_styles/normal = SubResource("StyleBoxFlat_input")
+placeholder_text = "Ketik apa yang sedang kamu rasakan di sini..."
+alignment = 1
+max_length = 150
+
+[node name="HintLabel" type="Label" parent="CardContainer/ReflectionCard/Margin/VBox/InputContainer"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.65, 0.7, 0.85, 0.8)
+theme_override_fonts/font = ExtResource("3_treg")
+theme_override_font_sizes/font_size = 13
+text = "(Tekan Enter untuk melanjutkan)"
+horizontal_alignment = 1
+
+[node name="SubmitButton" type="Button" parent="CardContainer/ReflectionCard/Margin/VBox"]
+custom_minimum_size = Vector2(0, 46)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("2_tbold")
+theme_override_font_sizes/font_size = 16
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn_normal")
+theme_override_styles/hover = SubResource("StyleBoxFlat_btn_hover")
+text = "Kirim Tanggapan"
+
+[node name="BadgeCard" type="PanelContainer" parent="CardContainer"]
+visible = false
+custom_minimum_size = Vector2(640, 360)
+layout_mode = 1
+anchors_preset = 8
+anchor_left = 0.5
+anchor_top = 0.5
+anchor_right = 0.5
+anchor_bottom = 0.5
+offset_left = -320.0
+offset_top = -180.0
+offset_right = 320.0
+offset_bottom = 180.0
+grow_horizontal = 2
+grow_vertical = 2
+pivot_offset = Vector2(320, 180)
+theme_override_styles/panel = SubResource("StyleBoxFlat_badge_card")
+
+[node name="Margin" type="MarginContainer" parent="CardContainer/BadgeCard"]
+layout_mode = 2
+theme_override_constants/margin_left = 36
+theme_override_constants/margin_top = 32
+theme_override_constants/margin_right = 36
+theme_override_constants/margin_bottom = 32
+
+[node name="VBox" type="VBoxContainer" parent="CardContainer/BadgeCard/Margin"]
+layout_mode = 2
+theme_override_constants/separation = 16
+
+[node name="StarLabel" type="Label" parent="CardContainer/BadgeCard/Margin/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(1.0, 0.85, 0.2, 1.0)
+theme_override_fonts/font = ExtResource("2_tbold")
+theme_override_font_sizes/font_size = 20
+text = "🌟 KETERAMPILAN TERCATAT 🌟"
+horizontal_alignment = 1
+
+[node name="BadgeTitle" type="Label" parent="CardContainer/BadgeCard/Margin/VBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.4, 0.95, 1.0, 1.0)
+theme_override_fonts/font = ExtResource("2_tbold")
+theme_override_font_sizes/font_size = 26
+text = "\"Rem & Intip Pola\""
+horizontal_alignment = 1
+
+[node name="BadgeDesc" type="Label" parent="CardContainer/BadgeCard/Margin/VBox"]
+custom_minimum_size = Vector2(0, 90)
+layout_mode = 2
+theme_override_colors/font_color = Color(0.9, 0.92, 0.98, 1.0)
+theme_override_fonts/font = ExtResource("3_treg")
+theme_override_font_sizes/font_size = 17
+text = "Saat menghadapi hal rumit, berhenti sejenak untuk melihat petunjuk. Mengulang satu langkah kecil bukanlah sebuah kegagalan."
+horizontal_alignment = 1
+vertical_alignment = 1
+autowrap_mode = 3
+
+[node name="CloseButton" type="Button" parent="CardContainer/BadgeCard/Margin/VBox"]
+custom_minimum_size = Vector2(0, 48)
+layout_mode = 2
+mouse_default_cursor_shape = 2
+theme_override_colors/font_color = Color(1, 1, 1, 1)
+theme_override_fonts/font = ExtResource("2_tbold")
+theme_override_font_sizes/font_size = 17
+theme_override_styles/normal = SubResource("StyleBoxFlat_btn_normal")
+theme_override_styles/hover = SubResource("StyleBoxFlat_btn_hover")
+text = "Lanjutkan Perjalanan"

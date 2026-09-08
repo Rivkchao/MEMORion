@@ -10,6 +10,11 @@ var is_resetting: bool = false
 var has_triggered_distraction: bool = false
 var dragging_rock: Node3D = null
 
+var is_crossing_active: bool = false
+var has_said_near_end: bool = false
+var has_crossed_river: bool = false
+var safe_crossing_pos: Vector3 = Vector3(-17.8, 0.2, 0.0)
+
 var slots: Array = []
 var rocks: Array = []
 var correct_sequence: Array = []
@@ -107,7 +112,19 @@ func start_puzzle() -> void:
 	_generate_sequence()
 	_hide_dialogue_ui()
 	await _move_camera_to_puzzle()
+
+	# Fase 1: Panduan Misi
+	var hud = get_tree().current_scene.find_child("HUD", true, false)
+	if hud and hud.has_method("set_objective"):
+		hud.set_objective("Ingat urutan kilauannya! Pasangkan batu sesuai urutan menyala dan jenis batu.")
+
 	await _play_sequence_preview()
+
+	# Fase 2: Dialog Rion saat mulai pasang
+	StoryManager.start_dialogue([
+		"Rion: Wah, gampang banget kayaknya! Pokoknya pasangnya sesuai urutan dan sesuai jenis batu ya..."
+	], "Rion")
+	await StoryManager.dialogue_finished
 
 func _hide_dialogue_ui() -> void:
 	if StoryManager and StoryManager.dialogue_box and StoryManager.dialogue_box is CanvasItem:
@@ -277,8 +294,12 @@ func _on_wrong_step(slot: Node3D, rock: Node3D) -> void:
 	for r in rocks:
 		r.return_to_original()
 
+	# Skenario jika pemain salah memasukkan urutan
+	StoryManager.start_dialogue(["Ona: Tidak apa-apa Rion. Yuk, kita lihat lagi polanya dari awal bersama-sama."], "Ona")
+	await StoryManager.dialogue_finished
+
 	# Preview kembali urutan yang benar
-	await get_tree().create_timer(0.6).timeout
+	await get_tree().create_timer(0.5).timeout
 	await _play_sequence_preview()
 	is_resetting = false
 
@@ -293,16 +314,93 @@ func _on_complete() -> void:
 
 	_restore_camera()
 
-	# Alur: Dialog Rion -> Dialog Selesai -> FragmentBox Muncul
-	await get_tree().create_timer(0.8).timeout
-	if StoryManager.dialogue_box != null:
-		StoryManager.dialogue_box.set_avatar_by_emotion("kagum")
-		StoryManager.start_dialogue(["Luar biasa! Kamu berhasil menyusun batu-batu itu dengan sempurna!"], "Rion")
-		await StoryManager.dialogue_finished
-		if not GameManager.collected_fragments.get("batu", false):
-			await FragmentBox.show_fragment("batu")
+	# Skenario saat pemain memasukkan urutan yang benar
+	await get_tree().create_timer(0.6).timeout
+	var win_dialogue: Array[String] = [
+		"Rion: Yeeay! Berhasil! Batunya muncul semua ke atas air!",
+		"Ona: Wah kamu hebat Rion. Jalur penyeberangan telah terbuka. Sekarang ayo kita melompat keatas batunya."
+	]
+	StoryManager.start_dialogue(win_dialogue, "Rion")
+	await StoryManager.dialogue_finished
+
+	if not GameManager.collected_fragments.get("batu", false):
+		await FragmentBox.show_fragment("batu")
+
+	# Fase 3: Instruksi Penyeberangan / Melompat
+	var jump_dialogue: Array[String] = [
+		"Ona: Lompat saja saat kamu sudah merasa siap. Kamu pasti bisa melewatinya."
+	]
+	StoryManager.start_dialogue(jump_dialogue, "Ona")
+	await StoryManager.dialogue_finished
 
 	_set_gameplay_ui_visible(true)
+	var hud = get_tree().current_scene.find_child("HUD", true, false)
+	if hud and hud.has_method("set_objective"):
+		hud.set_objective("Lompat melewati batu-batu sungai ke seberang")
+
+	start_river_crossing_phase()
+
+func start_river_crossing_phase() -> void:
+	is_crossing_active = true
+	has_said_near_end = false
+	has_crossed_river = false
+
+	var ona = get_tree().current_scene.find_child("Ona", true, false)
+	if ona and "waypoints" in ona and ona.waypoints.size() > 6 and ona.waypoints[6]:
+		safe_crossing_pos = ona.waypoints[6].global_position + Vector3(0.5, 0.2, 0.0)
+	elif ona:
+		safe_crossing_pos = ona.global_position + Vector3(0.5, 0.2, 0.0)
+
+func _process(_delta: float) -> void:
+	if not is_crossing_active or has_crossed_river:
+		return
+
+	var player = get_tree().get_first_node_in_group("player")
+	if player == null or not is_instance_valid(player):
+		return
+
+	var px = player.global_position.x
+	var py = player.global_position.y
+
+	# 1. Deteksi Jatuh ke Air (Y di bawah air sungai pada rentang sungai)
+	if py < -1.2 and px < -20.0 and px > -37.0:
+		on_player_fell_in_river()
+		return
+
+	# 2. Deteksi Sisa Satu Batu (Rion di dekat batu terakhir X <= -32.0 dan X > -36.0)
+	if not has_said_near_end and px <= -32.0 and px > -36.0 and py > -1.0:
+		has_said_near_end = true
+		StoryManager.start_dialogue(["Ona: Lompatan yang bagus Rion. Tinggal sedikit lagi kamu berhasil."], "Ona")
+
+	# 3. Deteksi Selesai Menyeberang (Rion mendarat di seberang sungai X <= -36.5)
+	if not has_crossed_river and px <= -36.5 and py > -1.0:
+		has_crossed_river = true
+		is_crossing_active = false
+		_on_river_crossed_successfully()
+
+func on_player_fell_in_river() -> void:
+	var player = get_tree().get_first_node_in_group("player")
+	if player:
+		player.global_position = safe_crossing_pos
+		player.velocity = Vector3.ZERO
+	if StoryManager and not is_dialogue_playing():
+		StoryManager.start_dialogue(["Ona: Tidak apa-apa Rion, aku akan selalu menyelamatkanmu. Kamu aman bersamaku"], "Ona")
+
+func is_dialogue_playing() -> bool:
+	if StoryManager and StoryManager.dialogue_box:
+		if StoryManager.dialogue_box.has_method("is_active"):
+			return StoryManager.dialogue_box.is_active()
+	return false
+
+func _on_river_crossed_successfully() -> void:
+	print("Rion berhasil menyeberangi sungai!")
+	var hud = get_tree().current_scene.find_child("HUD", true, false)
+	if hud and hud.has_method("set_objective"):
+		hud.set_objective("Temui Tuan Rallux di dalam Bengkel Laboratorium")
+
+	var ona = get_tree().current_scene.find_child("Ona", true, false)
+	if ona and ona.has_method("teleport_to_point_8"):
+		await ona.teleport_to_point_8()
 
 func _restore_camera() -> void:
 	if camera_rig == null:

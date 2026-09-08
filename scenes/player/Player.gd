@@ -109,12 +109,16 @@ func _physics_process(delta: float) -> void:
 
 func _check_fall() -> void:
 	if global_position.y < fall_threshold:
+		if RockPuzzleManager and RockPuzzleManager.is_crossing_active:
+			RockPuzzleManager.on_player_fell_in_river()
+			return
 		global_position = last_safe_position
 		velocity = Vector3.ZERO
 		return
 	
 	if is_on_floor():
-		last_safe_position = global_position
+		if not (RockPuzzleManager and RockPuzzleManager.is_crossing_active):
+			last_safe_position = global_position
 
 func _apply_gravity(delta: float) -> void:
 	if not is_on_floor():
