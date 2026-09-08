@@ -137,7 +137,9 @@ func _physics_process(delta: float) -> void:
 	for child in target.get_children():
 		if child is CollisionObject3D:
 			excludes.append(child.get_rid())
-	query.exclude = excludes
+	query.collision_mask = 1 # Hanya tabrak lingkungan/solid (layer 1)
+	query.collide_with_areas = false
+	query.collide_with_bodies = true
 
 	var result: Dictionary = space.intersect_ray(query)
 	var final_pos: Vector3 = desired_pos
@@ -151,6 +153,45 @@ func _physics_process(delta: float) -> void:
 	
 	if global_position.distance_squared_to(focus_point) > 0.01:
 		look_at(focus_point, Vector3.UP)
+
+## Snap instan posisi & arah hadap kamera ke belakang target
+func snap_to_target() -> void:
+	if target == null:
+		target = get_tree().root.find_child("Player", true, false) as Node3D
+	if target == null:
+		return
+	_last_target_pos = target.global_position
+
+	var target_facing_node := target
+	if target.has_node("RionMesh"):
+		target_facing_node = target.get_node("RionMesh")
+	elif target.has_node("Model"):
+		target_facing_node = target.get_node("Model")
+
+	yaw = target_facing_node.global_rotation.y + PI
+	pitch = 20.0
+	var pitch_rad := deg_to_rad(pitch)
+	var offset := Vector3(
+		sin(yaw) * cos(pitch_rad),
+		sin(pitch_rad),
+		cos(yaw) * cos(pitch_rad)
+	) * zoom_distance
+	var focus_point := target.global_position + Vector3(0.0, look_offset_height, 0.0)
+	var desired_pos := focus_point + offset
+
+	var space := get_world_3d().direct_space_state
+	if space:
+		var query := PhysicsRayQueryParameters3D.create(focus_point, desired_pos)
+		query.collision_mask = 1
+		query.collide_with_areas = false
+		query.collide_with_bodies = true
+		var result := space.intersect_ray(query)
+		if not result.is_empty():
+			desired_pos = result["position"] + (result["normal"] * 0.25)
+
+	global_position = desired_pos
+	look_at(focus_point, Vector3.UP)
+	orbit_cooldown = 0.0
 
 ## Helper untuk kontrol kamera dari layar sentuh / mobile
 func rotate_camera(relative_delta: Vector2) -> void:

@@ -11,6 +11,8 @@ var has_spawn_override: bool = false
 var rock_puzzle_done: bool = false
 
 # State R1 (Bengkel & Ruangan)
+var has_visited_workshop: bool = false
+var workshop_door_locked: bool = false
 var solved_levers: Dictionary = {}
 var terminal_puzzle_done: bool = false
 var unpacking_rak1_done: bool = false

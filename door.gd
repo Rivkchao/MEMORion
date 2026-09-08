@@ -79,6 +79,15 @@ func _on_body_exited(body: Node3D) -> void:
 		hide_prompt()
 
 func interact() -> void:
+	# Cek apakah pintu bengkel sedang terkunci dari cerita
+	if target_scene.contains("R1") and GameManager.workshop_door_locked:
+		var locked_msg: Array[String] = [
+			"Ona: Ayo kita jalan-jalan santai di sekitar kebun luar dulu, Rion. Supaya kamu bisa menghirup udara segar dan merasa lebih rileks."
+		]
+		if StoryManager and StoryManager.has_method("start_dialogue"):
+			StoryManager.start_dialogue(locked_msg, "Ona")
+		return
+
 	if not spawn_point.is_empty() or spawn_position != Vector3.ZERO:
 		if _teleport_player():
 			return
@@ -135,7 +144,7 @@ func _show_locked() -> void:
 func _change_scene() -> void:
 	var player = _get_player()
 	if player and GameManager.has_method("save_state"):
-		GameManager.save_state(player, "LEV1")
+		GameManager.save_state(player, target_scene)
 
 	if has_node("/root/LoadingScreen"):
 		LoadingScreen.load_scene(target_scene)

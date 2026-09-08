@@ -29,6 +29,14 @@ func _ready():
 			reflection_dialog = dialog_scene.instantiate()
 			get_parent().add_child.call_deferred(reflection_dialog)
 
+	# Jika Ona berada di dalam Bengkel (R1), serahkan kendali penuh cutscene ke Main.gd
+	if get_parent().has_node("StoryPointing2") or (get_tree().current_scene and get_tree().current_scene.name == "R1"):
+		is_moving = false
+		is_dialogue = false
+		is_following_player = false
+		set_physics_process(false)
+		return
+
 	var storypoints = get_parent().get_node_or_null("Storypoints")
 	if storypoints:
 		for point in storypoints.get_children():
@@ -36,6 +44,19 @@ func _ready():
 				waypoints.append(point)
 
 	print("Jumlah waypoint Ona: ", waypoints.size())
+
+	# Jika pemain baru saja kembali dari Bengkel (R1) dan pintu terkunci:
+	if GameManager.workshop_door_locked:
+		is_moving = false
+		is_following_player = true
+		# Posisikan Ona di dekat pintu bengkel / Point 9
+		if waypoints.size() >= 9:
+			global_position = waypoints[8].global_position + Vector3(2.0, 0, 0)
+		else:
+			global_position = Vector3(-145.0, 0.0, -0.86)
+		play_animation("idle")
+		print("Ona menyambut Rion di kebun luar dan siap mengikuti ke mana pun Rion pergi!")
+		return
 
 	await get_tree().create_timer(5.0).timeout
 	go_to_next_waypoint()

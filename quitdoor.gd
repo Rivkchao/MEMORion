@@ -59,6 +59,9 @@ func _try_interact() -> void:
 	if global_position.distance_to(player.global_position) > interact_distance:
 		return
 	_transition_started = true
+	GameManager.has_visited_workshop = true
+	GameManager.workshop_door_locked = true
+	GameManager.set_spawn_override(Vector3(-147.0, 0.0, -0.86), "LEV1")
 	print("[DoorExit] Pindah scene ke: ", target_scene)
 	if has_node("/root/LoadingScreen"):
 		LoadingScreen.load_scene(target_scene)

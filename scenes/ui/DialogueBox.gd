@@ -77,6 +77,20 @@ func _show_line() -> void:
 		display_text = raw_text.substr(5).strip_edges()
 		name_label.modulate = Color(0.4, 0.85, 1.0, 1.0)
 		avatar.visible = true
+	elif raw_text.begins_with("Rallux:") or raw_text.begins_with("Rallux (") or raw_text.begins_with("Rallux:"):
+		current_speaker = "Rallux"
+		var colon_idx = raw_text.find(":")
+		if colon_idx != -1:
+			display_text = raw_text.substr(colon_idx + 1).strip_edges()
+		else:
+			display_text = raw_text.substr(6).strip_edges()
+		name_label.modulate = Color(1.0, 0.65, 0.2, 1.0) # Orange / warm amber
+		avatar.visible = false
+	elif raw_text == "TANG! KLATAK!" or raw_text.begins_with("TANG!") or raw_text.begins_with("*Suara"):
+		current_speaker = "Efek Suara"
+		display_text = raw_text
+		name_label.modulate = Color(1.0, 0.8, 0.2, 1.0)
+		avatar.visible = false
 	elif raw_text.begins_with("[SISTEM ONA]") or raw_text.begins_with("*[SISTEM ONA]*"):
 		current_speaker = "[SISTEM ONA]"
 		if raw_text.begins_with("[SISTEM ONA]"):
@@ -85,7 +99,7 @@ func _show_line() -> void:
 			display_text = raw_text.substr(14).strip_edges()
 		name_label.modulate = Color(0.2, 1.0, 0.8, 1.0)
 		avatar.visible = false
-	elif raw_text.begins_with("_(") or raw_text.begins_with("("):
+	elif raw_text.begins_with("_(") or raw_text.begins_with("(") or raw_text.begins_with("*"):
 		current_speaker = "Catatan"
 		display_text = raw_text
 		name_label.modulate = Color(0.75, 0.75, 0.85, 1.0)
