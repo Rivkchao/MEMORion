@@ -11,6 +11,7 @@ var original_position: Vector3
 var original_rotation: Vector3
 var is_solved: bool = false
 
+var last_cursor_pos: Vector2 = Vector2.ZERO
 var _tween: Tween = null
 
 func _ready() -> void:
@@ -41,6 +42,18 @@ func stop_drag() -> void:
 func set_solved() -> void:
 	is_solved = true
 
+func is_cursor_pointing(camera: Camera3D, screen_pos: Vector2) -> bool:
+	if camera == null or is_solved:
+		return false
+	var ray_origin = camera.project_ray_origin(screen_pos)
+	var ray_dir = camera.project_ray_normal(screen_pos)
+	var to_center = global_position - ray_origin
+	var projection = to_center.dot(ray_dir)
+	if projection <= 0.0:
+		return false
+	var closest_point = ray_origin + ray_dir * projection
+	return closest_point.distance_to(global_position) <= 1.6
+
 func _physics_process(_delta: float) -> void:
 	if global_position.y < respawn_y_threshold:
 		return_to_original()
@@ -50,7 +63,7 @@ func _physics_process(_delta: float) -> void:
 	var camera = get_viewport().get_camera_3d()
 	if camera == null:
 		return
-	var mouse_pos = get_viewport().get_mouse_position()
+	var mouse_pos = last_cursor_pos if last_cursor_pos != Vector2.ZERO else get_viewport().get_mouse_position()
 	var ray_origin = camera.project_ray_origin(mouse_pos)
 	var ray_dir = camera.project_ray_normal(mouse_pos)
 	if abs(ray_dir.y) > 0.001:
@@ -62,29 +75,45 @@ func _physics_process(_delta: float) -> void:
 func _input_event(_camera: Camera3D, event: InputEvent, _event_position: Vector3, _normal: Vector3, _shape_idx: int) -> void:
 	if not RockPuzzleManager.is_puzzle_active or RockPuzzleManager.is_previewing or RockPuzzleManager.is_resetting or is_solved:
 		return
+	var is_press: bool = false
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
-		if RockPuzzleManager.dragging_rock == null:
-			_pick_up()
+		is_press = true
+		last_cursor_pos = event.position
+	elif event is InputEventScreenTouch and event.pressed:
+		is_press = true
+		last_cursor_pos = event.position
+
+	if is_press and RockPuzzleManager.dragging_rock == null:
+		pick_up()
 
 func _input(event: InputEvent) -> void:
-	# Lepas drag di mana saja layar diklik-lepas
-	if is_dragging and event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and not event.pressed:
-		_drop()
+	if event is InputEventMouseMotion or event is InputEventScreenDrag:
+		last_cursor_pos = event.position
 
-func _pick_up() -> void:
+	# Lepas drag di mana saja layar diklik-lepas atau touch dilepas
+	if is_dragging:
+		var is_release: bool = false
+		if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and not event.pressed:
+			is_release = true
+		elif event is InputEventScreenTouch and not event.pressed:
+			is_release = true
+
+		if is_release:
+			drop()
+
+func pick_up() -> void:
 	if current_slot != null:
 		current_slot.occupied_by = null
 		current_slot = null
 	is_dragging = true
 	RockPuzzleManager.dragging_rock = self
-	# Langsung tempelkan batu ke bidang drag di bawah kursor (responsif sekali klik)
 	_snap_to_cursor()
 
 func _snap_to_cursor() -> void:
 	var camera = get_viewport().get_camera_3d()
 	if camera == null:
 		return
-	var mouse_pos = get_viewport().get_mouse_position()
+	var mouse_pos = last_cursor_pos if last_cursor_pos != Vector2.ZERO else get_viewport().get_mouse_position()
 	var ray_origin = camera.project_ray_origin(mouse_pos)
 	var ray_dir = camera.project_ray_normal(mouse_pos)
 	if abs(ray_dir.y) > 0.001:
@@ -92,7 +121,7 @@ func _snap_to_cursor() -> void:
 		var world_pos = ray_origin + ray_dir * t
 		global_position = Vector3(world_pos.x, drag_y, world_pos.z)
 
-func _drop() -> void:
+func drop() -> void:
 	is_dragging = false
 	RockPuzzleManager.dragging_rock = null
 	var nearest_slot = _find_nearest_slot()
@@ -111,11 +140,11 @@ func _drop() -> void:
 
 func _find_nearest_slot() -> Node3D:
 	# Jarak dihitung pada bidang XZ (abaikan Y) agar tidak gagal karena tinggi drag
-	var min_dist = 1.8
+	var min_dist = 3.0
 	var nearest = null
 	var rock_xz = Vector2(global_position.x, global_position.z)
 	for slot in RockPuzzleManager.slots:
-		if slot.is_occupied():
+		if not is_instance_valid(slot) or slot.is_occupied():
 			continue
 		var slot_xz = Vector2(slot.global_position.x, slot.global_position.z)
 		var dist = rock_xz.distance_to(slot_xz)

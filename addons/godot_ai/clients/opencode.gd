@@ -36,4 +36,3 @@ func _init() -> void:
 	command_initial_fields = {"enabled": true}
 	command_user_fields = PackedStringArray(["enabled", "timeout", "environment", "cwd"])
 	command_timeout_fields = PackedStringArray(["timeout"])
-	command_supports_url_fallback = true

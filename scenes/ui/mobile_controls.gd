@@ -256,17 +256,17 @@ func _start_joystick(touch_id: int, touch_pos: Vector2) -> void:
 
 func _update_joystick(touch_pos: Vector2) -> void:
 	var base_center_global = joystick_base.global_position + _joystick_center
-	var offset = touch_pos - base_center_global
-	var dist = offset.length()
+	var drag_offset = touch_pos - base_center_global
+	var dist = drag_offset.length()
 	
 	if dist > max_joystick_radius:
-		offset = offset.normalized() * max_joystick_radius
+		drag_offset = drag_offset.normalized() * max_joystick_radius
 	
 	# Geser knob secara presisi
-	joystick_knob.position = (_joystick_center + offset) - (joystick_knob.size / 2.0)
+	joystick_knob.position = (_joystick_center + drag_offset) - (joystick_knob.size / 2.0)
 	
 	# Normalisasi vektor input (-1.0 s/d 1.0)
-	var raw_vec = offset / max_joystick_radius
+	var raw_vec = drag_offset / max_joystick_radius
 	if raw_vec.length() < deadzone:
 		_joystick_input = Vector2.ZERO
 	else:

@@ -1,9 +1,9 @@
 [gd_scene format=4 uid="uid://b6nekddtmru8c"]
 
-[ext_resource type="Texture2D" uid="uid://bod5f1ndajms5" path="res://assets/World/Stylized Nature MegaKit/Textures/Bark_DeadTree.png" id="2_0hpxv"]
+[ext_resource type="Texture2D" uid="uid://bod5f1ndajms5" path="res://assets/World/Stylized Nature MegaKit/textures/Bark_DeadTree.png" id="2_0hpxv"]
 [ext_resource type="Texture2D" uid="uid://dtsic8stagvea" path="res://assets/World/Stylized Nature MegaKit/glTF/Bark_NormalTree_Normal.png" id="3_0tbwp"]
-[ext_resource type="Texture2D" uid="uid://crxmjwdbe7evr" path="res://assets/World/Stylized Nature MegaKit/Textures/Pohon1.png" id="4_h5ntu"]
-[ext_resource type="Texture2D" uid="uid://ksolp0n404ee" path="res://assets/World/Stylized Nature MegaKit/Textures/Pohon2B.png" id="5_q5pnj"]
+[ext_resource type="Texture2D" uid="uid://crxmjwdbe7evr" path="res://assets/World/Stylized Nature MegaKit/textures/Pohon1.png" id="4_h5ntu"]
+[ext_resource type="Texture2D" uid="uid://ksolp0n404ee" path="res://assets/World/Stylized Nature MegaKit/textures/Pohon2B.png" id="5_q5pnj"]
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_c24ca"]
 resource_name = "Bark_NormalTree"

@@ -10,4 +10,9 @@ func _ready() -> void:
 func _process(_delta: float) -> void:
 	# Hanya lacak saat kamera ini sedang aktif (current)
 	if current and is_instance_valid(target_node):
-		look_at(target_node.global_position, Vector3.UP)
+		var target_pos = target_node.global_position + Vector3(0, 1.0, 0)
+		if global_position.distance_to(target_pos) > 0.2:
+			look_at(target_pos, Vector3.UP)
+
+func track_target(node: Node3D) -> void:
+	target_node = node

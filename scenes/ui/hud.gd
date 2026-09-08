@@ -35,3 +35,19 @@ func _unhandled_input(event: InputEvent) -> void:
 
 func _on_settings_pressed() -> void:
 	SettingsManager.open_settings_dialog(self)
+
+func set_gameplay_ui_visible(is_vis: bool) -> void:
+	for node_name in ["Prompt", "ObjectivePanel", "SettingsBtn"]:
+		var n = find_child(node_name, true, false)
+		if n:
+			n.visible = is_vis
+
+	var mobile = find_child("MobileControls", true, false)
+	if mobile:
+		if not is_vis:
+			mobile.visible = false
+		else:
+			if SettingsManager and SettingsManager.has_method("is_mobile_controls_active"):
+				mobile.visible = SettingsManager.is_mobile_controls_active()
+			else:
+				mobile.visible = true

@@ -3,7 +3,7 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://x455jwbbrus2"
-path.s3tc="res://.godot/imported/PERFECT GRID FOR FEED (5).png-3279e46075eb48094a7aaa766263daba.s3tc.ctex"
+path.s3tc="res://.godot/imported/PERFECT GRID FOR FEED (5).png-9962c1f63f64979f67f2e80309644ed7.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
@@ -11,8 +11,8 @@ metadata={
 
 [deps]
 
-source_file="res://assets/World/Stylized Nature MegaKit/Textures/PERFECT GRID FOR FEED (5).png"
-dest_files=["res://.godot/imported/PERFECT GRID FOR FEED (5).png-3279e46075eb48094a7aaa766263daba.s3tc.ctex"]
+source_file="res://assets/World/Stylized Nature MegaKit/textures/PERFECT GRID FOR FEED (5).png"
+dest_files=["res://.godot/imported/PERFECT GRID FOR FEED (5).png-9962c1f63f64979f67f2e80309644ed7.s3tc.ctex"]
 
 [params]
 

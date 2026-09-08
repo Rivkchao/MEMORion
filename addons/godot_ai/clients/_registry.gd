@@ -16,6 +16,7 @@ const _CLIENT_SCRIPT_PATHS := [
 	"res://addons/godot_ai/clients/claude_code.gd",
 	"res://addons/godot_ai/clients/claude_desktop.gd",
 	"res://addons/godot_ai/clients/codex.gd",
+	"res://addons/godot_ai/clients/codebuddy.gd",
 	"res://addons/godot_ai/clients/grok.gd",
 	"res://addons/godot_ai/clients/antigravity.gd",
 	"res://addons/godot_ai/clients/cursor.gd",
@@ -30,11 +31,12 @@ const _CLIENT_SCRIPT_PATHS := [
 	"res://addons/godot_ai/clients/zoo_code.gd",
 	"res://addons/godot_ai/clients/kiro.gd",
 	"res://addons/godot_ai/clients/trae.gd",
-	"res://addons/godot_ai/clients/cherry_studio.gd",
 	"res://addons/godot_ai/clients/opencode.gd",
 	"res://addons/godot_ai/clients/qwen_code.gd",
 	"res://addons/godot_ai/clients/kimi_code.gd",
 	"res://addons/godot_ai/clients/hermes.gd",
+	"res://addons/godot_ai/clients/pi.gd",
+	"res://addons/godot_ai/clients/deepseek_harness.gd",
 ]
 
 static var _instances: Array[McpClient] = []
@@ -100,6 +102,9 @@ static func _instance_is_coherent(inst: Object) -> bool:
 		inst.get("config_path_candidates") is Dictionary
 		and inst.get("config_file_env") is String
 		and inst.get("path_template") is Dictionary
+		and inst.get("server_key_path_aliases") is Array
+		and inst.get("config_merge_path_templates") is Dictionary
+		and inst.get("config_merge_project_paths") is PackedStringArray
 	)
 
 

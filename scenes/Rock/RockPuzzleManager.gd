@@ -74,6 +74,27 @@ func setup_camera(cam_rig: Node3D, puzzle_pos: Vector3) -> void:
 	camera_rig = cam_rig
 	puzzle_camera_position = puzzle_pos
 
+func _set_gameplay_ui_visible(is_vis: bool) -> void:
+	var root = get_tree().current_scene
+	if root == null:
+		root = get_tree().root
+	if root:
+		var hud = root.find_child("HUD", true, false)
+		if hud:
+			if hud.has_method("set_gameplay_ui_visible"):
+				hud.set_gameplay_ui_visible(is_vis)
+			else:
+				hud.visible = is_vis
+		var mobile_controls = root.find_child("MobileControls", true, false)
+		if mobile_controls:
+			if not is_vis:
+				mobile_controls.visible = false
+			else:
+				if SettingsManager and SettingsManager.has_method("is_mobile_controls_active"):
+					mobile_controls.visible = SettingsManager.is_mobile_controls_active()
+				else:
+					mobile_controls.visible = true
+
 func start_puzzle() -> void:
 	if is_puzzle_active or GameManager.rock_puzzle_done:
 		return
@@ -82,6 +103,7 @@ func start_puzzle() -> void:
 	current_step = 0
 	is_resetting = false
 
+	_set_gameplay_ui_visible(false)
 	_generate_sequence()
 	_hide_dialogue_ui()
 	await _move_camera_to_puzzle()
@@ -113,6 +135,70 @@ func _move_camera_to_puzzle() -> void:
 		.set_ease(Tween.EASE_OUT).set_trans(Tween.TRANS_CUBIC)
 
 	await tween.finished
+
+	var cam = camera_rig.find_child("*Camera*", true, false) as Camera3D
+	if cam:
+		cam.make_current()
+
+func _unhandled_input(event: InputEvent) -> void:
+	if not is_puzzle_active or is_previewing or is_resetting or is_puzzle_done:
+		return
+
+	var camera = get_tree().root.get_viewport().get_camera_3d()
+	if camera == null:
+		return
+
+	# 1. Deteksi Tekan (Klik Kiri / Touch Down)
+	var is_press := false
+	var press_pos := Vector2.ZERO
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and event.pressed:
+		is_press = true
+		press_pos = event.position
+	elif event is InputEventScreenTouch and event.pressed:
+		is_press = true
+		press_pos = event.position
+
+	if is_press and dragging_rock == null:
+		var best_rock: Node3D = null
+		var min_dist := 1.8
+		var ray_origin = camera.project_ray_origin(press_pos)
+		var ray_dir = camera.project_ray_normal(press_pos)
+		for r in rocks:
+			if not is_instance_valid(r) or r.get("is_solved"):
+				continue
+			var to_center = r.global_position - ray_origin
+			var proj = to_center.dot(ray_dir)
+			if proj > 0.0:
+				var closest_pt = ray_origin + ray_dir * proj
+				var d = closest_pt.distance_to(r.global_position)
+				if d < min_dist:
+					min_dist = d
+					best_rock = r
+
+		if best_rock != null:
+			if "last_cursor_pos" in best_rock:
+				best_rock.last_cursor_pos = press_pos
+			if best_rock.has_method("pick_up"):
+				best_rock.pick_up()
+			elif best_rock.has_method("_pick_up"):
+				best_rock._pick_up()
+			get_viewport().set_input_as_handled()
+			return
+
+	# 2. Deteksi Lepas (Klik Dilepas / Touch Up)
+	var is_release := false
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT and not event.pressed:
+		is_release = true
+	elif event is InputEventScreenTouch and not event.pressed:
+		is_release = true
+
+	if is_release and dragging_rock != null:
+		if dragging_rock.has_method("drop"):
+			dragging_rock.drop()
+		elif dragging_rock.has_method("_drop"):
+			dragging_rock._drop()
+		get_viewport().set_input_as_handled()
+		return
 
 func _play_sequence_preview() -> void:
 	is_previewing = true
@@ -215,6 +301,8 @@ func _on_complete() -> void:
 		await StoryManager.dialogue_finished
 		if not GameManager.collected_fragments.get("batu", false):
 			await FragmentBox.show_fragment("batu")
+
+	_set_gameplay_ui_visible(true)
 
 func _restore_camera() -> void:
 	if camera_rig == null:

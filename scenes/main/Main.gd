@@ -20,39 +20,68 @@ func _play_rocket_intro() -> void:
 	var player = find_child("Player", true, false)
 	var camera_rig = find_child("CameraRig", true, false)
 	var hud = find_child("HUD", true, false)
+	var ona = find_child("Ona", true, false)
 	
 	# Cari kamera player di dalam CameraRig secara otomatis
 	var player_cam: Camera3D = null
 	if camera_rig:
 		player_cam = camera_rig.find_child("*Camera*", true, false) as Camera3D
 
-	# 1. Nonaktifkan kontrol player & HUD
+	# 1. Nonaktifkan kontrol player, sembunyikan Rion sampai Ona selesai ke Point 5
 	if player:
+		player.visible = false
 		player.set_physics_process(false)
 		player.set_process_unhandled_input(false)
+		var col = player.find_child("CollisionShape3D", true, false)
+		if col:
+			col.set_deferred("disabled", true)
+
 	if camera_rig:
 		camera_rig.set_process(false)
 		camera_rig.set_process_unhandled_input(false)
+
 	if hud:
-		hud.visible = false
+		if hud.has_method("set_gameplay_ui_visible"):
+			hud.set_gameplay_ui_visible(false)
+		else:
+			hud.visible = false
 
 	# 2. Pindah ke kamera sinematik roket
 	if rocket_cam:
 		rocket_cam.make_current()
 
-	# 3. Putar animasi dan tunggu hingga tuntas
+	# 3. Putar animasi roket Kehancuran
 	if anim_player:
 		anim_player.play("Kehancuran")
-		await anim_player.animation_finished
 
-	# 4. Kembalikan kamera dan pulihkan kontrol pemain
-	if player_cam:
-		player_cam.make_current()
+	# 4. Saat roket mendarat (5 detik), arahkan kamera ke Ona yang mulai berjalan
+	await get_tree().create_timer(5.0).timeout
+	if rocket_cam and is_instance_valid(ona):
+		if rocket_cam.has_method("track_target"):
+			rocket_cam.track_target(ona)
+		else:
+			rocket_cam.target_node = ona
+
+	# 5. Tunggu sampai Ona selesai sampai di Point 5
+	if ona and ona.has_signal("point_5_finished"):
+		await ona.point_5_finished
+
+	# 6. Pastikan Rion muncul (unhidden) dan kontrol pemain pulih
 	if player:
+		player.visible = true
 		player.set_physics_process(true)
 		player.set_process_unhandled_input(true)
+		var col = player.find_child("CollisionShape3D", true, false)
+		if col:
+			col.set_deferred("disabled", false)
+
+	if player_cam:
+		player_cam.make_current()
 	if camera_rig:
 		camera_rig.set_process(true)
 		camera_rig.set_process_unhandled_input(true)
 	if hud:
-		hud.visible = true
+		if hud.has_method("set_gameplay_ui_visible"):
+			hud.set_gameplay_ui_visible(true)
+		else:
+			hud.visible = true

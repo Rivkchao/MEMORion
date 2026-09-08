@@ -24,6 +24,12 @@ var last_safe_position: Vector3 = Vector3.ZERO
 @onready var hand_point: Marker3D = get_node(hand_point_path)
 
 var held_item: Carryable3D = null
+var auto_target: Vector3 = Vector3.ZERO
+var is_auto_moving: bool = false
+
+func auto_move_to(target_pos: Vector3) -> void:
+	auto_target = target_pos
+	is_auto_moving = true
 
 func _ready() -> void:
 	add_to_group("player")
@@ -139,9 +145,24 @@ func _handle_movement() -> void:
 		input_dir = joystick_input
 
 	if input_dir == Vector2.ZERO or _is_any_ui_active():
+		if is_auto_moving and auto_target != Vector3.ZERO and not _is_any_ui_active():
+			var diff = auto_target - global_position
+			diff.y = 0.0
+			if diff.length() > 2.0:
+				var auto_dir = diff.normalized()
+				current_speed = sprint_speed
+				velocity.x = auto_dir.x * current_speed
+				velocity.z = auto_dir.z * current_speed
+				return
+			else:
+				is_auto_moving = false
+
 		velocity.x = move_toward(velocity.x, 0, current_speed)
 		velocity.z = move_toward(velocity.z, 0, current_speed)
 		return
+
+	# Pemain menggerakkan tombol / joystick secara manual
+	is_auto_moving = false
 
 	if camera_node == null:
 		if not camera_rig.is_empty():

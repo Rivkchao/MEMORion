@@ -85,6 +85,8 @@ var _eval_token_counter: int = 0
 ## _handle_take_screenshot (running inside that capture) detects the freeze
 ## synchronously. -1 until the first tick.
 var _last_loop_tick_msec: int = -1
+var _mcp_runtime_process_ticks: int = 0
+var _last_debug_status_reply: Dictionary = {}
 ## Rendering-freeze beacon for the Windows-minimize state (#794 smoke, 1b):
 ## the frames_drawn value last observed in _process, and when it last
 ## advanced. -1 until the first observed advance, so a booting or
@@ -92,6 +94,11 @@ var _last_loop_tick_msec: int = -1
 ## render-stalled and keeps the fresh-frame await path's error replies.
 var _last_frames_drawn_seen: int = -1
 var _last_frames_advance_msec: int = -1
+## #859: test/diagnostic seam for the synchronous eval liveness reply. The
+## debugger capture remains callable while the game loop is parked, so the
+## reply reports whether the _process beacon is actually advancing rather
+## than merely proving that the capture was registered once.
+var _last_eval_liveness_reply: Dictionary = {}
 
 
 func _ready() -> void:
@@ -130,6 +137,7 @@ func _ready() -> void:
 
 
 func _process(_delta: float) -> void:
+	_mcp_runtime_process_ticks += 1
 	## #777: liveness beacon for _handle_take_screenshot's stalled-loop check.
 	## Recorded before the early returns below so the signal stays truthful
 	## even when the logger or debugger channel is unavailable.
@@ -180,6 +188,12 @@ func _on_debug_message(message: String, data: Array) -> bool:
 		"take_screenshot":
 			_handle_take_screenshot(data)
 			return true
+		"eval_liveness":
+			_reply_eval_liveness(data)
+			return true
+		"debug_status":
+			_reply_debug_status(data)
+			return true
 		"eval":
 			_handle_eval(data)
 			return true
@@ -190,6 +204,46 @@ func _on_debug_message(message: String, data: Array) -> bool:
 			_handle_game_command(data)
 			return true
 	return false
+
+
+## #859: answer from the debugger capture without awaiting a game frame. The
+## capture can still run while a backgrounded/frozen game's main loop cannot,
+## so the _process beacon is the liveness signal that matters for game_eval.
+func _reply_eval_liveness(data: Array) -> void:
+	var request_id: String = data[0] if data.size() > 0 else ""
+	var loop_live := not _main_loop_appears_stalled()
+	_last_eval_liveness_reply = {"request_id": request_id, "loop_live": loop_live}
+	if EngineDebugger.is_active():
+		EngineDebugger.send_message("mcp:eval_liveness_response", [request_id, loop_live])
+
+
+func _debug_status_snapshot() -> Dictionary:
+	var inside_tree := is_inside_tree()
+	var tree := get_tree() if inside_tree else null
+	return {
+		"probe_version": 1,
+		"helper_found": true,
+		## GameHelper is PROCESS_MODE_ALWAYS, so pause does not stop it; native
+		## SceneTree suspension does. This exposes Godot's debugger-owned suspend
+		## bit through Node::can_process() without conflating it with pause/time scale.
+		"suspended": inside_tree and not can_process(),
+		"loop_live": not _main_loop_appears_stalled(),
+		"loop_tick_msec": _last_loop_tick_msec,
+		"process_ticks": _mcp_runtime_process_ticks,
+		"tree_paused": tree.paused if tree != null else false,
+		"frames_drawn": Engine.get_frames_drawn(),
+		"process_frames": Engine.get_process_frames(),
+		"physics_frames": Engine.get_physics_frames(),
+		"time_scale": Engine.time_scale,
+	}
+
+
+func _reply_debug_status(data: Array) -> void:
+	var request_id: String = data[0] if data.size() > 0 else ""
+	var state := _debug_status_snapshot()
+	_last_debug_status_reply = {"request_id": request_id, "state": state.duplicate(true)}
+	if EngineDebugger.is_active():
+		EngineDebugger.send_message("mcp:debug_status_response", [request_id, state])
 
 
 func _handle_take_screenshot(data: Array) -> void:
@@ -251,6 +305,9 @@ static func _should_capture_stale_sync(
 ## #777: true when _process hasn't ticked within MAIN_LOOP_STALL_MSEC —
 ## i.e. the main loop is frozen (backgrounded window) or has never run.
 func _main_loop_appears_stalled() -> bool:
+	## The hello→probe round trip normally follows at least one _process tick.
+	## Treat the never-ticked sentinel as stalled defensively rather than
+	## dispatching an eval into a game whose main loop has not started.
 	if _last_loop_tick_msec < 0:
 		return true
 	return Time.get_ticks_msec() - _last_loop_tick_msec > MAIN_LOOP_STALL_MSEC
@@ -942,8 +999,8 @@ func _mouse_button_index(name: String) -> int:
 ## EVAL_HUNG code, #518, but the editor's message can't name the cause).
 ## Raise this at/above the editor timer (or drop that timer below this) and
 ## the less specific editor message wins the race, silently losing the
-## diagnostic this fix exists to provide. Nothing enforces the order —
-## change one, re-check the other two.
+## diagnostic this fix exists to provide. The cross-file contract is enforced
+## by tests/unit/test_game_eval_timeout_ordering.py.
 ##
 ## NOTE: this catches a hung `await`, not a CPU-bound loop with no `await` —
 ## a tight `while true:` with no yield blocks the main thread, so nothing

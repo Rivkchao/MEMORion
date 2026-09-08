@@ -1,11 +1,16 @@
 [gd_scene format=4 uid="uid://c5h1cpeo1ujjt"]
 
 [ext_resource type="Texture2D" uid="uid://f4p0656gscgk" path="res://assets/Ona/T-Pose_0.png" id="1_3s0uh"]
+[ext_resource type="Script" uid="uid://dog34pnlokif" path="res://scenes/npc/ona.gd" id="1_nusfc"]
 [ext_resource type="Texture2D" uid="uid://cphfd4u8f418j" path="res://assets/Ona/T-Pose_1.png" id="2_8xnwt"]
 [ext_resource type="Animation" uid="uid://dt47t8f86hq00" path="res://assets/Ona/bashfulona.res" id="3_pg4po"]
 [ext_resource type="Animation" uid="uid://bndjamekft6fc" path="res://assets/Ona/runona.res" id="4_5ac8a"]
 [ext_resource type="Animation" uid="uid://d21mpkqq0md8h" path="res://assets/Ona/idleona.res" id="4_x0jnc"]
 [ext_resource type="Animation" uid="uid://b751nrqnpije0" path="res://assets/Ona/walk.res" id="5_x0jnc"]
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_c6lqs"]
+radius = 0.33154297
+height = 1.1330566
 
 [sub_resource type="StandardMaterial3D" id="StandardMaterial3D_6i3e0"]
 resource_name = "tripo_mat_fc750374-d097-4b5f-a1b9-79ad2e6f5def"
@@ -300,9 +305,12 @@ _data = {
 &"walk": ExtResource("5_x0jnc")
 }
 
-[sub_resource type="AnimationNodeStateMachine" id="AnimationNodeStateMachine_c6lqs"]
+[node name="Ona" type="CharacterBody3D" unique_id=1474474557]
+script = ExtResource("1_nusfc")
 
-[node name="T-Pose" type="Node3D" unique_id=785923267]
+[node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=1614411830]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4390869, 0)
+shape = SubResource("CapsuleShape3D_c6lqs")
 
 [node name="Skeleton3D" type="Skeleton3D" parent="." unique_id=512315982]
 bones/0/name = "mixamorig_Hips"
@@ -545,6 +553,3 @@ skeleton = NodePath("..")
 [node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=340778076]
 libraries/ = SubResource("AnimationLibrary_jr0pe")
 autoplay = &"idle"
-
-[node name="AnimationTree" type="AnimationTree" parent="." unique_id=594113687]
-tree_root = SubResource("AnimationNodeStateMachine_c6lqs")

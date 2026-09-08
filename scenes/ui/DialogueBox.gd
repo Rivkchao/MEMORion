@@ -49,9 +49,57 @@ func start(dialogue_lines: Array[String], npc_name: String = "", avatar_texture:
 	show()
 	_show_line()
 
+func _unhandled_input(event: InputEvent) -> void:
+	if not visible:
+		return
+	if event.is_action_pressed("interact") or event.is_action_pressed("ui_accept") or (event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT) or (event is InputEventScreenTouch and event.pressed):
+		get_viewport().set_input_as_handled()
+		next()
+
+func _gui_input(event: InputEvent) -> void:
+	if (event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT) or (event is InputEventScreenTouch and event.pressed):
+		get_viewport().set_input_as_handled()
+		next()
+
 func _show_line() -> void:
 	dialogue_label.lines_skipped = 0
-	dialogue_label.text = lines[current_line]
+	var raw_text: String = lines[current_line].strip_edges()
+	var current_speaker: String = speaker_name
+	var display_text: String = raw_text
+
+	if raw_text.begins_with("Ona:"):
+		current_speaker = "Ona"
+		display_text = raw_text.substr(4).strip_edges()
+		name_label.modulate = Color(0.85, 0.55, 1.0, 1.0)
+		avatar.visible = true
+	elif raw_text.begins_with("Rion:"):
+		current_speaker = "Rion"
+		display_text = raw_text.substr(5).strip_edges()
+		name_label.modulate = Color(0.4, 0.85, 1.0, 1.0)
+		avatar.visible = true
+	elif raw_text.begins_with("[SISTEM ONA]") or raw_text.begins_with("*[SISTEM ONA]*"):
+		current_speaker = "[SISTEM ONA]"
+		if raw_text.begins_with("[SISTEM ONA]"):
+			display_text = raw_text.substr(12).strip_edges()
+		else:
+			display_text = raw_text.substr(14).strip_edges()
+		name_label.modulate = Color(0.2, 1.0, 0.8, 1.0)
+		avatar.visible = false
+	elif raw_text.begins_with("_(") or raw_text.begins_with("("):
+		current_speaker = "Catatan"
+		display_text = raw_text
+		name_label.modulate = Color(0.75, 0.75, 0.85, 1.0)
+		avatar.visible = false
+	else:
+		name_label.modulate = Color(0.85, 0.6, 1.0, 1.0)
+		avatar.visible = true
+
+	# Bersihkan tanda kutip pembungkus jika ada
+	if display_text.begins_with("\"") and display_text.ends_with("\"") and display_text.length() > 2:
+		display_text = display_text.substr(1, display_text.length() - 2)
+
+	name_label.text = current_speaker
+	dialogue_label.text = display_text
 	_start_typewriter_for_current_view()
 
 func _start_typewriter_for_current_view() -> void:
