@@ -24,7 +24,7 @@ func _ready() -> void:
 	if Engine.is_editor_hint():
 		return
 	
-	var buttons = [mulai_game_btn, muat_game_btn, lanjut_game_btn, pengaturan_btn, keluar_btn]
+	var buttons = [mulai_game_btn, muat_game_btn, lanjut_game_btn, pengaturan_btn, keluar_btn, instagram_btn]
 	for btn in buttons:
 		if btn:
 			_setup_button_hover(btn)
@@ -43,9 +43,8 @@ func _ready() -> void:
 func _setup_button_hover(btn: Button) -> void:
 	# Ambil warna teks bawaan (font_color) yang sudah diatur di Inspector/Theme
 	var default_color: Color = btn.get_theme_color("font_color")
-	
-	# Simpan warna aslinya ke metadata tombol
 	btn.set_meta("default_font_color", default_color)
+	btn.pivot_offset = btn.size / 2.0
 	
 	# Sambungkan signal hover in dan hover out
 	btn.mouse_entered.connect(func():
@@ -57,6 +56,20 @@ func _setup_button_hover(btn: Button) -> void:
 		var original_color = btn.get_meta("default_font_color")
 		btn.add_theme_color_override("font_color", original_color)
 		btn.add_theme_color_override("font_hover_color", original_color)
+	)
+
+	# Sentuhan responsif pada mobile & klik mouse
+	btn.button_down.connect(func():
+		btn.add_theme_color_override("font_color", HOVER_COLOR)
+		var tween = create_tween()
+		tween.tween_property(btn, "scale", Vector2(0.95, 0.95), 0.08).set_ease(Tween.EASE_OUT)
+	)
+	
+	btn.button_up.connect(func():
+		var original_color = btn.get_meta("default_font_color")
+		btn.add_theme_color_override("font_color", original_color)
+		var tween = create_tween()
+		tween.tween_property(btn, "scale", Vector2.ONE, 0.12).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 	)
 
 func _start_logo_flip_animation() -> void:

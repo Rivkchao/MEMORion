@@ -189,27 +189,113 @@ func _process(delta: float) -> void:
 	held_item.global_rotation = player.global_rotation
 
 func _input(event: InputEvent) -> void:
-
-	if not event is InputEventKey:
+	if phase_completed or waiting_for_dialog:
 		return
 
-	if not event.pressed:
+	# Deteksi tombol aksi (Interact) dari keyboard E atau Virtual Button Mobile
+	var is_interact := false
+	if event.is_action_pressed("interact"):
+		is_interact = true
+	elif event is InputEventKey and event.pressed and not event.echo and event.keycode == KEY_E:
+		is_interact = true
+
+	if is_interact:
+		# Kalau belum memegang item
+		if held_item == null:
+			_try_interact_pickup()
+		# Kalau sedang memegang item
+		else:
+			_try_interact_place()
 		return
 
-	if event.echo:
+	# Deteksi tombol drop / lepas item
+	if event.is_action_pressed("ui_cancel") and held_item != null:
+		drop_held_item()
 		return
 
-	if event.keycode != KEY_E:
-		return
+	# Sentuhan langsung pada item / slot di layar mobile
+	if event is InputEventScreenTouch and event.pressed:
+		_try_touch_interact(event.position)
 
-
-	# Kalau belum memegang item
+func drop_held_item() -> void:
 	if held_item == null:
-		_try_interact_pickup()
+		return
+	held_item.return_to_origin()
+	held_item = null
+	_highlight_matching_slots("", false)
 
-	# Kalau sedang memegang item
+func has_held_item() -> bool:
+	return held_item != null
+
+func get_nearest_item_distance() -> float:
+	if player == null:
+		return 999.0
+	var active_container = _get_active_container()
+	if active_container == null:
+		return 999.0
+	var min_d := 999.0
+	for item in active_container.find_children("", "UnpackItem3D", true, false):
+		var unpack_item := item as UnpackItem3D
+		if unpack_item and not unpack_item.is_placed and unpack_item.visible:
+			var d = player.global_position.distance_to(unpack_item.global_position)
+			if d < min_d:
+				min_d = d
+	return min_d
+
+func get_nearest_slot_distance() -> float:
+	if player == null:
+		return 999.0
+	var active_container = _get_active_container()
+	if active_container == null:
+		return 999.0
+	var min_d := 999.0
+	for slot in active_container.find_children("", "UnpackingSlot3D", true, false):
+		var unpack_slot := slot as UnpackingSlot3D
+		if unpack_slot and not unpack_slot.occupied:
+			var d = player.global_position.distance_to(unpack_slot.global_position)
+			if d < min_d:
+				min_d = d
+	return min_d
+
+func _try_touch_interact(screen_pos: Vector2) -> bool:
+	var camera = get_viewport().get_camera_3d()
+	if camera == null or player == null:
+		return false
+
+	var ray_origin = camera.project_ray_origin(screen_pos)
+	var ray_dir = camera.project_ray_normal(screen_pos)
+	var active_container = _get_active_container()
+	if active_container == null:
+		return false
+
+	if held_item != null:
+		for slot in active_container.find_children("", "UnpackingSlot3D", true, false):
+			var unpack_slot := slot as UnpackingSlot3D
+			if unpack_slot == null or unpack_slot.occupied or unpack_slot.accepts_item_type != held_item.item_type:
+				continue
+			var to_slot = unpack_slot.global_position - ray_origin
+			var proj = to_slot.dot(ray_dir)
+			if proj > 0.0:
+				var closest = ray_origin + ray_dir * proj
+				if closest.distance_to(unpack_slot.global_position) < 2.0:
+					if player.global_position.distance_to(unpack_slot.global_position) <= interact_distance + 2.0:
+						_try_interact_place()
+						return true
 	else:
-		_try_interact_place()
+		for item in active_container.find_children("", "UnpackItem3D", true, false):
+			var unpack_item := item as UnpackItem3D
+			if unpack_item == null or unpack_item.is_placed or not unpack_item.visible:
+				continue
+			var to_item = unpack_item.global_position - ray_origin
+			var proj = to_item.dot(ray_dir)
+			if proj > 0.0:
+				var closest = ray_origin + ray_dir * proj
+				if closest.distance_to(unpack_item.global_position) < 2.0:
+					if player.global_position.distance_to(unpack_item.global_position) <= interact_distance + 2.0:
+						held_item = unpack_item
+						_highlight_matching_slots(unpack_item.item_type, true)
+						return true
+	return false
 
 func _try_interact_pickup() -> void:
 

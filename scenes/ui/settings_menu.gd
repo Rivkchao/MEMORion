@@ -83,6 +83,25 @@ func _connect_signals() -> void:
 	save_btn.pressed.connect(_on_save_pressed)
 	reset_btn.pressed.connect(_on_reset_pressed)
 	close_btn.pressed.connect(_on_close_pressed)
+
+	for btn in [save_btn, reset_btn, close_btn]:
+		if btn:
+			btn.pivot_offset = btn.size / 2.0
+			btn.button_down.connect(func():
+				var tween = create_tween()
+				tween.tween_property(btn, "scale", Vector2(0.95, 0.95), 0.08).set_ease(Tween.EASE_OUT)
+			)
+			btn.button_up.connect(func():
+				var tween = create_tween()
+				tween.tween_property(btn, "scale", Vector2.ONE, 0.12).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+			)
+
+	var dim = get_node_or_null("DimOverlay")
+	if dim:
+		dim.gui_input.connect(func(event):
+			if (event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT) or (event is InputEventScreenTouch and event.pressed):
+				_on_close_pressed()
+		)
 	
 	if SettingsManager:
 		SettingsManager.window_mode_changed.connect(_on_settings_window_mode_changed)

@@ -130,17 +130,80 @@ func _update_ui_state(delta: float) -> void:
 		action_buttons_container.modulate.a = lerpf(action_buttons_container.modulate.a, target_alpha, 10.0 * delta)
 	
 	if _player != null:
-		# Update tombol lepas benda
+		var root = get_tree().current_scene
+
+		# 1. Cek jika player membawa item reguler
 		if "held_item" in _player and _player.held_item != null:
 			if not btn_drop.visible:
 				btn_drop.visible = true
 				btn_drop.scale = Vector2(0.5, 0.5)
 				var tween = create_tween()
 				tween.tween_property(btn_drop, "scale", Vector2.ONE, 0.15).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-		else:
-			btn_drop.visible = false
+			btn_interact.text = "✦\nPASANG"
+			btn_interact.modulate = Color(0.4, 1.0, 0.7, 1.0)
+			return
+
+		# 2. Cek puzzle Unpacking (bengkel R1)
+		var unpack_mgr = root.find_child("UnpackingManager", true, false) if root else null
+		if unpack_mgr == null and root != null:
+			unpack_mgr = root.find_child("UnpackingManager3D", true, false)
 		
-		# Efek visual tombol interaksi jika ada objek interaktif di dekatnya
+		if unpack_mgr != null:
+			if unpack_mgr.has_method("has_held_item") and unpack_mgr.has_held_item():
+				if not btn_drop.visible:
+					btn_drop.visible = true
+					btn_drop.scale = Vector2(0.5, 0.5)
+					var tween = create_tween()
+					tween.tween_property(btn_drop, "scale", Vector2.ONE, 0.15).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+				_pulse_time += delta * 4.0
+				var p_scale = 1.0 + sin(_pulse_time) * 0.05
+				btn_interact.scale = Vector2(p_scale, p_scale)
+				btn_interact.modulate = Color(1.0, 0.85, 0.3, 1.0)
+				btn_interact.text = "✦\nTARUH"
+				return
+			elif unpack_mgr.has_method("get_nearest_item_distance") and unpack_mgr.get_nearest_item_distance() <= unpack_mgr.interact_distance:
+				btn_drop.visible = false
+				_pulse_time += delta * 4.0
+				var p_scale = 1.0 + sin(_pulse_time) * 0.05
+				btn_interact.scale = Vector2(p_scale, p_scale)
+				btn_interact.modulate = Color(0.4, 1.0, 0.7, 1.0)
+				btn_interact.text = "✦\nAMBIL"
+				return
+
+		# 3. Cek tuas (Lever)
+		var near_lever := false
+		if root:
+			for lever in root.find_children("*", "Node3D", true, false):
+				if lever.has_method("is_player_near") and lever.is_player_near():
+					near_lever = true
+					break
+		if near_lever:
+			btn_drop.visible = false
+			_pulse_time += delta * 4.0
+			var p_scale = 1.0 + sin(_pulse_time) * 0.05
+			btn_interact.scale = Vector2(p_scale, p_scale)
+			btn_interact.modulate = Color(1.0, 0.6, 0.2, 1.0)
+			btn_interact.text = "✦\nTAHAN"
+			return
+
+		# 4. Cek pintu interior R1
+		var near_room_door := false
+		if root:
+			for door in root.find_children("*", "Area3D", true, false):
+				if door.has_method("is_player_inside") and door.is_player_inside():
+					near_room_door = true
+					break
+		if near_room_door:
+			btn_drop.visible = false
+			_pulse_time += delta * 4.0
+			var p_scale = 1.0 + sin(_pulse_time) * 0.05
+			btn_interact.scale = Vector2(p_scale, p_scale)
+			btn_interact.modulate = Color(0.4, 0.9, 1.0, 1.0)
+			btn_interact.text = "✦\nPINDAH"
+			return
+
+		# 5. Objek interaktif umum (Interactable)
+		btn_drop.visible = false
 		if "current_interactable" in _player and _player.current_interactable != null:
 			_pulse_time += delta * 4.0
 			var pulse_scale = 1.0 + sin(_pulse_time) * 0.05
@@ -161,8 +224,18 @@ func _is_ui_blocking() -> bool:
 			return true
 		if StoryManager.wire_puzzle != null and StoryManager.wire_puzzle.visible:
 			return true
-	if RockPuzzleManager != null and RockPuzzleManager.is_puzzle_active and RockPuzzleManager.dragging_rock != null:
+	if RockPuzzleManager != null and RockPuzzleManager.is_puzzle_active:
 		return true
+	if FragmentBox != null and "is_showing" in FragmentBox and FragmentBox.is_showing:
+		return true
+	var root = get_tree().current_scene
+	if root:
+		var ref = root.find_child("ReflectionDialog", true, false)
+		if ref and ref.visible and (("is_waiting_input" in ref and ref.is_waiting_input) or ("is_waiting_badge" in ref and ref.is_waiting_badge)):
+			return true
+		var sm = root.find_child("SettingsMenu", true, false)
+		if sm and sm.visible:
+			return true
 	return false
 
 # ----------------------------------------------------
@@ -170,6 +243,14 @@ func _is_ui_blocking() -> bool:
 # ----------------------------------------------------
 func _input(event: InputEvent) -> void:
 	if not visible:
+		return
+	
+	# Jika UI dialog atau puzzle sedang aktif, lepaskan input kontrol agar touch digunakan oleh UI
+	if _is_ui_blocking():
+		if _joystick_touch_id != -1:
+			_release_joystick()
+		_camera_touches.clear()
+		_prev_pinch_dist = 0.0
 		return
 	
 	var viewport_rect = get_viewport().get_visible_rect()
@@ -236,6 +317,12 @@ func _is_touching_action_buttons(touch_pos: Vector2) -> bool:
 	for btn in buttons:
 		if btn and btn.is_visible_in_tree() and btn.get_global_rect().has_point(touch_pos):
 			return true
+	
+	# Hindari swipe kamera bila menyentuh tombol pengaturan (kanan atas)
+	var vp_size = get_viewport().get_visible_rect().size
+	if touch_pos.x > vp_size.x - 120.0 and touch_pos.y < 120.0:
+		return true
+		
 	return false
 
 # ----------------------------------------------------
@@ -338,8 +425,16 @@ func _on_interact_up() -> void:
 	Input.action_release("interact")
 
 func _on_drop_pressed() -> void:
-	if _player and _player.has_method("drop_item"):
+	if _player and _player.has_method("drop_item") and "held_item" in _player and _player.held_item != null:
 		_player.drop_item()
-	else:
-		Input.action_press("ui_cancel")
-		Input.action_release("ui_cancel")
+		return
+	var root = get_tree().current_scene
+	if root:
+		var unpack = root.find_child("UnpackingManager", true, false)
+		if unpack == null:
+			unpack = root.find_child("UnpackingManager3D", true, false)
+		if unpack and unpack.has_method("drop_held_item"):
+			unpack.drop_held_item()
+			return
+	Input.action_press("ui_cancel")
+	Input.action_release("ui_cancel")

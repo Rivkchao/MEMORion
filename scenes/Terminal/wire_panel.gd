@@ -82,13 +82,13 @@ func setup() -> void:
 	right_points.clear()
 	
 	var screen_size = get_viewport_rect().size if size == Vector2.ZERO else size
-	var panel_width = 440.0
-	var panel_height = 540.0
+	var panel_width = minf(screen_size.x * 0.85, 460.0)
+	var panel_height = minf(screen_size.y * 0.90, 560.0)
 	var panel_x = (screen_size.x - panel_width) / 2.0
 	var panel_y = (screen_size.y - panel_height) / 2.0
 	
 	panel_rect = Rect2(panel_x, panel_y, panel_width, panel_height)
-	close_button_rect = Rect2(panel_rect.position.x + panel_rect.size.x - 38, panel_rect.position.y + 8, 30, 30)
+	close_button_rect = Rect2(panel_rect.position.x + panel_rect.size.x - 52, panel_rect.position.y + 6, 44, 44)
 	
 	var wire_spacing = (panel_height - 60.0) / float(WIRE_COUNT + 1)
 	var left_offset = panel_x + 65.0
@@ -228,66 +228,95 @@ func _draw() -> void:
 		_draw_socket(right_points[i], final_socket_col, displayed_symbol, is_active, false)
 	
 	# Tombol Tutup (X)
-	draw_rect(close_button_rect, Color(0.7, 0.15, 0.15))
+	draw_rect(close_button_rect, Color(0.7, 0.15, 0.15), true)
 	draw_rect(close_button_rect, Color.WHITE, false, 1.5)
-	draw_line(close_button_rect.position + Vector2(7, 7), close_button_rect.end - Vector2(7, 7), Color.WHITE, 2.5)
-	draw_line(Vector2(close_button_rect.end.x - 7, close_button_rect.position.y + 7), Vector2(close_button_rect.position.x + 7, close_button_rect.end.y - 7), Color.WHITE, 2.5)
+	var pad := 12.0
+	draw_line(close_button_rect.position + Vector2(pad, pad), close_button_rect.end - Vector2(pad, pad), Color.WHITE, 2.5)
+	draw_line(Vector2(close_button_rect.end.x - pad, close_button_rect.position.y + pad), Vector2(close_button_rect.position.x + pad, close_button_rect.end.y - pad), Color.WHITE, 2.5)
 	
 func _gui_input(event: InputEvent) -> void:
-	if event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT:
-		if close_button_rect.has_point(event.position):
+	var event_pos := Vector2.ZERO
+	var is_press := false
+	var is_release := false
+	var is_drag := false
+
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+		event_pos = event.position
+		if event.pressed:
+			is_press = true
+		else:
+			is_release = true
+	elif event is InputEventMouseMotion:
+		event_pos = event.position
+		is_drag = true
+	elif event is InputEventScreenTouch:
+		event_pos = event.position
+		if event.pressed:
+			is_press = true
+		else:
+			is_release = true
+	elif event is InputEventScreenDrag:
+		event_pos = event.position
+		is_drag = true
+
+	if is_press:
+		if close_button_rect.grow(10.0).has_point(event_pos):
+			accept_event()
 			_on_close_pressed()
 			return
-	
+
 	if is_complete or is_preview_phase:
 		return
-	
-	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
-		if event.pressed:
-			for i in range(WIRE_COUNT):
-				if event.position.distance_to(left_points[i]) < 28.0:
-					dragging_from = i
-					drag_pos = event.position
-					connections.erase(i)
-					correct_status.erase(i)
-					
-					drag_line.points = _generate_curved_points(left_points[i], drag_pos)
-					var mat = drag_line.material as ShaderMaterial
-					mat.set_shader_parameter("wire_color", WIRE_COLORS[i])
-					mat.set_shader_parameter("is_powered", false)
-					drag_line.visible = true
-					
-					_update_wire_lines()
-					queue_redraw()
-					break
-		else:
-			if dragging_from >= 0:
-				for i in range(WIRE_COUNT):
-					if event.position.distance_to(right_points[i]) < 28.0:
-						# Lepaskan sambungan kabel lama jika soket kanan ini sudah pernah disambung kabel lain
-						for l_idx in connections.keys():
-							if connections[l_idx] == i:
-								connections.erase(l_idx)
-								correct_status.erase(l_idx)
-								break
-						
-						connections[dragging_from] = i
-						var is_pair_correct = (right_order[i] == dragging_from)
-						correct_status[dragging_from] = is_pair_correct
-						break
+
+	var touch_radius := 48.0
+
+	if is_press:
+		for i in range(WIRE_COUNT):
+			if event_pos.distance_to(left_points[i]) < touch_radius:
+				dragging_from = i
+				drag_pos = event_pos
+				connections.erase(i)
+				correct_status.erase(i)
 				
-				dragging_from = -1
-				drag_line.visible = false
+				drag_line.points = _generate_curved_points(left_points[i], drag_pos)
+				var mat = drag_line.material as ShaderMaterial
+				mat.set_shader_parameter("wire_color", WIRE_COLORS[i])
+				mat.set_shader_parameter("is_powered", false)
+				drag_line.visible = true
+				
 				_update_wire_lines()
 				queue_redraw()
-				
-				if connections.size() == WIRE_COUNT:
-					_check_complete()
-	
-	if event is InputEventMouseMotion and dragging_from >= 0:
-		drag_pos = event.position
+				accept_event()
+				break
+	elif is_release:
+		if dragging_from >= 0:
+			for i in range(WIRE_COUNT):
+				if event_pos.distance_to(right_points[i]) < touch_radius:
+					# Lepaskan sambungan kabel lama jika soket kanan ini sudah pernah disambung kabel lain
+					for l_idx in connections.keys():
+						if connections[l_idx] == i:
+							connections.erase(l_idx)
+							correct_status.erase(l_idx)
+							break
+					
+					connections[dragging_from] = i
+					var is_pair_correct = (right_order[i] == dragging_from)
+					correct_status[dragging_from] = is_pair_correct
+					break
+			
+			dragging_from = -1
+			drag_line.visible = false
+			_update_wire_lines()
+			queue_redraw()
+			accept_event()
+			
+			if connections.size() == WIRE_COUNT:
+				_check_complete()
+	elif is_drag and dragging_from >= 0:
+		drag_pos = event_pos
 		drag_line.points = _generate_curved_points(left_points[dragging_from], drag_pos)
 		queue_redraw()
+		accept_event()
 
 func _check_complete() -> void:
 	var all_correct = true

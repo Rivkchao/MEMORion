@@ -2,8 +2,8 @@ extends CharacterBody3D
 
 signal point_5_finished
 
-@onready var navigation_agent: NavigationAgent3D = $NavigationAgent3D
-@onready var animation_player: AnimationPlayer = $AnimationPlayer
+@onready var navigation_agent: NavigationAgent3D = get_node_or_null("NavigationAgent3D")
+@onready var animation_player: AnimationPlayer = get_node_or_null("AnimationPlayer")
 @onready var fade_rect: ColorRect = get_parent().get_node_or_null("FadeLayer/FadeRect")
 
 @export var speed := 10.0

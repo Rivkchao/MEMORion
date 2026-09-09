@@ -15,9 +15,24 @@ extends Area3D
 var current_player: Node3D = null
 
 
+var label_3d: Label3D = null
+
 func _ready() -> void:
 	body_entered.connect(_on_body_entered)
 	body_exited.connect(_on_body_exited)
+	
+	label_3d = Label3D.new()
+	label_3d.billboard = BaseMaterial3D.BILLBOARD_ENABLED
+	label_3d.font_size = 48
+	label_3d.outline_size = 8
+	label_3d.outline_modulate = Color(0, 0, 0, 1)
+	label_3d.position = Vector3(0, 2.5, 0)
+	add_child(label_3d)
+	label_3d.hide()
+
+
+func is_player_inside() -> bool:
+	return current_player != null
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -32,11 +47,17 @@ func _on_body_entered(body: Node3D) -> void:
 		return
 	if body is CharacterBody3D or body.is_in_group("player") or "player" in body.name.to_lower():
 		current_player = body
+		if label_3d:
+			var is_mobile := SettingsManager != null and SettingsManager.is_mobile_controls_active()
+			label_3d.text = "Pindah Ruangan (Tekan Aksi)" if is_mobile else "Pindah Ruangan [E]"
+			label_3d.show()
 
 
 func _on_body_exited(body: Node3D) -> void:
 	if body == current_player:
 		current_player = null
+		if label_3d:
+			label_3d.hide()
 
 
 func teleport_player() -> void:

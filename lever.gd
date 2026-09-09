@@ -18,9 +18,29 @@ var progress := 0.0
 var completed := false
 var initial_rot_z: float = 0.0
 var player_node: Node3D = null
+var is_near: bool = false
+var _touch_holding: bool = false
 
 # Timer interval agar Output tidak spam setiap frame
 var debug_timer: float = 0.0
+
+func is_player_near() -> bool:
+	return is_near and not completed
+
+func _unhandled_input(event: InputEvent) -> void:
+	if completed or not is_near:
+		_touch_holding = false
+		return
+	if event is InputEventScreenTouch or (event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT):
+		if event.pressed:
+			var cam = get_viewport().get_camera_3d()
+			if cam:
+				var pos_3d = lever_handle.global_position if lever_handle else global_position
+				var screen_pos = cam.unproject_position(pos_3d)
+				if event.position.distance_to(screen_pos) < 140.0:
+					_touch_holding = true
+		else:
+			_touch_holding = false
 
 
 func _ready() -> void:
@@ -97,31 +117,34 @@ func _process(delta: float) -> void:
 	var switch_pos: Vector3 = lever_handle.global_position if lever_handle else global_position
 	var player_pos: Vector3 = player_node.global_position
 	var dist: float = switch_pos.distance_to(player_pos)
-	var is_near: bool = dist <= interact_distance
+	is_near = dist <= interact_distance
 
-	# Cek input tombol E / action
+	var is_mobile := SettingsManager != null and SettingsManager.is_mobile_controls_active()
+	var hold_prompt := "[TAHAN AKSI]" if is_mobile else "[E] TAHAN"
+
+	# Cek input tombol E / action / touch langsung
 	var e_pressed = Input.is_key_pressed(KEY_E)
 	var action_pressed = Input.is_action_pressed("interact") if InputMap.has_action("interact") else false
-	var key_active = e_pressed or action_pressed
+	var key_active = (e_pressed or action_pressed or _touch_holding) and is_near
 
 	# Log debug saat tombol ditekan
 	if key_active:
 		debug_timer += delta
 		if debug_timer >= 0.5:
-			print_rich("[color=white][DEBUG INPUT][/color] Tombol E DITEKAN | Tuas: %s | Jarak ke Player: [b]%.2f meter[/b] (Batas: %.2f) | Dekat? [b]%s[/b]" % [name, dist, interact_distance, str(is_near)])
+			print_rich("[color=white][DEBUG INPUT][/color] Menarik Tuas: %s | Jarak: [b]%.2f m[/b]" % [name, dist])
 			debug_timer = 0.0
 
 	# Tampilan teks saat player mendekat
 	if is_near and not holding and progress == 0.0:
 		if progress_label:
-			progress_label.text = "[E] TAHAN"
+			progress_label.text = hold_prompt
 			progress_label.visible = true
 	elif not is_near and not holding:
 		if progress_label and progress == 0.0:
 			progress_label.visible = false
 
 	# Logika menahan tuas
-	if is_near and key_active:
+	if key_active:
 		if not holding:
 			print_rich("[color=green][LEVER][/color] Mulai menarik tuas...")
 		holding = true
@@ -148,7 +171,7 @@ func _process(delta: float) -> void:
 			if progress_label:
 				progress_label.text = str(int(progress * 100.0)) + "%"
 				if progress <= 0.0:
-					progress_label.text = "[E] TAHAN"
+					progress_label.text = hold_prompt
 
 
 func complete_lever() -> void:

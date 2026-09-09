@@ -99,6 +99,11 @@ func _unhandled_input(event: InputEvent) -> void:
 		if event.keycode in [KEY_ENTER, KEY_SPACE, KEY_E, KEY_KP_ENTER]:
 			get_viewport().set_input_as_handled()
 			_on_claim_pressed()
+			return
+
+	if (event is InputEventScreenTouch and event.pressed) or (event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT):
+		get_viewport().set_input_as_handled()
+		_on_claim_pressed()
 
 func show_fragment(fragment_key: String) -> void:
 	current_fragment_key = fragment_key

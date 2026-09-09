@@ -3,7 +3,7 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://c3gno2r5lcxf4"
-path.s3tc="res://.godot/imported/Code_Generated_Image (5).png-1551e86b2007e98e56d69933425ae5d1.s3tc.ctex"
+path.s3tc="res://.godot/imported/Code_Generated_Image (5).png-fb78827712997cddc1a52efd195740a2.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
@@ -11,8 +11,8 @@ metadata={
 
 [deps]
 
-source_file="res://assets/World/Stylized Nature MegaKit/textures/Code_Generated_Image (5).png"
-dest_files=["res://.godot/imported/Code_Generated_Image (5).png-1551e86b2007e98e56d69933425ae5d1.s3tc.ctex"]
+source_file="res://assets/World/Stylized Nature MegaKit/Textures/Code_Generated_Image (5).png"
+dest_files=["res://.godot/imported/Code_Generated_Image (5).png-fb78827712997cddc1a52efd195740a2.s3tc.ctex"]
 
 [params]
 

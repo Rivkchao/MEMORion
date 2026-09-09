@@ -89,6 +89,8 @@ func _input_event(_camera: Camera3D, event: InputEvent, _event_position: Vector3
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion or event is InputEventScreenDrag:
 		last_cursor_pos = event.position
+		if is_dragging:
+			_snap_to_cursor()
 
 	# Lepas drag di mana saja layar diklik-lepas atau touch dilepas
 	if is_dragging:

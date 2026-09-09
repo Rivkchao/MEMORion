@@ -26,11 +26,6 @@ GameManager="*uid://dcc8udvj0vqi8"
 NLPManager="*uid://cnbvt12ms3ovq"
 AIManager="*uid://cg561dukvvvws"
 RockPuzzleManager="*uid://5b2qoi6ui3q3"
-AppConfig="*uid://cjke6crjg14a0"
-SceneLoader="*uid://cbwmrnp0af35y"
-ProjectMusicController="*uid://r5t485lr3p7t"
-ProjectUISoundController="*uid://cc37235kj4384"
-SceneTransition="*uid://cec4jkbrtthg3"
 LoadingScreen="*uid://rncmc7smqy2"
 RockDistractionOverlay="*uid://danyj7nt81p62"
 FragmentBox="*res://scenes/ui/FragmentBox.tscn"
@@ -45,6 +40,7 @@ window/size/viewport_height=1080
 window/size/mode=3
 window/stretch/mode="canvas_items"
 window/stretch/aspect="expand"
+window/handheld/orientation="sensor_landscape"
 
 [editor]
 
@@ -101,6 +97,7 @@ sprint={
 [input_devices]
 
 pointing/emulate_touch_from_mouse=true
+pointing/emulate_mouse_from_touch=true
 
 [layer_names]
 

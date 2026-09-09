@@ -35,6 +35,8 @@ func _process(_delta: float) -> void:
 	var near := global_position.distance_to(player.global_position) <= interact_distance
 	if near != _player_near:
 		_player_near = near
+		var is_mobile := SettingsManager != null and SettingsManager.is_mobile_controls_active()
+		label_3d.text = "Keluar (Tekan Aksi)" if is_mobile else door_label
 		label_3d.visible = near
 
 func _input(event: InputEvent) -> void:

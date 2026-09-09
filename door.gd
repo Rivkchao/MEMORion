@@ -34,6 +34,15 @@ func _ready() -> void:
 
 	hide_prompt()
 
+func show_prompt() -> void:
+	if label_3d:
+		var is_mobile := SettingsManager != null and SettingsManager.is_mobile_controls_active()
+		label_3d.text = "Masuk (Tekan Aksi)" if is_mobile else door_label
+		label_3d.show()
+
+func get_label() -> String:
+	return "MASUK"
+
 func _input(event: InputEvent) -> void:
 	if player_inside and event.is_action_pressed("interact"):
 		if _is_ui_blocking():
