@@ -3,7 +3,7 @@
 importer="texture"
 type="CompressedTexture2D"
 uid="uid://d0mib64bu58wu"
-path.s3tc="res://.godot/imported/Pohon2.png-b71658cac5c37a792030bb44522ae3f6.s3tc.ctex"
+path.s3tc="res://.godot/imported/Pohon2.png-fa29afd22d5d3df41e291526c85820b5.s3tc.ctex"
 metadata={
 "imported_formats": ["s3tc_bptc"],
 "vram_texture": true
@@ -11,8 +11,8 @@ metadata={
 
 [deps]
 
-source_file="res://assets/World/Stylized Nature MegaKit/Textures/Pohon2.png"
-dest_files=["res://.godot/imported/Pohon2.png-b71658cac5c37a792030bb44522ae3f6.s3tc.ctex"]
+source_file="res://assets/World/Stylized Nature MegaKit/textures/Pohon2.png"
+dest_files=["res://.godot/imported/Pohon2.png-fa29afd22d5d3df41e291526c85820b5.s3tc.ctex"]
 
 [params]
 

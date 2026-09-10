@@ -21,10 +21,11 @@ signal rak1_completed
 signal all_completed
 
 func _ready() -> void:
+	add_to_group("unpacking_manager")
 	if player == null:
-		player = get_tree().root.find_child("Player", true, false) as Node3D
-		if player == null:
-			player = get_tree().root.find_child("player", true, false) as Node3D
+		player = get_tree().get_first_node_in_group("player") as Node3D
+		if player == null and get_tree().current_scene:
+			player = get_tree().current_scene.get_node_or_null("Player") as Node3D
 
 	if StoryManager.has_signal("dialogue_finished"):
 		StoryManager.dialogue_finished.connect(_on_story_dialogue_finished)

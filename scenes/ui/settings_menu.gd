@@ -37,6 +37,7 @@ var _initial_resolution: int = 0
 var _initial_mobile_mode: int = 0
 
 func _ready() -> void:
+	add_to_group("settings_menu")
 	process_mode = Node.PROCESS_MODE_ALWAYS
 	visible = false
 	

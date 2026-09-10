@@ -305,6 +305,57 @@ _data = {
 &"walk": ExtResource("5_x0jnc")
 }
 
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_idle"]
+animation = &"idle"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_walk"]
+animation = &"walk"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_run"]
+animation = &"run"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_bashful"]
+animation = &"bashful"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_start"]
+advance_mode = 2
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_i_w"]
+xfade_time = 0.25
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_w_i"]
+xfade_time = 0.25
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_i_r"]
+xfade_time = 0.25
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_r_i"]
+xfade_time = 0.25
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_w_r"]
+xfade_time = 0.2
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_r_w"]
+xfade_time = 0.2
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_i_b"]
+xfade_time = 0.3
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_b_i"]
+xfade_time = 0.3
+
+[sub_resource type="AnimationNodeStateMachine" id="AnimationNodeStateMachine_ona"]
+states/Start/position = Vector2(50, 100)
+states/bashful/node = SubResource("AnimationNodeAnimation_bashful")
+states/bashful/position = Vector2(200, 220)
+states/idle/node = SubResource("AnimationNodeAnimation_idle")
+states/idle/position = Vector2(200, 100)
+states/run/node = SubResource("AnimationNodeAnimation_run")
+states/run/position = Vector2(400, 160)
+states/walk/node = SubResource("AnimationNodeAnimation_walk")
+states/walk/position = Vector2(400, 60)
+transitions = ["Start", "idle", SubResource("AnimationNodeStateMachineTransition_start"), "idle", "walk", SubResource("AnimationNodeStateMachineTransition_i_w"), "walk", "idle", SubResource("AnimationNodeStateMachineTransition_w_i"), "idle", "run", SubResource("AnimationNodeStateMachineTransition_i_r"), "run", "idle", SubResource("AnimationNodeStateMachineTransition_r_i"), "walk", "run", SubResource("AnimationNodeStateMachineTransition_w_r"), "run", "walk", SubResource("AnimationNodeStateMachineTransition_r_w"), "idle", "bashful", SubResource("AnimationNodeStateMachineTransition_i_b"), "bashful", "idle", SubResource("AnimationNodeStateMachineTransition_b_i")]
+
 [node name="Ona" type="CharacterBody3D" unique_id=1474474557]
 script = ExtResource("1_nusfc")
 
@@ -313,6 +364,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4390869, 0)
 shape = SubResource("CapsuleShape3D_c6lqs")
 
 [node name="Skeleton3D" type="Skeleton3D" parent="." unique_id=512315982]
+transform = Transform3D(-1, 0, -8.742278e-08, 0, 1, 0, 8.742278e-08, 0, -1, 0, 0, 0)
 bones/0/name = "mixamorig_Hips"
 bones/0/parent = -1
 bones/0/rest = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.4616747, 0.013960015)
@@ -553,3 +605,8 @@ skeleton = NodePath("..")
 [node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=340778076]
 libraries/ = SubResource("AnimationLibrary_jr0pe")
 autoplay = &"idle"
+
+[node name="AnimationTree" type="AnimationTree" parent="." unique_id=981240172]
+tree_root = SubResource("AnimationNodeStateMachine_ona")
+anim_player = NodePath("../AnimationPlayer")
+

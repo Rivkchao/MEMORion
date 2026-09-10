@@ -44,8 +44,11 @@ func is_point_inside(point: Vector3, global_transform: Transform3D) -> bool:
 
 	if thickness > 0:
 		var closest_point_on_curve: Vector3 = curve.get_closest_point(point)
-		var dist2 = closest_point_on_curve.distance_squared_to(point)
-		if dist2 < _half_thickness_squared:
+		# Gunakan jarak horizontal (X dan Z) agar perbedaan ketinggian/elevasi tanah
+		# pada bukit tidak membuat titik jalanan salah dianggap di luar jalur
+		var diff := closest_point_on_curve - point
+		var dist2_horizontal = diff.x * diff.x + diff.z * diff.z
+		if dist2_horizontal < _half_thickness_squared:
 			return true
 
 	if closed:

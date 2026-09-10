@@ -44,6 +44,7 @@ func _unhandled_input(event: InputEvent) -> void:
 
 
 func _ready() -> void:
+	add_to_group("levers")
 	print_rich("[color=cyan]=== INITIALIZING LEVER (%s) ===[/color]" % name)
 
 	if progress_label:

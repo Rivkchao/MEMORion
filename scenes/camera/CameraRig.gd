@@ -27,9 +27,12 @@ var orbit_cooldown: float = 0.0
 var _last_target_pos: Vector3 = Vector3.ZERO
 
 func _ready() -> void:
+	add_to_group("camera_rig")
 	top_level = true
 	if target == null:
-		target = get_tree().root.find_child("Player", true, false) as Node3D
+		target = get_tree().get_first_node_in_group("player") as Node3D
+		if target == null and get_tree().current_scene:
+			target = get_tree().current_scene.get_node_or_null("Player") as Node3D
 
 	if target:
 		_last_target_pos = target.global_position
@@ -58,10 +61,11 @@ func _apply_scene_camera_settings() -> void:
 	if scene_name in ["BengkelRallux", "R1"] or file_path in ["BengkelRallux", "R1"]:
 		camera.near = 0.05
 		camera.far = 1000.0       # Jarak render jauh tanpa batas kabut/clipping di interior
-		zoom_distance = 3.5       # Sedikit lebih dekat agar pas di dalam ruangan
+		zoom_distance = 6.5       # Lebih leluasa dan luas di dalam bengkel besar
+		max_zoom = 9.0
 	elif scene_name == "LEV1" or file_path == "LEV1":
 		camera.near = 0.05
-		camera.far = 300.0        # Optimal untuk outdoor / terrain
+		camera.far = 160.0        # Optimal untuk outdoor / terrain (cull distant scatter)
 		zoom_distance = 4.0
 	else:
 		# Fallback default untuk scene lain

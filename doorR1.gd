@@ -18,6 +18,7 @@ var current_player: Node3D = null
 var label_3d: Label3D = null
 
 func _ready() -> void:
+	add_to_group("doors")
 	body_entered.connect(_on_body_entered)
 	body_exited.connect(_on_body_exited)
 	

@@ -80,6 +80,7 @@ animations = [{
 }]
 
 [node name="LoadingScreen" type="CanvasLayer" unique_id=132151679]
+layer = 100
 script = ExtResource("1_jrdmd")
 
 [node name="FadeRect" type="ColorRect" parent="." unique_id=1074636445]

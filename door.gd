@@ -88,6 +88,15 @@ func _on_body_exited(body: Node3D) -> void:
 		hide_prompt()
 
 func interact() -> void:
+	# Cek apakah pemain mencoba masuk sebelum Ona sampai dan menyelesaikan dialog di Point 9
+	if target_scene.contains("R1") and not GameManager.point_9_dialog_done and not GameManager.has_visited_workshop:
+		var wait_ona_msg: Array[String] = [
+			"Rion: (Menatap pintu bengkel dengan ragu) Aku harus menunggu Ona sampai di sini dulu... Aku tidak berani masuk sendirian."
+		]
+		if StoryManager and StoryManager.has_method("start_dialogue"):
+			StoryManager.start_dialogue(wait_ona_msg, "Rion")
+		return
+
 	# Cek apakah pintu bengkel sedang terkunci dari cerita
 	if target_scene.contains("R1") and GameManager.workshop_door_locked:
 		var locked_msg: Array[String] = [

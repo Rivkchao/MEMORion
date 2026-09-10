@@ -4,6 +4,7 @@ signal point_5_finished
 
 @onready var navigation_agent: NavigationAgent3D = get_node_or_null("NavigationAgent3D")
 @onready var animation_player: AnimationPlayer = get_node_or_null("AnimationPlayer")
+@onready var animation_tree: AnimationTree = get_node_or_null("AnimationTree")
 @onready var fade_rect: ColorRect = get_parent().get_node_or_null("FadeLayer/FadeRect")
 
 @export var speed := 10.0
@@ -13,8 +14,12 @@ var is_moving := false
 var is_dialogue := false
 var is_following_player := false
 var reflection_dialog: CanvasLayer = null
+var _playback: AnimationNodeStateMachinePlayback = null
+var _teleport_cooldown: float = 0.0
 
 func _ready():
+	_setup_animation_tree()
+
 	if fade_rect:
 		fade_rect.modulate.a = 0.0
 		fade_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
@@ -46,7 +51,8 @@ func _ready():
 	print("Jumlah waypoint Ona: ", waypoints.size())
 
 	# Jika pemain baru saja kembali dari Bengkel (R1) dan pintu terkunci:
-	if GameManager.workshop_door_locked:
+	var gm = get_node_or_null("/root/GameManager") if is_inside_tree() else null
+	if gm and gm.get("workshop_door_locked"):
 		is_moving = false
 		is_following_player = true
 		# Posisikan Ona di dekat pintu bengkel / Point 9
@@ -67,6 +73,15 @@ func _physics_process(_delta):
 		velocity.y -= 18.0 * _delta
 	else:
 		velocity.y = 0.0
+
+	# Penyelamatan darurat jika Ona tercebur ke dalam air sungai di sembarang waktu
+	if global_position.y < -0.8 and global_position.x > -37.5 and global_position.x < -18.0:
+		var player_node = get_parent().find_child("Player", true, false)
+		var rescue_x = -17.8
+		if player_node and player_node.global_position.x < -28.0:
+			rescue_x = -39.0
+		var rescue_z = player_node.global_position.z if player_node else global_position.z
+		_execute_teleport(Vector3(rescue_x, 0.2, rescue_z), "Penyelamatan darurat dari air sungai")
 
 	# ==========================================
 	# ONA SEDANG DIALOG
@@ -132,7 +147,7 @@ func _physics_process(_delta):
 		direction = direction.normalized()
 		velocity.x = direction.x * speed
 		velocity.z = direction.z * speed
-		look_at(global_position + Vector3(direction.x, 0, direction.z), Vector3.UP)
+		_rotate_towards(direction, _delta)
 		play_animation("run" if current_waypoint == 5 else "walk")
 	else:
 		velocity.x = 0.0
@@ -192,7 +207,7 @@ func waypoint_reached():
 		velocity = Vector3.ZERO
 		play_animation("idle")
 		print("Ona telah sampai di Point 7 (Depan Konsol Batu)!")
-		look_at(global_position + Vector3(-1, 0, 0), Vector3.UP)
+		_rotate_towards(Vector3(-1, 0, 0), 1.0, 50.0)
 		var rock_area = get_parent().find_child("RockArea", true, false)
 		if rock_area and rock_area.has_method("check_trigger"):
 			rock_area.check_trigger()
@@ -240,10 +255,18 @@ func teleport_to_point_3():
 	global_position = waypoints[2].global_position
 	print("Teleport ke Point 3")
 
-	# 2. Hentikan animasi roket jika masih aktif agar tidak merebut kamera
+	# 2. Hentikan animasi roket jika masih aktif dan pastikan kapsul tetap di tanah
 	var anim_player: AnimationPlayer = get_parent().get_node_or_null("RionCapsule/AnimationPlayer")
 	if anim_player and anim_player.is_playing():
 		anim_player.stop()
+	var capsule = get_parent().find_child("RionCapsule", true, false)
+	if capsule:
+		capsule.visible = true
+		capsule.global_position = Vector3(106.118, -0.096, 25.87)
+		capsule.rotation = Vector3(0, 0, deg_to_rad(9.5))
+		var smoke = capsule.find_child("Smoke", true, false)
+		if smoke:
+			smoke.visible = true
 
 	# 3. Posisikan kamera di depan kapsulrion dan shoot dari depan Ona
 	var rocket_cam = get_parent().get_node_or_null("RocketCamera")
@@ -376,7 +399,9 @@ func point_5_dialog() -> void:
 	is_dialogue = false
 
 func play_animation(animation_name: String):
-	if animation_player and animation_player.current_animation != animation_name:
+	if _playback:
+		_playback.travel(animation_name)
+	elif animation_player and animation_player.current_animation != animation_name:
 		animation_player.play(animation_name)
 
 func fade_out():
@@ -397,14 +422,18 @@ func point_6_reached():
 	is_moving = false
 	velocity = Vector3.ZERO
 	play_animation("idle")
-	print("Ona telah sampai di Point 6!")
+	print("Ona telah sampai di Point 6, menunggu Rion mendekat...")
 
 	var player = get_parent().find_child("Player", true, false)
-	if player:
+	while is_instance_valid(player):
+		var dist = global_position.distance_to(player.global_position)
 		var dir_to_rion = player.global_position - global_position
-		dir_to_rion.y = 0
-		if dir_to_rion.length() > 0.1:
-			look_at(global_position + dir_to_rion, Vector3.UP)
+		dir_to_rion.y = 0.0
+		if dir_to_rion.length_squared() > 0.01:
+			_rotate_towards(dir_to_rion, 0.05, 5.0)
+		if dist <= 4.5:
+			break
+		await get_tree().create_timer(0.05).timeout
 
 	await point_6_dialog()
 
@@ -440,7 +469,7 @@ func teleport_to_point_8():
 		return
 	await fade_out()
 	global_position = waypoints[7].global_position
-	look_at(global_position + Vector3(-1, 0, 0), Vector3.UP)
+	_rotate_towards(Vector3(-1, 0, 0), 1.0, 50.0)
 	print("Ona telah diteleportasikan ke Point 8 (Seberang Sungai)!")
 	await fade_in()
 
@@ -457,7 +486,7 @@ func point_8_sequence() -> void:
 		var dir_to_rion = player.global_position - global_position
 		dir_to_rion.y = 0
 		if dir_to_rion.length() > 0.1:
-			look_at(global_position + dir_to_rion, Vector3.UP)
+			_rotate_towards(dir_to_rion, 0.2, 10.0)
 
 	# 1. Ona menanyakan perasaan Rion
 	var initial_dialogue: Array[String] = [
@@ -545,7 +574,7 @@ func point_9_reached() -> void:
 		var dir_to_rion = player.global_position - global_position
 		dir_to_rion.y = 0
 		if dir_to_rion.length() > 0.1:
-			look_at(global_position + dir_to_rion, Vector3.UP)
+			_rotate_towards(dir_to_rion, 0.5, 10.0)
 
 	# Mainkan percakapan 19-line di Point 9
 	await point_9_dialog()
@@ -589,6 +618,7 @@ func point_9_dialog() -> void:
 	StoryManager.start_dialogue(dialogue_lines, "Ona")
 	await StoryManager.dialogue_finished
 	is_dialogue = false
+	GameManager.point_9_dialog_done = true
 
 func _process_follow_player(_delta: float) -> void:
 	var player = get_parent().find_child("Player", true, false)
@@ -597,6 +627,23 @@ func _process_follow_player(_delta: float) -> void:
 		velocity.z = 0.0
 		move_and_slide()
 		play_animation("idle")
+		return
+
+	# Cek apakah perlu teleportasi melintasi sungai menyusul Rion
+	if _check_river_teleport(_delta, player):
+		move_and_slide()
+		return
+
+	# Jika Player sedang berada di atas batu sungai:
+	# Ona tidak boleh masuk ke air, tunggu aman di tepi sungai
+	if player.global_position.x >= -36.5 and player.global_position.x <= -19.0:
+		velocity.x = 0.0
+		velocity.z = 0.0
+		move_and_slide()
+		play_animation("idle")
+		var dir_to_p = player.global_position - global_position
+		dir_to_p.y = 0.0
+		_rotate_towards(dir_to_p, _delta)
 		return
 
 	var dist = global_position.distance_to(player.global_position)
@@ -616,7 +663,7 @@ func _process_follow_player(_delta: float) -> void:
 			var follow_speed = clamp(dist * 2.0, 3.5, 7.5)
 			velocity.x = dir.x * follow_speed
 			velocity.z = dir.z * follow_speed
-			look_at(global_position + Vector3(dir.x, 0, dir.z), Vector3.UP)
+			_rotate_towards(dir, _delta)
 			play_animation("walk" if follow_speed < 5.5 else "run")
 		else:
 			velocity.x = 0.0
@@ -630,6 +677,118 @@ func _process_follow_player(_delta: float) -> void:
 		var dir_to_player = player.global_position - global_position
 		dir_to_player.y = 0.0
 		if dir_to_player.length() > 0.2:
-			look_at(global_position + dir_to_player, Vector3.UP)
+			_rotate_towards(dir_to_player, _delta)
 
 	move_and_slide()
+
+func _check_river_teleport(delta: float, player: Node3D) -> bool:
+	if _teleport_cooldown > 0.0:
+		_teleport_cooldown -= delta
+
+	var ona_x = global_position.x
+	var ona_y = global_position.y
+
+	# 1. Penyelamatan darurat jika Ona tercebur ke dalam air sungai
+	if ona_y < -0.8 and ona_x > -37.5 and ona_x < -18.0:
+		var target_x = -17.8 if player.global_position.x > -28.0 else -39.0
+		var rescue_pos = Vector3(target_x, 0.2, player.global_position.z)
+		_execute_teleport(rescue_pos, "Penyelamatan darurat dari air sungai")
+		return true
+
+	if _teleport_cooldown > 0.0:
+		return false
+
+	var player_x = player.global_position.x
+
+	# 2. Player sudah di Tepi Kapsul (X > -19.0), sedangkan Ona masih di Tepi Bengkel / Sungai (X < -26.0)
+	if player_x > -19.0 and ona_x < -26.0:
+		var target_pos = Vector3(-17.8, 0.1, player.global_position.z)
+		if waypoints.size() > 6 and waypoints[6]:
+			target_pos = waypoints[6].global_position + Vector3(0.5, 0.1, 0.0)
+		_execute_teleport(target_pos, "Menyusul Rion ke tepi sungai daerah kapsul")
+		return true
+
+	# 3. Player sudah di Tepi Bengkel (X < -36.5), sedangkan Ona masih di Tepi Kapsul / Sungai (X > -29.0)
+	if player_x < -36.5 and ona_x > -29.0:
+		var target_pos = Vector3(-39.5, 0.1, player.global_position.z)
+		if waypoints.size() > 7 and waypoints[7]:
+			target_pos = waypoints[7].global_position + Vector3(-0.5, 0.1, 0.0)
+		_execute_teleport(target_pos, "Menyusul Rion ke tepi sungai daerah bengkel")
+		return true
+
+	return false
+
+func _execute_teleport(target_pos: Vector3, reason: String) -> void:
+	_teleport_cooldown = 1.0
+	velocity = Vector3.ZERO
+	global_position = target_pos
+	play_animation("idle")
+	var player = get_parent().find_child("Player", true, false)
+	if player:
+		var dir_to_p = player.global_position - global_position
+		dir_to_p.y = 0.0
+		if dir_to_p.length_squared() > 0.01:
+			rotation.y = atan2(-dir_to_p.x, -dir_to_p.z)
+	print("[Ona Teleport] %s -> Posisi: %s" % [reason, str(target_pos)])
+
+func _rotate_towards(target_dir: Vector3, delta: float, turn_speed: float = 10.0) -> void:
+	if target_dir.length_squared() < 0.001:
+		return
+	var target_angle = atan2(-target_dir.x, -target_dir.z)
+	var weight = clampf(turn_speed * delta, 0.0, 1.0)
+	rotation.y = lerp_angle(rotation.y, target_angle, weight)
+
+func _setup_animation_tree() -> void:
+	if animation_tree == null:
+		animation_tree = get_node_or_null("AnimationTree")
+
+	if animation_tree == null and animation_player != null:
+		animation_tree = AnimationTree.new()
+		animation_tree.name = "AnimationTree"
+		add_child(animation_tree)
+		animation_tree.anim_player = animation_tree.get_path_to(animation_player)
+
+		var sm = AnimationNodeStateMachine.new()
+
+		var anim_idle = AnimationNodeAnimation.new()
+		anim_idle.animation = &"idle"
+		sm.add_node("idle", anim_idle, Vector2(200, 100))
+
+		var anim_walk = AnimationNodeAnimation.new()
+		anim_walk.animation = &"walk"
+		sm.add_node("walk", anim_walk, Vector2(400, 50))
+
+		var anim_run = AnimationNodeAnimation.new()
+		anim_run.animation = &"run"
+		sm.add_node("run", anim_run, Vector2(400, 150))
+
+		var anim_bashful = AnimationNodeAnimation.new()
+		anim_bashful.animation = &"bashful"
+		sm.add_node("bashful", anim_bashful, Vector2(200, 220))
+
+		var start_trans = AnimationNodeStateMachineTransition.new()
+		start_trans.advance_mode = AnimationNodeStateMachineTransition.ADVANCE_MODE_AUTO
+		sm.add_transition("Start", "idle", start_trans)
+
+		var add_trans = func(from: String, to: String, xfade: float):
+			var t1 = AnimationNodeStateMachineTransition.new()
+			t1.xfade_time = xfade
+			sm.add_transition(from, to, t1)
+			var t2 = AnimationNodeStateMachineTransition.new()
+			t2.xfade_time = xfade
+			sm.add_transition(to, from, t2)
+
+		add_trans.call("idle", "walk", 0.25)
+		add_trans.call("idle", "run", 0.25)
+		add_trans.call("walk", "run", 0.2)
+		add_trans.call("idle", "bashful", 0.3)
+		add_trans.call("walk", "bashful", 0.3)
+		add_trans.call("run", "bashful", 0.3)
+
+		animation_tree.tree_root = sm
+
+	if animation_tree:
+		animation_tree.active = true
+		_playback = animation_tree.get("parameters/playback")
+		if _playback:
+			_playback.start("idle")

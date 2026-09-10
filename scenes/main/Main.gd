@@ -70,6 +70,75 @@ func _setup_gameplay_state() -> void:
 		else:
 			hud.visible = true
 
+	# Pastikan Kapsul Rion di LEV1 tetap ada di posisi mendarat di tanah dan tidak hilang
+	var capsule = find_child("RionCapsule", true, false)
+	if capsule:
+		capsule.visible = true
+		capsule.global_position = Vector3(106.118, -0.096, 25.87)
+		capsule.rotation = Vector3(0, 0, deg_to_rad(9.5))
+		var c_anim: AnimationPlayer = capsule.get_node_or_null("AnimationPlayer")
+		if c_anim:
+			c_anim.stop()
+		var smoke = capsule.find_child("Smoke", true, false)
+		if smoke:
+			smoke.visible = true
+	
+	# Pastikan efek partikel api di lokasi kapsul jatuh tetap menyala
+	for fire_name in ["Fire1", "Fire2", "Fire3"]:
+		var fire_node = find_child(fire_name, true, false)
+		if fire_node:
+			fire_node.visible = true
+
+var _fade_layer: CanvasLayer = null
+var _fade_color_rect: ColorRect = null
+
+func _get_or_create_fade_rect() -> ColorRect:
+	if _fade_color_rect and is_instance_valid(_fade_color_rect):
+		return _fade_color_rect
+	_fade_layer = CanvasLayer.new()
+	_fade_layer.layer = 120
+	add_child(_fade_layer)
+	_fade_color_rect = ColorRect.new()
+	_fade_color_rect.set_anchors_preset(Control.PRESET_FULL_RECT)
+	_fade_color_rect.color = Color.BLACK
+	_fade_color_rect.modulate.a = 0.0
+	_fade_color_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	_fade_layer.add_child(_fade_color_rect)
+	return _fade_color_rect
+
+func _fade_screen_out(duration: float = 0.5) -> void:
+	var rect = _get_or_create_fade_rect()
+	rect.mouse_filter = Control.MOUSE_FILTER_STOP
+	var tween = create_tween()
+	tween.tween_property(rect, "modulate:a", 1.0, duration)
+	await tween.finished
+
+func _fade_screen_in(duration: float = 0.5) -> void:
+	var rect = _get_or_create_fade_rect()
+	var tween = create_tween()
+	tween.tween_property(rect, "modulate:a", 0.0, duration)
+	await tween.finished
+	rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+
+## Memutar node/mesh secara halus ke sudut target Y dengan lerp_angle
+func _smooth_rotate_y(node: Node3D, target_angle: float, duration: float = 0.35) -> void:
+	if not is_instance_valid(node):
+		return
+	var start_angle = node.rotation.y
+	var diff = abs(wrapf(target_angle - start_angle, -PI, PI))
+	if diff < 0.02:
+		node.rotation.y = target_angle
+		return
+	var adj_duration = clampf(duration * (diff / PI), 0.15, duration)
+	var tween = create_tween()
+	tween.tween_method(func(t: float):
+		if is_instance_valid(node):
+			node.rotation.y = lerp_angle(start_angle, target_angle, t)
+	, 0.0, 1.0, adj_duration).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	await tween.finished
+	if is_instance_valid(node):
+		node.rotation.y = target_angle
+
 func _walk_character(char: CharacterBody3D, target_pos: Vector3, speed: float = 6.0) -> void:
 	var start_pos = char.global_position
 	var diff = target_pos - start_pos
@@ -84,15 +153,18 @@ func _walk_character(char: CharacterBody3D, target_pos: Vector3, speed: float = 
 	var rion_mesh = char.get_node_or_null("RionMesh")
 	var anim_tree: AnimationTree = char.get_node_or_null("AnimationTree")
 
+	# Putar badan secara halus sebelum atau saat mulai melangkah
 	if is_player:
 		char.rotation = Vector3.ZERO
 		if rion_mesh and move_dir.length() > 0.01:
-			rion_mesh.rotation.y = atan2(move_dir.x, move_dir.z)
+			var target_rot = atan2(move_dir.x, move_dir.z)
+			await _smooth_rotate_y(rion_mesh, target_rot, 0.25)
 		if anim_tree:
 			anim_tree.set("parameters/StateMachine/Move/blend_position", 0.5)
 	else:
 		if move_dir.length() > 0.01:
-			char.look_at(char.global_position + move_dir, Vector3.UP)
+			var target_rot = atan2(-move_dir.x, -move_dir.z)
+			await _smooth_rotate_y(char, target_rot, 0.25)
 		if char.has_method("play_animation"):
 			char.play_animation("walk")
 
@@ -117,17 +189,33 @@ func _walk_pair(ona_char: CharacterBody3D, ona_target: Vector3, player_char: Cha
 	var rion_mesh = player_char.get_node_or_null("RionMesh")
 	var anim_tree: AnimationTree = player_char.get_node_or_null("AnimationTree")
 
+	# Putar Ona dan Rion secara halus bersamaan sebelum melangkah maju
+	var rot_tween = create_tween().set_parallel(true)
 	if ona_dir.length() > 0.01:
-		ona_char.look_at(ona_char.global_position + ona_dir, Vector3.UP)
-	if ona_char.has_method("play_animation"):
-		ona_char.play_animation("walk")
+		var ona_target_rot = atan2(-ona_dir.x, -ona_dir.z)
+		var ona_start_rot = ona_char.rotation.y
+		rot_tween.tween_method(func(t: float):
+			if is_instance_valid(ona_char):
+				ona_char.rotation.y = lerp_angle(ona_start_rot, ona_target_rot, t)
+		, 0.0, 1.0, 0.28).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 
 	var p_diff = player_target - player_char.global_position
 	p_diff.y = 0.0
 	var p_dir = p_diff.normalized()
 	player_char.rotation = Vector3.ZERO
 	if rion_mesh and p_dir.length() > 0.01:
-		rion_mesh.rotation.y = atan2(p_dir.x, p_dir.z)
+		var p_target_rot = atan2(p_dir.x, p_dir.z)
+		var p_start_rot = rion_mesh.rotation.y
+		rot_tween.tween_method(func(t: float):
+			if is_instance_valid(rion_mesh):
+				rion_mesh.rotation.y = lerp_angle(p_start_rot, p_target_rot, t)
+		, 0.0, 1.0, 0.28).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+
+	await rot_tween.finished
+
+	# Mulai animasi jalan
+	if ona_char.has_method("play_animation"):
+		ona_char.play_animation("walk")
 	if anim_tree:
 		anim_tree.set("parameters/StateMachine/Move/blend_position", 0.5)
 
@@ -188,6 +276,19 @@ func _play_rocket_intro() -> void:
 
 	# 4. Saat roket mendarat (5 detik), arahkan kamera ke Ona yang mulai berjalan
 	await get_tree().create_timer(5.0).timeout
+	var capsule = find_child("RionCapsule", true, false)
+	if capsule:
+		capsule.visible = true
+		capsule.global_position = Vector3(106.118, -0.096, 25.87)
+		capsule.rotation = Vector3(0, 0, deg_to_rad(9.5))
+		var smoke = capsule.find_child("Smoke", true, false)
+		if smoke:
+			smoke.visible = true
+	for fire_name in ["Fire1", "Fire2", "Fire3"]:
+		var fire_node = find_child(fire_name, true, false)
+		if fire_node:
+			fire_node.visible = true
+
 	if rocket_cam and is_instance_valid(ona):
 		if rocket_cam.has_method("track_target"):
 			rocket_cam.track_target(ona)
@@ -236,6 +337,7 @@ func _play_workshop_intro() -> void:
 	var p2: Marker3D = storypoints.get_node_or_null("Point2") as Marker3D
 	var p3: Marker3D = storypoints.get_node_or_null("Point3") as Marker3D
 	var p4: Marker3D = storypoints.get_node_or_null("Point4") as Marker3D
+	var p5: Marker3D = storypoints.get_node_or_null("Point5") as Marker3D
 
 	if p1 == null or p2 == null or p3 == null or p4 == null:
 		return
@@ -264,98 +366,143 @@ func _play_workshop_intro() -> void:
 	if rion_mesh:
 		rion_mesh.rotation = Vector3.ZERO
 
-	# Rallux berada di Point 2 (balik meja kerja), memutar animasi searching
-	rallux.global_position = p2.global_position
+	# Rallux berada di posisi awal yang telah diatur (23.843, 0, 30.673) rotasi (0, -137.3, 0) di balik meja kerja
+	var rallux_start_pos := Vector3(23.843, 0.0, 30.673)
+	var rallux_start_rot := Vector3(0.0, deg_to_rad(-137.3), 0.0)
+	rallux.global_position = rallux_start_pos
+	rallux.rotation = rallux_start_rot
 	if rallux_anim:
 		rallux_anim.play("searching")
 
-	# Setup Kamera di belakang Ona & Rion saat baru masuk
+	# Setup Kamera di belakang-kiri Ona saat baru masuk - tetap di dalam ruangan (bukan menembus dinding selatan)
+	var entrance_cam_offset := Vector3(-6.0, 5.0, 2.5)
 	if camera_rig:
-		camera_rig.global_position = ona.global_position + Vector3(0.0, 2.5, -4.5)
-		camera_rig.look_at(ona.global_position + Vector3(0.0, 1.4, 2.0), Vector3.UP)
+		camera_rig.global_position = ona.global_position + entrance_cam_offset
+		camera_rig.look_at(ona.global_position + Vector3(0.0, 1.4, 3.0), Vector3.UP)
 		var cam = camera_rig.find_child("*Camera*", true, false) as Camera3D
 		if cam:
 			cam.make_current()
 
 	await get_tree().create_timer(0.5).timeout
 
-	# ==========================================
-	# ONA & RION BERJALAN DARI PINTU KE POINT 1
-	# ==========================================
-	await _walk_pair(ona, p1.global_position, player, p1.global_position + Vector3(-1.0, 0, -1.0), 6.5, Vector3(0.0, 2.5, -4.5))
+	# =========================================================================
+	# 2. ONA & RION BERJALAN DARI PINTU (P4) KE POINT 1 → DIALOG → LANJUT KE POINT 2
+	# =========================================================================
+	# Langkah 1: Jalan dari P4 ke Point 1
+	var p1_ona_target: Vector3 = p1.global_position
+	var p1_player_target: Vector3 = p1.global_position + Vector3(-1.0, 0, 1.0)
+	var cam_p1: Vector3 = p1.global_position + Vector3(-6.0, 5.0, 3.0)
+	await _walk_pair(ona, p1_ona_target, player, p1_player_target, 6.5, cam_p1 - p1_ona_target)
 
-	# Di Point 1: Ona & Rion berbalik menatap ke arah dalam bengkel / Point 2
-	var dir_to_p2 = (p2.global_position - p1.global_position).normalized()
-	dir_to_p2.y = 0.0
-	ona.look_at(ona.global_position + dir_to_p2, Vector3.UP)
+	# Pastikan di Point 1 menghadap lurus ke lorong (+X / menuju Point 2), tidak serong
+	var straight_dir_p1 := Vector3(1.0, 0.0, 0.0)
+	var target_rot_ona_p1 := atan2(-straight_dir_p1.x, -straight_dir_p1.z)
+	var target_rot_rion_p1 := atan2(straight_dir_p1.x, straight_dir_p1.z)
+	var rot_p1 = create_tween().set_parallel(true)
+	var ona_s_p1 = ona.rotation.y
+	rot_p1.tween_method(func(t: float):
+		if is_instance_valid(ona):
+			ona.rotation.y = lerp_angle(ona_s_p1, target_rot_ona_p1, t)
+	, 0.0, 1.0, 0.25).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
 	if rion_mesh:
-		rion_mesh.rotation.y = atan2(dir_to_p2.x, dir_to_p2.z)
+		var rion_s_p1 = rion_mesh.rotation.y
+		rot_p1.tween_method(func(t: float):
+			if is_instance_valid(rion_mesh):
+				rion_mesh.rotation.y = lerp_angle(rion_s_p1, target_rot_rion_p1, t)
+		, 0.0, 1.0, 0.25).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	await rot_p1.finished
+
+	if camera_rig:
+		camera_rig.look_at(ona.global_position + Vector3(0, 1.4, 0), Vector3.UP)
+
+	# Dialog di Point 1: Rion bingung mencari Rallux
+	var point1_dialog: Array[String] = [
+		"Rion: \"Ona... tempatnya luas banget... Tapi... mana Tuan Rallux-nya?\"",
+		"Ona: \"Tuan Rallux pasti sedang bekerja di meja kerjanya di sudut ruangan. Ayo kita hampiri, Rion.\""
+	]
+	StoryManager.start_dialogue(point1_dialog, "Rion")
+	await StoryManager.dialogue_finished
+
+	await get_tree().create_timer(0.4).timeout
+
+	# Langkah 2: Lanjut jalan ke Point 2
+	var p2_ona_target: Vector3 = p2.global_position + Vector3(0.0, 0.0, -0.6)
+	var p2_player_target: Vector3 = p2.global_position + Vector3(-1.2, 0, 1.0)
+	var cam_p2: Vector3 = p2.global_position + Vector3(-7.5, 5.2, 4.0)
+	await _walk_pair(ona, p2_ona_target, player, p2_player_target, 6.5, cam_p2 - p2_ona_target)
+
+	# Di Point 2: Menghadap lurus ke depan (+X), tidak serong / tidak menoleh ke meja kerja
+	var straight_dir_p2 := Vector3(1.0, 0.0, 0.0)
+	var target_rot_ona_p2 := atan2(-straight_dir_p2.x, -straight_dir_p2.z)
+	var target_rot_rion_p2 := atan2(straight_dir_p2.x, straight_dir_p2.z)
+	var rot_p2 = create_tween().set_parallel(true)
+	var ona_s_p2 = ona.rotation.y
+	rot_p2.tween_method(func(t: float):
+		if is_instance_valid(ona):
+			ona.rotation.y = lerp_angle(ona_s_p2, target_rot_ona_p2, t)
+	, 0.0, 1.0, 0.25).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	if rion_mesh:
+		var rion_s_p2 = rion_mesh.rotation.y
+		rot_p2.tween_method(func(t: float):
+			if is_instance_valid(rion_mesh):
+				rion_mesh.rotation.y = lerp_angle(rion_s_p2, target_rot_rion_p2, t)
+		, 0.0, 1.0, 0.25).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	await rot_p2.finished
 
 	if camera_rig:
 		camera_rig.look_at(ona.global_position + Vector3(0, 1.4, 0), Vector3.UP)
 
 	await get_tree().create_timer(0.4).timeout
 
-	# ==========================================
-	# POINT 1: DIALOG RION BERBISIK DI BALIK PUNGGUNG ONA
-	# ==========================================
-	var p1_dialog: Array[String] = [
-		"Rion: \"Ona... tempatnya luas banget... Tapi... mana Tuan Rallux-nya?\""
+	# Di Point 2 terdengar suara TANG! KLATAK! dari meja kerja Rallux
+	var point2_dialog: Array[String] = [
+		"TANG! KLATAK!",
 	]
-	StoryManager.start_dialogue(p1_dialog, "Rion")
+	StoryManager.start_dialogue(point2_dialog, "Rion")
 	await StoryManager.dialogue_finished
 
 	await get_tree().create_timer(0.4).timeout
 
-	# ==========================================
-	# POINT 2: KEJADIAN DARI BALIK MEJA KERJA
-	# ==========================================
-	# Sorot Rallux secara jelas di balik meja kerja
+	# =========================================================================
+	# 3. SHOOT RALLUX DI MEJA KERJA SAAT MENGGERUTU, LALU FADE MENUJU POINT 2 & 3
+	# =========================================================================
+	# Sorot Rallux dari arah depannya saat mencari baut di meja kerja
 	if camera_rig:
-		var rallux_cam_pos = p2.global_position + Vector3(-4.0, 2.8, 5.0)
-		var cam_tween = create_tween()
-		cam_tween.tween_property(camera_rig, "global_position", rallux_cam_pos, 1.2)
-		await cam_tween.finished
-		camera_rig.look_at(rallux.global_position + Vector3(0, 1.8, 0), Vector3.UP)
+		var rallux_cam_pos = rallux.global_position + Vector3(-7.0, 4.5, -7.2)
+		camera_rig.global_position = rallux_cam_pos
+		camera_rig.look_at(rallux.global_position + Vector3(0, 2.0, 0), Vector3.UP)
 
 	if rallux_anim:
 		rallux_anim.play("searching")
 
+	# Rallux menggerutu sambil mencari baut di meja kerja (kamera menyorot Rallux)
 	var p2_dialog: Array[String] = [
-		"_(Tiba-tiba, dari balik meja kerja besar di sudut ruangan, terdengar suara kencang:)",
-		"TANG! KLATAK!",
-		"*Suara dari Balik Meja*",
 		"Rallux: \"Aduh! Baut gravitasi yang nakal... lari ke mana lagi kamu? Jangan pura-pura jadi hiasan lantai, aku tahu kamu sembunyi di dekat situ!\"",
 		"Rallux: \"Fiuh... baut kecil itu lincah sekali kalau menggelinding.\""
 	]
 	StoryManager.start_dialogue(p2_dialog, "Rallux")
 	await StoryManager.dialogue_finished
 
-	# ==========================================
-	# POINT 3: RALLUX LARI KE POINT 3
-	# ==========================================
-	# Rallux berbalik dan berlari ke Point 3
-	var dir_to_p3 = (p3.global_position - rallux.global_position).normalized()
-	dir_to_p3.y = 0.0
-	rallux.look_at(rallux.global_position + dir_to_p3, Vector3.UP)
-	if rallux_anim:
-		rallux_anim.play("run")
+	# Setelah dialog Rallux selesai: Fade out
+	await _fade_screen_out(0.4)
 
-	var run_duration = max(rallux.global_position.distance_to(p3.global_position) / 8.0, 1.5)
-	var rallux_tween = create_tween().set_parallel(true)
-	rallux_tween.tween_property(rallux, "global_position", p3.global_position, run_duration)
-	if camera_rig:
-		rallux_tween.tween_property(camera_rig, "global_position", p3.global_position + Vector3(-4.5, 2.5, 4.5), run_duration)
-	await rallux_tween.finished
-
-	# Rallux sampai di Point 3, tatap Ona & Rion, ganti animasi idle
-	var dir_rallux_face = (ona.global_position - rallux.global_position).normalized()
-	dir_rallux_face.y = 0.0
-	rallux.look_at(rallux.global_position + dir_rallux_face, Vector3.UP)
+	# Posisikan Rallux di Point 3 menghadap ke arah Ona & Rion di Point 2
+	rallux.global_position = p3.global_position
+	var dir_rallux_to_ona = (ona.global_position - rallux.global_position).normalized()
+	dir_rallux_to_ona.y = 0.0
+	if dir_rallux_to_ona.length() > 0.01:
+		rallux.rotation.y = atan2(dir_rallux_to_ona.x, dir_rallux_to_ona.z)
 	if rallux_anim:
 		rallux_anim.play("idle")
+
+	# Kamera kembali siap di Point 2 menyorot Ona dan Rion
 	if camera_rig:
-		camera_rig.look_at(rallux.global_position + Vector3(0, 1.8, 0), Vector3.UP)
+		camera_rig.global_position = cam_p2
+		camera_rig.look_at(ona.global_position + Vector3(0, 1.4, 0), Vector3.UP)
+
+	await get_tree().create_timer(0.2).timeout
+	# Fade in: layar kembali terang dengan kamera menyorot Ona & Rion dan Rallux sudah tiba di Point 3
+	await _fade_screen_in(0.4)
 
 	# Dialog sambutan Rallux bagian pertama
 	var p3_dialog_1: Array[String] = [
@@ -366,19 +513,22 @@ func _play_workshop_intro() -> void:
 	StoryManager.start_dialogue(p3_dialog_1, "Rallux")
 	await StoryManager.dialogue_finished
 
-	# Kamera berpindah menyorot Ona & Rion
+	# Kamera berpindah menyorot Ona & Rion dari jarak lebih jauh
 	if camera_rig:
-		camera_rig.global_position = ona.global_position + Vector3(-3.0, 2.0, 4.0)
+		camera_rig.global_position = ona.global_position + Vector3(-5.5, 3.2, 6.5)
 		camera_rig.look_at(ona.global_position + Vector3(0, 1.2, 0), Vector3.UP)
 
 	# Rion bergerak secara alami ke belakang Ona, tetapi tetap menghadap ke arah Rallux
-	var rion_hide_pos = ona.global_position - dir_to_p2 * 1.5 + Vector3(-0.6, 0, 0)
+	var dir_to_rallux = (rallux.global_position - ona.global_position).normalized()
+	dir_to_rallux.y = 0.0
+	var rion_hide_pos = ona.global_position - dir_to_rallux * 1.5 + Vector3(-0.6, 0, 0)
 	await _walk_character(player, rion_hide_pos, 3.5)
 
 	var dir_rion_to_rallux = (rallux.global_position - player.global_position).normalized()
 	dir_rion_to_rallux.y = 0.0
-	if rion_mesh:
-		rion_mesh.rotation.y = atan2(dir_rion_to_rallux.x, dir_rion_to_rallux.z)
+	if rion_mesh and dir_rion_to_rallux.length() > 0.01:
+		var target_rion_rallux = atan2(dir_rion_to_rallux.x, dir_rion_to_rallux.z)
+		await _smooth_rotate_y(rion_mesh, target_rion_rallux, 0.3)
 	if ona.has_method("play_animation"):
 		ona.play_animation("bashful")
 
@@ -391,22 +541,70 @@ func _play_workshop_intro() -> void:
 		"Rallux: \"Ona, bagaimana kalau kamu ajak Rion jalan-jalan santai dulu di sekitar kebun luar? Supaya Rion bisa menghirup udara segar dan merasa lebih rileks dulu.\"",
 		"Ona: \"Ide yang sangat bagus, Tuan Rallux. Udara sore di luar sangat sejuk dan menenangkan.\"",
 		"Ona: \"Ayo, Rion... kita jalan-jalan santai di luar sebentar, mau?\"",
-		"Rion: \"...\"",
-		"_(Rion masih terdiam dan tidak bicara, tapi perlahan ia mengangguk pelan lalu melangkah mengikuti Ona keluar)_"
+		"Rion: \"...\""
 	]
 	StoryManager.start_dialogue(p3_dialog_2, "Rallux")
 	await StoryManager.dialogue_finished
 
-	# ==========================================
-	# POINT 4: ONA & RION MELANGKAH KE PINTU KELUAR (POINT 4)
-	# ==========================================
-	var dir_to_p4 = (p4.global_position - ona.global_position).normalized()
-	dir_to_p4.y = 0.0
+	# =========================================================================
+	# 4. ONA & RION MELANGKAH KE PINTU KELUAR: LEWAT POINT 1 DULU, LALU KE POINT 4
+	# =========================================================================
+	# Nonaktifkan tabrakan antara Player dan Ona agar pergerakan mulus tanpa saling dorong
+	player.set_collision_mask_value(2, false)
+	player.set_collision_mask_value(3, false)
+	ona.set_collision_mask_value(2, false)
+	ona.set_collision_mask_value(3, false)
+
+	# --- Tahap 1: Berjalan dari posisi sekarang (Point 2 / sekitarnya) menuju Point 1 ---
+	var dir_to_p1 = (p1.global_position - ona.global_position).normalized()
+	dir_to_p1.y = 0.0
+	var to_p1_cam_offset = -dir_to_p1 * 7.0 + Vector3(0, 4.0, 0)
 	if camera_rig:
-		camera_rig.global_position = ona.global_position - dir_to_p4 * 4.0 + Vector3(0, 3.0, 0)
+		camera_rig.global_position = ona.global_position + to_p1_cam_offset
 		camera_rig.look_at(ona.global_position + Vector3(0, 1.4, 0), Vector3.UP)
 
-	await _walk_pair(ona, p4.global_position, player, p4.global_position + Vector3(1.2, 0, 1.2), 6.0, -dir_to_p4 * 4.0 + Vector3(0, 3.0, 0))
+	# Lajur paralel untuk Player di samping Ona menuju Point 1
+	var side_vec_p1 = Vector3(-dir_to_p1.z, 0.0, dir_to_p1.x).normalized()
+	var player_p1_exit_target = p1.global_position + side_vec_p1 * 1.8 - dir_to_p1 * 0.8
+	await _walk_pair(ona, p1.global_position, player, player_p1_exit_target, 6.0, to_p1_cam_offset)
+
+	# --- Tahap 2: Lanjut berjalan dari Point 1 menuju pintu keluar (Point 4) ---
+	var dir_to_p4 = (p4.global_position - ona.global_position).normalized()
+	dir_to_p4.y = 0.0
+	var to_p4_cam_offset = -dir_to_p4 * 7.0 + Vector3(0, 4.0, 0)
+	if camera_rig:
+		camera_rig.global_position = ona.global_position + to_p4_cam_offset
+		camera_rig.look_at(ona.global_position + Vector3(0, 1.4, 0), Vector3.UP)
+
+	# Lajur paralel untuk Player di samping Ona menuju Point 4
+	var side_vec_p4 = Vector3(-dir_to_p4.z, 0.0, dir_to_p4.x).normalized()
+	var player_p4_target = p4.global_position + side_vec_p4 * 1.8 - dir_to_p4 * 0.8
+	await _walk_pair(ona, p4.global_position, player, player_p4_target, 6.0, to_p4_cam_offset)
+
+	# Hadapkan Ona dan Rion tepat ke arah pintu keluar (Point 4 / quitdoor ke arah -Z), bukan ke tembok
+	var door_dir := Vector3(0.0, 0.0, -1.0)
+	var quitdoor_node = find_child("quitdoor", true, false)
+	if quitdoor_node:
+		var diff_door = quitdoor_node.global_position - ona.global_position
+		diff_door.y = 0.0
+		if diff_door.length() > 0.1:
+			door_dir = diff_door.normalized()
+	var door_rot_ona := atan2(-door_dir.x, -door_dir.z)
+	var door_rot_rion := atan2(door_dir.x, door_dir.z)
+	var rot_door = create_tween().set_parallel(true)
+	var ona_s_door = ona.rotation.y
+	rot_door.tween_method(func(t: float):
+		if is_instance_valid(ona):
+			ona.rotation.y = lerp_angle(ona_s_door, door_rot_ona, t)
+	, 0.0, 1.0, 0.25).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	if rion_mesh:
+		var rion_s_door = rion_mesh.rotation.y
+		rot_door.tween_method(func(t: float):
+			if is_instance_valid(rion_mesh):
+				rion_mesh.rotation.y = lerp_angle(rion_s_door, door_rot_rion, t)
+		, 0.0, 1.0, 0.25).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	await rot_door.finished
+	await get_tree().create_timer(0.3).timeout
 
 	# Kunci pintu bengkel dan tandai telah mengunjungi bengkel
 	GameManager.has_visited_workshop = true
@@ -420,3 +618,62 @@ func _play_workshop_intro() -> void:
 		LoadingScreen.load_scene("res://LEV1.tscn")
 	else:
 		get_tree().change_scene_to_file("res://LEV1.tscn")
+
+## Rallux berlari menyusuri titik-titik rute dengan gerak tetap (move_toward per frame,
+## bukan tween) sehingga dijamin sampai ke tujuan. Kamera mengikuti mulus setiap frame.
+func _run_rallux_route(rallux: Node3D, route: Array, rallux_anim: AnimationPlayer, camera_rig: Node3D, speed: float = 9.0, end_idle: bool = true) -> void:
+	if rallux_anim:
+		rallux_anim.play("run")
+
+	var cam_offset: Vector3 = Vector3(-6.5, 4.2, 6.5)
+
+	# Posisikan kamera dulu di belakang Rallux sebelum ia mulai berlari
+	if camera_rig:
+		var behind: Vector3 = rallux.global_position + cam_offset
+		var cam_set: Tween = create_tween()
+		cam_set.tween_property(camera_rig, "global_position", behind, 0.5)
+		await cam_set.finished
+		camera_rig.look_at(rallux.global_position + Vector3(0, 1.6, 0), Vector3.UP)
+
+	var prev_time := Time.get_ticks_msec()
+
+	for i in range(1, route.size()):
+		var to: Vector3 = route[i]
+		var dist2d: float = Vector2(
+			to.x - rallux.global_position.x,
+			to.z - rallux.global_position.z
+		).length()
+		var time_limit := Time.get_ticks_msec() + int((dist2d / speed) * 1000.0) + 1500
+
+		while rallux.global_position.distance_to(to) > 0.2:
+			if Time.get_ticks_msec() > time_limit:
+				break
+			var now := Time.get_ticks_msec()
+			var dt := clampf((now - prev_time) / 1000.0, 0.0, 0.1)
+			prev_time = now
+
+			# Putar hadap Rallux secara mulus (lerp_angle) mengikuti arah gerak saat ini
+			var dir: Vector3 = to - rallux.global_position
+			dir.y = 0.0
+			if dir.length() > 0.01:
+				var target_rot = atan2(dir.x, dir.z)
+				rallux.rotation.y = lerp_angle(rallux.rotation.y, target_rot, 12.0 * dt)
+
+			var next_pos: Vector3 = rallux.global_position.move_toward(to, speed * dt)
+			next_pos.y = to.y
+			rallux.global_position = next_pos
+
+			if camera_rig:
+				var desired: Vector3 = rallux.global_position + cam_offset
+				camera_rig.global_position = camera_rig.global_position.lerp(desired, 0.08)
+				camera_rig.look_at(rallux.global_position + Vector3(0, 1.6, 0), Vector3.UP)
+			await get_tree().physics_frame
+
+		prev_time = Time.get_ticks_msec()
+
+	rallux.global_position = route[route.size() - 1]
+	if camera_rig:
+		camera_rig.global_position = rallux.global_position + cam_offset
+		camera_rig.look_at(rallux.global_position + Vector3(0, 1.6, 0), Vector3.UP)
+	if rallux_anim and end_idle:
+		rallux_anim.play("idle")

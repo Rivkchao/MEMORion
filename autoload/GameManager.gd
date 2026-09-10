@@ -9,6 +9,7 @@ var spawn_override_position: Vector3 = Vector3.ZERO
 var spawn_override_scene: String = "LEV1"
 var has_spawn_override: bool = false
 var rock_puzzle_done: bool = false
+var point_9_dialog_done: bool = false
 
 # State R1 (Bengkel & Ruangan)
 var has_visited_workshop: bool = false

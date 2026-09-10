@@ -15,7 +15,7 @@ var is_loading_finished: bool = false
 
 func _ready() -> void:
 	_start_logo_flip_animation()
-	layer = 10
+	layer = 100
 	fade_rect.color = Color(0, 0, 0, 0)
 	fade_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	panel.hide()
@@ -26,6 +26,11 @@ func _ready() -> void:
 func load_scene(scene_path: String) -> void:
 	target_scene = scene_path
 	is_loading_finished = false
+	layer = 100
+	fade_rect.mouse_filter = Control.MOUSE_FILTER_STOP
+	var mobile = get_tree().root.find_child("MobileControls", true, false)
+	if mobile:
+		mobile.visible = false
 	_fade_out()
 
 func _fade_out() -> void:
@@ -102,6 +107,13 @@ func _on_load_success() -> void:
 func _fade_in() -> void:
 	var tween = create_tween()
 	tween.tween_property(fade_rect, "color:a", 0.0, 0.5)
+	tween.tween_callback(func():
+		fade_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+		if SettingsManager and SettingsManager.has_method("is_mobile_controls_active"):
+			var mobile = get_tree().root.find_child("MobileControls", true, false)
+			if mobile:
+				mobile.visible = SettingsManager.is_mobile_controls_active()
+	)
 
 func _on_instagram() -> void:
 	OS.shell_open(INSTAGRAM_URL)

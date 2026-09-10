@@ -1,4 +1,4 @@
-﻿# scenes/ui/ReflectionDialog.gd
+# scenes/ui/ReflectionDialog.gd
 extends CanvasLayer
 
 signal reflection_submitted(sentiment: String)
@@ -29,6 +29,7 @@ const NEGATIVE_KEYWORDS: Array[String] = [
 ]
 
 func _ready() -> void:
+	add_to_group("reflection_dialog")
 	hide()
 	reflection_card.hide()
 	badge_card.hide()
@@ -73,34 +74,36 @@ func _submit_text(raw_text: String) -> void:
 
 	is_waiting_input = false
 
-	# Sembunyikan reflection card
-	var tween = create_tween().set_parallel(true)
-	tween.tween_property(reflection_card, "scale", Vector2(0.85, 0.85), 0.25).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_IN)
-	tween.tween_property(reflection_card, "modulate:a", 0.0, 0.2)
-	await tween.finished
-	reflection_card.hide()
+	# 1. Analisis sentimen lokal secara instan (0 ms latency)
+	var sentiment = _local_keyword_sentiment(cleaned)
+
+	# 2. Sembunyikan reflection card dan dialog seketika
+	if reflection_card:
+		reflection_card.hide()
+	if backdrop:
+		backdrop.modulate.a = 0.0
 	hide()
 
-	# Analisis sentimen (dengan AI jika terhubung atau offline fallback)
-	var sentiment = await _analyze_sentiment(cleaned)
+	# 3. Emit sentimen seketika agar dialog box cerita langsung muncul tanpa lag
 	reflection_submitted.emit(sentiment)
 
 func _analyze_sentiment(text: String) -> String:
+	var ai_mgr = get_node_or_null("/root/AIManager") if is_inside_tree() else null
 	# 1. Coba lewat AIManager jika API key tersedia
-	if AIManager and AIManager._api_key != "" and AIManager._api_key != "ISI_API_KEY_KAMU_DISINI":
-		var result = await _request_ai_sentiment(text)
+	if ai_mgr and ai_mgr.get("_api_key") != "" and ai_mgr.get("_api_key") != "ISI_API_KEY_KAMU_DISINI":
+		var result = await _request_ai_sentiment(text, ai_mgr)
 		if result != "":
 			return result
 
 	# 2. Offline NLP keyword matching
 	return _local_keyword_sentiment(text)
 
-func _request_ai_sentiment(text: String) -> String:
+func _request_ai_sentiment(text: String, ai_mgr: Node) -> String:
 	var http_request := HTTPRequest.new()
 	add_child(http_request)
 
 	var request_headers = [
-		"Authorization: Bearer " + AIManager._api_key,
+		"Authorization: Bearer " + str(ai_mgr.get("_api_key")),
 		"Content-Type: application/json"
 	]
 
@@ -122,7 +125,7 @@ func _request_ai_sentiment(text: String) -> String:
 	}
 
 	var err = http_request.request(
-		AIManager.API_URL,
+		str(ai_mgr.get("API_URL")),
 		request_headers,
 		HTTPClient.METHOD_POST,
 		JSON.stringify(payload)
@@ -156,24 +159,28 @@ func _local_keyword_sentiment(text: String) -> String:
 
 	var pos_score := 0
 	var neg_score := 0
+	var nlp_mgr = get_node_or_null("/root/NLPManager") if is_inside_tree() else null
 
 	for w in words:
 		for p in POSITIVE_KEYWORDS:
-			if p == w or (NLPManager and NLPManager.levenshtein(w, p) <= 1):
+			if p == w or (nlp_mgr and nlp_mgr.has_method("levenshtein") and nlp_mgr.levenshtein(w, p) <= 1):
 				pos_score += 1
 				break
 		for n in NEGATIVE_KEYWORDS:
-			if n == w or (NLPManager and NLPManager.levenshtein(w, n) <= 1):
+			if n == w or (nlp_mgr and nlp_mgr.has_method("levenshtein") and nlp_mgr.levenshtein(w, n) <= 1):
 				neg_score += 1
 				break
 
+	var is_overcoming = ("akhirnya bisa" in lower or "ternyata bisa" in lower or "tapi bisa" in lower or "bisa melewatinya" in lower)
+
 	# Jika terdapat kata negasi seperti "tidak bisa", "kurang paham"
 	if ("tidak bisa" in lower or "gak bisa" in lower or "ngga bisa" in lower or "nggak bisa" in lower
-		or "susah" in lower or "capek" in lower or "lelah" in lower or "kesal" in lower):
+		or "capek" in lower or "lelah" in lower or "kesal" in lower
+		or ("susah" in lower and not is_overcoming)):
 		neg_score += 2
 
-	if ("ternyata bisa" in lower or "akhirnya bisa" in lower or "bisa melewatinya" in lower or "senang" in lower):
-		pos_score += 2
+	if is_overcoming or "senang" in lower or "bangga" in lower or "bisa" in lower:
+		pos_score += 3
 
 	print("[ReflectionDialog] Local sentiment score: Pos=%d, Neg=%d for text: '%s'" % [pos_score, neg_score, text])
 

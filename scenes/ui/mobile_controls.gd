@@ -113,13 +113,13 @@ func _process(delta: float) -> void:
 func _find_player_and_camera() -> void:
 	if _player == null or not is_instance_valid(_player):
 		_player = get_tree().get_first_node_in_group("player")
-		if _player == null:
-			_player = get_tree().root.find_child("Player", true, false)
+		if _player == null and get_tree().current_scene:
+			_player = get_tree().current_scene.get_node_or_null("Player")
 	
 	if _camera_rig == null or not is_instance_valid(_camera_rig):
-		_camera_rig = get_tree().current_scene.find_child("CameraRig", true, false)
-		if _camera_rig == null:
-			_camera_rig = get_tree().root.find_child("CameraRig", true, false)
+		_camera_rig = get_tree().get_first_node_in_group("camera_rig")
+		if _camera_rig == null and get_tree().current_scene:
+			_camera_rig = get_tree().current_scene.get_node_or_null("CameraRig")
 
 func _update_ui_state(delta: float) -> void:
 	var ui_blocking = _is_ui_blocking()
@@ -131,6 +131,7 @@ func _update_ui_state(delta: float) -> void:
 	
 	if _player != null:
 		var root = get_tree().current_scene
+		var is_workshop: bool = root != null and (root.name in ["R1", "BengkelRallux"] or "R1" in root.scene_file_path or "Bengkel" in root.scene_file_path)
 
 		# 1. Cek jika player membawa item reguler
 		if "held_item" in _player and _player.held_item != null:
@@ -143,64 +144,66 @@ func _update_ui_state(delta: float) -> void:
 			btn_interact.modulate = Color(0.4, 1.0, 0.7, 1.0)
 			return
 
-		# 2. Cek puzzle Unpacking (bengkel R1)
-		var unpack_mgr = root.find_child("UnpackingManager", true, false) if root else null
-		if unpack_mgr == null and root != null:
-			unpack_mgr = root.find_child("UnpackingManager3D", true, false)
-		
-		if unpack_mgr != null:
-			if unpack_mgr.has_method("has_held_item") and unpack_mgr.has_held_item():
-				if not btn_drop.visible:
-					btn_drop.visible = true
-					btn_drop.scale = Vector2(0.5, 0.5)
-					var tween = create_tween()
-					tween.tween_property(btn_drop, "scale", Vector2.ONE, 0.15).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
-				_pulse_time += delta * 4.0
-				var p_scale = 1.0 + sin(_pulse_time) * 0.05
-				btn_interact.scale = Vector2(p_scale, p_scale)
-				btn_interact.modulate = Color(1.0, 0.85, 0.3, 1.0)
-				btn_interact.text = "✦\nTARUH"
-				return
-			elif unpack_mgr.has_method("get_nearest_item_distance") and unpack_mgr.get_nearest_item_distance() <= unpack_mgr.interact_distance:
+		# Cek fitur khusus bengkel R1 (Unpacking, Levers, Doors) HANYA jika berada di R1
+		if is_workshop:
+			# 2. Cek puzzle Unpacking (bengkel R1)
+			var unpack_mgr = get_tree().get_first_node_in_group("unpacking_manager")
+			if unpack_mgr == null and root != null:
+				unpack_mgr = root.get_node_or_null("UnpackingManager")
+				if unpack_mgr == null:
+					unpack_mgr = root.get_node_or_null("UnpackingManager3D")
+			
+			if unpack_mgr != null:
+				if unpack_mgr.has_method("has_held_item") and unpack_mgr.has_held_item():
+					if not btn_drop.visible:
+						btn_drop.visible = true
+						btn_drop.scale = Vector2(0.5, 0.5)
+						var tween = create_tween()
+						tween.tween_property(btn_drop, "scale", Vector2.ONE, 0.15).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
+					_pulse_time += delta * 4.0
+					var p_scale = 1.0 + sin(_pulse_time) * 0.05
+					btn_interact.scale = Vector2(p_scale, p_scale)
+					btn_interact.modulate = Color(1.0, 0.85, 0.3, 1.0)
+					btn_interact.text = "✦\nTARUH"
+					return
+				elif unpack_mgr.has_method("get_nearest_item_distance") and unpack_mgr.get_nearest_item_distance() <= unpack_mgr.interact_distance:
+					btn_drop.visible = false
+					_pulse_time += delta * 4.0
+					var p_scale = 1.0 + sin(_pulse_time) * 0.05
+					btn_interact.scale = Vector2(p_scale, p_scale)
+					btn_interact.modulate = Color(0.4, 1.0, 0.7, 1.0)
+					btn_interact.text = "✦\nAMBIL"
+					return
+
+			# 3. Cek tuas (Lever)
+			var near_lever := false
+			for lever in get_tree().get_nodes_in_group("levers"):
+				if lever.has_method("is_player_near") and lever.is_player_near():
+					near_lever = true
+					break
+			if near_lever:
 				btn_drop.visible = false
 				_pulse_time += delta * 4.0
 				var p_scale = 1.0 + sin(_pulse_time) * 0.05
 				btn_interact.scale = Vector2(p_scale, p_scale)
-				btn_interact.modulate = Color(0.4, 1.0, 0.7, 1.0)
-				btn_interact.text = "✦\nAMBIL"
+				btn_interact.modulate = Color(1.0, 0.6, 0.2, 1.0)
+				btn_interact.text = "✦\nTAHAN"
 				return
 
-		# 3. Cek tuas (Lever)
-		var near_lever := false
-		if root:
-			for lever in root.find_children("*", "Node3D", true, false):
-				if lever.has_method("is_player_near") and lever.is_player_near():
-					near_lever = true
-					break
-		if near_lever:
-			btn_drop.visible = false
-			_pulse_time += delta * 4.0
-			var p_scale = 1.0 + sin(_pulse_time) * 0.05
-			btn_interact.scale = Vector2(p_scale, p_scale)
-			btn_interact.modulate = Color(1.0, 0.6, 0.2, 1.0)
-			btn_interact.text = "✦\nTAHAN"
-			return
-
-		# 4. Cek pintu interior R1
-		var near_room_door := false
-		if root:
-			for door in root.find_children("*", "Area3D", true, false):
+			# 4. Cek pintu interior R1
+			var near_room_door := false
+			for door in get_tree().get_nodes_in_group("doors"):
 				if door.has_method("is_player_inside") and door.is_player_inside():
 					near_room_door = true
 					break
-		if near_room_door:
-			btn_drop.visible = false
-			_pulse_time += delta * 4.0
-			var p_scale = 1.0 + sin(_pulse_time) * 0.05
-			btn_interact.scale = Vector2(p_scale, p_scale)
-			btn_interact.modulate = Color(0.4, 0.9, 1.0, 1.0)
-			btn_interact.text = "✦\nPINDAH"
-			return
+			if near_room_door:
+				btn_drop.visible = false
+				_pulse_time += delta * 4.0
+				var p_scale = 1.0 + sin(_pulse_time) * 0.05
+				btn_interact.scale = Vector2(p_scale, p_scale)
+				btn_interact.modulate = Color(0.4, 0.9, 1.0, 1.0)
+				btn_interact.text = "✦\nPINDAH"
+				return
 
 		# 5. Objek interaktif umum (Interactable)
 		btn_drop.visible = false
@@ -228,14 +231,12 @@ func _is_ui_blocking() -> bool:
 		return true
 	if FragmentBox != null and "is_showing" in FragmentBox and FragmentBox.is_showing:
 		return true
-	var root = get_tree().current_scene
-	if root:
-		var ref = root.find_child("ReflectionDialog", true, false)
-		if ref and ref.visible and (("is_waiting_input" in ref and ref.is_waiting_input) or ("is_waiting_badge" in ref and ref.is_waiting_badge)):
-			return true
-		var sm = root.find_child("SettingsMenu", true, false)
-		if sm and sm.visible:
-			return true
+	var ref = get_tree().get_first_node_in_group("reflection_dialog")
+	if ref and ref.visible and (("is_waiting_input" in ref and ref.is_waiting_input) or ("is_waiting_badge" in ref and ref.is_waiting_badge)):
+		return true
+	var sm = get_tree().get_first_node_in_group("settings_menu")
+	if sm and sm.visible:
+		return true
 	return false
 
 # ----------------------------------------------------
@@ -428,13 +429,9 @@ func _on_drop_pressed() -> void:
 	if _player and _player.has_method("drop_item") and "held_item" in _player and _player.held_item != null:
 		_player.drop_item()
 		return
-	var root = get_tree().current_scene
-	if root:
-		var unpack = root.find_child("UnpackingManager", true, false)
-		if unpack == null:
-			unpack = root.find_child("UnpackingManager3D", true, false)
-		if unpack and unpack.has_method("drop_held_item"):
-			unpack.drop_held_item()
-			return
+	var unpack = get_tree().get_first_node_in_group("unpacking_manager")
+	if unpack and unpack.has_method("drop_held_item"):
+		unpack.drop_held_item()
+		return
 	Input.action_press("ui_cancel")
 	Input.action_release("ui_cancel")

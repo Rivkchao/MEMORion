@@ -367,8 +367,8 @@ func _process(_delta: float) -> void:
 		on_player_fell_in_river()
 		return
 
-	# 2. Deteksi Sisa Satu Batu (Rion di dekat batu terakhir X <= -32.0 dan X > -36.0)
-	if not has_said_near_end and px <= -32.0 and px > -36.0 and py > -1.0:
+	# 2. Deteksi Sisa Satu Batu (Rion sudah mendarat di 1 batu sebelum batu terakhir: RockSlot4, X ~ -30.91)
+	if not has_said_near_end and px <= -30.2 and px > -32.2 and player.is_on_floor() and py > -1.0:
 		has_said_near_end = true
 		StoryManager.start_dialogue(["Ona: Lompatan yang bagus Rion. Tinggal sedikit lagi kamu berhasil."], "Ona")
 
