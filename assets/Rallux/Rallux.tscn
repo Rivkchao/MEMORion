@@ -1,6 +1,7 @@
 [gd_scene format=4 uid="uid://dllw40c1jw6sa"]
 
 [ext_resource type="Texture2D" uid="uid://74qi548mygih" path="res://assets/Rallux/T-Pose_0.png" id="1_vpe3g"]
+[ext_resource type="Script" path="res://scenes/npc/rallux.gd" id="1_ralluxscript"]
 [ext_resource type="Texture2D" uid="uid://j8h7k6gcgafp" path="res://assets/Rallux/T-Pose_1.png" id="2_0wey3"]
 [ext_resource type="Animation" uid="uid://cftrbbg0hallt" path="res://assets/Rallux/idle.res" id="3_02t3c"]
 [ext_resource type="Animation" uid="uid://b1s2uqkhh800r" path="res://assets/Rallux/run.res" id="4_b24o1"]
@@ -348,8 +349,49 @@ _data = {
 &"tpose": SubResource("Animation_11pnx")
 }
 
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_idle"]
+animation = &"idle"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_run"]
+animation = &"run"
+
+[sub_resource type="AnimationNodeAnimation" id="AnimationNodeAnimation_searching"]
+animation = &"searching"
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_start"]
+advance_mode = 2
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_i_r"]
+xfade_time = 0.25
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_r_i"]
+xfade_time = 0.25
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_i_s"]
+xfade_time = 0.3
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_s_i"]
+xfade_time = 0.3
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_r_s"]
+xfade_time = 0.25
+
+[sub_resource type="AnimationNodeStateMachineTransition" id="AnimationNodeStateMachineTransition_s_r"]
+xfade_time = 0.25
+
+[sub_resource type="AnimationNodeStateMachine" id="AnimationNodeStateMachine_rallux"]
+states/Start/position = Vector2(50, 100)
+states/idle/node = SubResource("AnimationNodeAnimation_idle")
+states/idle/position = Vector2(200, 100)
+states/run/node = SubResource("AnimationNodeAnimation_run")
+states/run/position = Vector2(400, 100)
+states/searching/node = SubResource("AnimationNodeAnimation_searching")
+states/searching/position = Vector2(200, 220)
+transitions = ["Start", "idle", SubResource("AnimationNodeStateMachineTransition_start"), "idle", "run", SubResource("AnimationNodeStateMachineTransition_i_r"), "run", "idle", SubResource("AnimationNodeStateMachineTransition_r_i"), "idle", "searching", SubResource("AnimationNodeStateMachineTransition_i_s"), "searching", "idle", SubResource("AnimationNodeStateMachineTransition_s_i"), "run", "searching", SubResource("AnimationNodeStateMachineTransition_r_s"), "searching", "run", SubResource("AnimationNodeStateMachineTransition_s_r")]
+
 [node name="Rallux" type="CharacterBody3D" unique_id=1278114264]
 collision_mask = 15
+script = ExtResource("1_ralluxscript")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="." unique_id=2064771787]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.48010254, 0)
@@ -652,3 +694,8 @@ skeleton = NodePath("..")
 [node name="AnimationPlayer" type="AnimationPlayer" parent="." unique_id=358175281]
 libraries/ = SubResource("AnimationLibrary_sqqyx")
 autoplay = &"idle"
+
+[node name="AnimationTree" type="AnimationTree" parent="." unique_id=1983057124]
+tree_root = SubResource("AnimationNodeStateMachine_rallux")
+anim_player = NodePath("../AnimationPlayer")
+

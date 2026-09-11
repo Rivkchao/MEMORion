@@ -14,7 +14,7 @@ metadata/_snap_enabled = true
 
 [sub_resource type="GradientTexture2D" id="GradientTexture2D_ebogf"]
 gradient = SubResource("Gradient_rdkif")
-fill_from = Vector2(0.5, 1)
+fill_from = Vector2(0.48634812, 0.3771331)
 fill_to = Vector2(0.5, 0)
 
 [sub_resource type="StyleBoxTexture" id="StyleBoxTexture_et7ch"]
@@ -49,7 +49,7 @@ theme_override_styles/panel = SubResource("StyleBoxTexture_et7ch")
 
 [node name="MarginContainer" type="MarginContainer" parent="PanelContainer" unique_id=549163087]
 layout_mode = 2
-theme_override_constants/margin_left = 220
+theme_override_constants/margin_left = 230
 theme_override_constants/margin_top = 15
 theme_override_constants/margin_right = 20
 theme_override_constants/margin_bottom = 15
@@ -76,7 +76,6 @@ autowrap_mode = 2
 
 [node name="ContinueLabel" type="Label" parent="." unique_id=1803768271]
 z_index = 2
-layout_mode = 1
 anchors_preset = 3
 anchor_left = 1.0
 anchor_top = 1.0
@@ -99,7 +98,6 @@ vertical_alignment = 1
 
 [node name="TextureRect" type="TextureRect" parent="." unique_id=1853842550]
 material = SubResource("ShaderMaterial_bjuha")
-layout_mode = 1
 anchors_preset = 2
 anchor_top = 1.0
 anchor_bottom = 1.0

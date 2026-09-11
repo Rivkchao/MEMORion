@@ -186,6 +186,8 @@ func _handle_movement() -> void:
 	velocity.z = move_dir.z * current_speed
 
 func _handle_jump() -> void:
+	if _is_any_ui_active():
+		return
 	if is_on_floor() and Input.is_action_just_pressed("jump"):
 		# Berikan daya dorong langsung secara instan
 		velocity.y = jump_force
@@ -261,5 +263,8 @@ func _is_any_ui_active() -> bool:
 	if StoryManager.matching_puzzle != null and StoryManager.matching_puzzle.visible:
 		return true
 	if StoryManager.wire_puzzle != null and StoryManager.wire_puzzle.visible:
+		return true
+	var ref = get_tree().get_first_node_in_group("reflection_dialog") if is_inside_tree() else null
+	if ref and ref.visible:
 		return true
 	return false

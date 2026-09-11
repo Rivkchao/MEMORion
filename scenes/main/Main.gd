@@ -371,7 +371,9 @@ func _play_workshop_intro() -> void:
 	var rallux_start_rot := Vector3(0.0, deg_to_rad(-137.3), 0.0)
 	rallux.global_position = rallux_start_pos
 	rallux.rotation = rallux_start_rot
-	if rallux_anim:
+	if rallux.has_method("play_animation"):
+		rallux.play_animation("searching")
+	elif rallux_anim:
 		rallux_anim.play("searching")
 
 	# Setup Kamera di belakang-kiri Ona saat baru masuk - tetap di dalam ruangan (bukan menembus dinding selatan)
@@ -472,7 +474,9 @@ func _play_workshop_intro() -> void:
 		camera_rig.global_position = rallux_cam_pos
 		camera_rig.look_at(rallux.global_position + Vector3(0, 2.0, 0), Vector3.UP)
 
-	if rallux_anim:
+	if rallux.has_method("play_animation"):
+		rallux.play_animation("searching")
+	elif rallux_anim:
 		rallux_anim.play("searching")
 
 	# Rallux menggerutu sambil mencari baut di meja kerja (kamera menyorot Rallux)
@@ -492,7 +496,9 @@ func _play_workshop_intro() -> void:
 	dir_rallux_to_ona.y = 0.0
 	if dir_rallux_to_ona.length() > 0.01:
 		rallux.rotation.y = atan2(dir_rallux_to_ona.x, dir_rallux_to_ona.z)
-	if rallux_anim:
+	if rallux.has_method("play_animation"):
+		rallux.play_animation("idle")
+	elif rallux_anim:
 		rallux_anim.play("idle")
 
 	# Kamera kembali siap di Point 2 menyorot Ona dan Rion
@@ -622,7 +628,9 @@ func _play_workshop_intro() -> void:
 ## Rallux berlari menyusuri titik-titik rute dengan gerak tetap (move_toward per frame,
 ## bukan tween) sehingga dijamin sampai ke tujuan. Kamera mengikuti mulus setiap frame.
 func _run_rallux_route(rallux: Node3D, route: Array, rallux_anim: AnimationPlayer, camera_rig: Node3D, speed: float = 9.0, end_idle: bool = true) -> void:
-	if rallux_anim:
+	if rallux.has_method("play_animation"):
+		rallux.play_animation("run")
+	elif rallux_anim:
 		rallux_anim.play("run")
 
 	var cam_offset: Vector3 = Vector3(-6.5, 4.2, 6.5)
@@ -675,5 +683,8 @@ func _run_rallux_route(rallux: Node3D, route: Array, rallux_anim: AnimationPlaye
 	if camera_rig:
 		camera_rig.global_position = rallux.global_position + cam_offset
 		camera_rig.look_at(rallux.global_position + Vector3(0, 1.6, 0), Vector3.UP)
-	if rallux_anim and end_idle:
-		rallux_anim.play("idle")
+	if end_idle:
+		if rallux.has_method("play_animation"):
+			rallux.play_animation("idle")
+		elif rallux_anim:
+			rallux_anim.play("idle")

@@ -483,6 +483,12 @@ func point_8_sequence() -> void:
 
 	var player = get_parent().find_child("Player", true, false)
 	if player:
+		player.velocity = Vector3.ZERO
+		player.set_physics_process(false)
+		player.set_process_unhandled_input(false)
+		var anim_tree = player.get_node_or_null("AnimationTree")
+		if anim_tree:
+			anim_tree.set("parameters/StateMachine/Move/blend_position", 0.0)
 		var dir_to_rion = player.global_position - global_position
 		dir_to_rion.y = 0
 		if dir_to_rion.length() > 0.1:
@@ -507,33 +513,49 @@ func point_8_sequence() -> void:
 				get_parent().add_child(reflection_dialog)
 
 	var detected_sentiment := "positif"
+	var user_written_text := ""
+	var ai_response_reply := ""
+
 	if reflection_dialog and reflection_dialog.has_method("show_reflection_prompt"):
+		var on_submitted = func(s: String, t: String, r: String):
+			detected_sentiment = s
+			user_written_text = t
+			ai_response_reply = r
+		reflection_dialog.reflection_submitted.connect(on_submitted, CONNECT_ONE_SHOT)
 		reflection_dialog.show_reflection_prompt()
-		detected_sentiment = await reflection_dialog.reflection_submitted
+		# Tunggu sampai dialog ditutup
+		while reflection_dialog.visible:
+			await get_tree().process_frame
 
-	print("[Ona] Hasil sentimen refleksi Rion: ", detected_sentiment)
+	print("[Ona] Hasil sentimen refleksi Rion: ", detected_sentiment, " | Teks: ", user_written_text)
 
-	# 3. Percabangan Berdasarkan Sentimen
-	if detected_sentiment == "positif":
-		var branch_a: Array[String] = [
-			"Rion: Awalnya kelihatan susah, tapi ternyata pas aku coba... aku bisa melewatinya!",
-			"Ona: Analisis emosi terdeteksi: Percaya diri meningkat! Rasa itu wajar kamu rasakan, Rion. Kamu berhasil karena mau memberi kesempatan pada dirimu sendiri untuk memperhatikan polanya.",
-			"Rion: Iya ya! Waktu aku sabar nonton preview kedipan lampunya sampai selesai, menyusun batunya jadi terasa jauh lebih gampang. Gak seseram yang aku bayangin di awal!",
-			"Ona: Tepat sekali. Otakmu merespons instruksi visual dengan sangat baik saat kamu tidak terburu-buru."
-		]
-		StoryManager.start_dialogue(branch_a, "Rion")
-		await StoryManager.dialogue_finished
+	# 3. Percakapan Refleksi (Rion mengutarakan ketikannya, Ona membalas langsung)
+	var dynamic_dialogue: Array[String] = []
+
+	# Kalimat 1: Rion menyampaikan apa yang baru saja diketiknya
+	if not user_written_text.is_empty():
+		dynamic_dialogue.append("Rion: \"" + user_written_text + "\"")
+	elif detected_sentiment == "positif":
+		dynamic_dialogue.append("Rion: Awalnya kelihatan susah, tapi ternyata pas aku coba... aku bisa melewatinya!")
 	else:
-		var branch_b: Array[String] = [
-			"Rion: Capek... dan agak kesel. Tadi aku sempat salah dan batunya langsung tenggelam lagi ke air. Rasanya pengen nyerah aja.",
-			"Ona: Analisis emosi terdeteksi: Kelelahan dan frustrasi. Emosi itu sepenuhnya valid, Rion. Beradaptasi dengan hal yang baru memang membutuhkan energi mental yang sangat besar.",
-			"Rion: Aku ngerasa bersalah tiap kali batunya reset... Kayak aku gak bisa apa-apa.",
-			"Ona: Reset sistem bukan berarti kamu gagal, Rion. Itu adalah fitur pengaman sungai agar kita bisa mencoba lagi dengan aman.",
-			"Ona: Yang terpenting, kamu tidak berhenti saat batunya tenggelam. Kamu menarik napas, mencoba lagi, dan buktinya... sekarang kakimu sudah menapak di tanah seberang ini.",
-			"Rion: (Tersenyum tipis) Makasih, Ona. Mendengarnya bikin dadaku terasa lebih lega."
-		]
-		StoryManager.start_dialogue(branch_b, "Rion")
-		await StoryManager.dialogue_finished
+		dynamic_dialogue.append("Rion: Capek... dan agak kesel. Tadi aku sempat salah dan batunya langsung tenggelam lagi ke air.")
+
+	# Kalimat 2: Ona menanggapi secara personal ucapan Rion
+	if not ai_response_reply.is_empty():
+		dynamic_dialogue.append("Ona: " + ai_response_reply)
+
+	# Kalimat 3 & seterusnya: Konteks penguatan mental / feedback emosi
+	if detected_sentiment == "positif":
+		dynamic_dialogue.append("Ona: Analisis emosi terdeteksi: Percaya diri meningkat! Kamu berhasil karena mau memberi kesempatan pada dirimu sendiri untuk memperhatikan polanya.")
+		dynamic_dialogue.append("Rion: Iya ya! Waktu aku sabar nonton preview kedipan lampunya sampai selesai, menyusun batunya jadi terasa jauh lebih gampang.")
+		dynamic_dialogue.append("Ona: Tepat sekali. Otakmu merespons instruksi visual dengan sangat baik saat kamu tidak terburu-buru.")
+	else:
+		dynamic_dialogue.append("Ona: Analisis emosi terdeteksi: Kelelahan dan frustrasi. Emosi itu sepenuhnya wajar, Rion. Beradaptasi dengan hal yang baru memang membutuhkan energi mental yang besar.")
+		dynamic_dialogue.append("Ona: Reset sistem bukan berarti kamu gagal. Yang terpenting, kamu menarik napas, mencoba lagi, dan buktinya... sekarang kakimu sudah menapak di tanah seberang ini.")
+		dynamic_dialogue.append("Rion: (Tersenyum tipis) Makasih, Ona. Mendengarnya bikin dadaku terasa lebih lega.")
+
+	StoryManager.start_dialogue(dynamic_dialogue, "Rion")
+	await StoryManager.dialogue_finished
 
 	# 4. Pop-up Keterampilan Tercatat (Badge)
 	if reflection_dialog and reflection_dialog.has_method("show_badge_popup"):
@@ -548,6 +570,11 @@ func point_8_sequence() -> void:
 	await StoryManager.dialogue_finished
 
 	is_dialogue = false
+
+	# Kembalikan kontrol gerak ke pemain
+	if player:
+		player.set_physics_process(true)
+		player.set_process_unhandled_input(true)
 
 	# 6. Update HUD dan Ona Berjalan ke Point 9
 	var hud = get_parent().find_child("HUD", true, false)

@@ -1,4 +1,4 @@
-﻿[gd_scene format=3 uid="uid://b23reflectiondlg"]
+[gd_scene format=3 uid="uid://b23reflectiondlg"]
 
 [ext_resource type="Script" path="res://scenes/ui/ReflectionDialog.gd" id="1_refscript"]
 [ext_resource type="FontFile" uid="uid://bb80gooxacs7q" path="res://Fonts/Telegraf-Bold-fix15408087824949790956.30.2aa1f309-cb96-4ad6-a94f-e5147e9.ttf" id="2_tbold"]
@@ -161,6 +161,16 @@ theme_override_fonts/font = ExtResource("3_treg")
 theme_override_font_sizes/font_size = 13
 text = "(Tekan Enter untuk melanjutkan)"
 horizontal_alignment = 1
+
+[node name="ErrorLabel" type="Label" parent="CardContainer/ReflectionCard/Margin/VBox/InputContainer"]
+visible = false
+layout_mode = 2
+theme_override_colors/font_color = Color(1.0, 0.4, 0.45, 1.0)
+theme_override_fonts/font = ExtResource("3_treg")
+theme_override_font_sizes/font_size = 13
+text = "Yuk ceritakan perasaanmu dengan bahasa yang baik."
+horizontal_alignment = 1
+autowrap_mode = 3
 
 [node name="SubmitButton" type="Button" parent="CardContainer/ReflectionCard/Margin/VBox"]
 custom_minimum_size = Vector2(0, 46)
