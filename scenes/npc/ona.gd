@@ -16,8 +16,11 @@ var is_following_player := false
 var reflection_dialog: CanvasLayer = null
 var _playback: AnimationNodeStateMachinePlayback = null
 var _teleport_cooldown: float = 0.0
+## Saat true, Ona digerakkan oleh tween cutscene: jangan override animasi/posisi dari _physics_process
+var _cutscene_walking: bool = false
 
 func _ready():
+	add_to_group("ona")
 	_setup_animation_tree()
 
 	if fade_rect:
@@ -54,14 +57,24 @@ func _ready():
 	var gm = get_node_or_null("/root/GameManager") if is_inside_tree() else null
 	if gm and gm.get("workshop_door_locked"):
 		is_moving = false
-		is_following_player = true
-		# Posisikan Ona di dekat pintu bengkel / Point 9
-		if waypoints.size() >= 9:
-			global_position = waypoints[8].global_position + Vector3(2.0, 0, 0)
-		else:
-			global_position = Vector3(-145.0, 0.0, -0.86)
+		is_following_player = false
+		# Ona berdiri berdampingan dekat Rion (selisih 0.9 meter, tidak berjauhan & tidak menabrak bengkel)
+		global_position = Vector3(-144.9, 0.0, -2.5)
 		play_animation("idle")
-		print("Ona menyambut Rion di kebun luar dan siap mengikuti ke mana pun Rion pergi!")
+		print("Ona menyambut Rion di kebun luar bengkel!")
+
+		# Orientasikan Ona menghadap ke arah kebun (Point 10)
+		var p10 = waypoints[9] if waypoints.size() > 9 else get_parent().find_child("Point10", true, false)
+		if p10:
+			var dir_init = (p10.global_position - global_position).normalized()
+			dir_init.y = 0
+			if dir_init.length_squared() > 0.01:
+				rotation.y = atan2(-dir_init.x, -dir_init.z)
+
+		if not gm.garden_intro_done:
+			call_deferred("_start_scene_5_garden_sequence")
+		else:
+			is_following_player = true
 		return
 
 	await get_tree().create_timer(5.0).timeout
@@ -84,6 +97,13 @@ func _physics_process(_delta):
 		_execute_teleport(Vector3(rescue_x, 0.2, rescue_z), "Penyelamatan darurat dari air sungai")
 
 	# ==========================================
+	# ONA DIGERAKKAN TWEEN CUTSCENE (jangan sentuh posisi & animasinya)
+	# ==========================================
+	if _cutscene_walking:
+		velocity = Vector3.ZERO
+		return
+
+	# ==========================================
 	# ONA SEDANG DIALOG
 	# ==========================================
 	if is_dialogue:
@@ -94,10 +114,14 @@ func _physics_process(_delta):
 		return
 
 	# ==========================================
-	# ONA MENGIKUTI RION DI SEKITAR POINT 9
+	# ONA MENGIKUTI RION DI SEKITAR POINT 9 / KEBUN
 	# ==========================================
 	if is_following_player:
 		_process_follow_player(_delta)
+		
+		# Cek jika Rion kembali ke Point 9 (depan bengkel) setelah memetik bunga di kebun:
+		if GameManager and GameManager.garden_intro_done and not GameManager.sleep_transition_done and not _is_evaluating_memory:
+			_check_garden_return_to_point9()
 		return
 
 	# ==========================================
@@ -401,6 +425,8 @@ func point_5_dialog() -> void:
 func play_animation(animation_name: String):
 	if _playback:
 		_playback.travel(animation_name)
+		if _playback.get_current_node() != animation_name:
+			_playback.start(animation_name)
 	elif animation_player and animation_player.current_animation != animation_name:
 		animation_player.play(animation_name)
 
@@ -517,15 +543,13 @@ func point_8_sequence() -> void:
 	var ai_response_reply := ""
 
 	if reflection_dialog and reflection_dialog.has_method("show_reflection_prompt"):
-		var on_submitted = func(s: String, t: String, r: String):
-			detected_sentiment = s
-			user_written_text = t
-			ai_response_reply = r
-		reflection_dialog.reflection_submitted.connect(on_submitted, CONNECT_ONE_SHOT)
 		reflection_dialog.show_reflection_prompt()
-		# Tunggu sampai dialog ditutup
-		while reflection_dialog.visible:
-			await get_tree().process_frame
+		# Ambil hasil langsung dari sinyal (lambda GDScript capture by value → tidak bisa menulis balik)
+		var res_ref: Array = await reflection_dialog.reflection_submitted
+		if res_ref.size() >= 3:
+			detected_sentiment = str(res_ref[0])
+			user_written_text = str(res_ref[1])
+			ai_response_reply = str(res_ref[2])
 
 	print("[Ona] Hasil sentimen refleksi Rion: ", detected_sentiment, " | Teks: ", user_written_text)
 
@@ -819,3 +843,425 @@ func _setup_animation_tree() -> void:
 		_playback = animation_tree.get("parameters/playback")
 		if _playback:
 			_playback.start("idle")
+
+# =============================================================================
+# SCENE 5: KEBUN KOSMIK, REFLEKSI KEMARAHAN, MEMORI BUNGA, & TRANSISI TIDUR
+# =============================================================================
+
+var _is_evaluating_memory: bool = false
+var _zero_flower_reminded: bool = false
+
+func _check_garden_return_to_point9() -> void:
+	var p9_marker = waypoints[8] if waypoints.size() > 8 else get_parent().find_child("Point9", true, false)
+	var p9_pos = p9_marker.global_position if p9_marker else Vector3(-147.0, 0.0, -0.86)
+	var player = get_parent().find_child("Player", true, false)
+	if player == null:
+		return
+	
+	var dist_p9 = player.global_position.distance_to(p9_pos)
+	if dist_p9 <= 4.0:
+		if GameManager.collected_flower_count > 0:
+			trigger_flower_memory_evaluation()
+		else:
+			# Belum memetik bunga: jangan trigger evaluasi!
+			if not _zero_flower_reminded and not is_dialogue:
+				_zero_flower_reminded = true
+				var reminder: Array[String] = [
+					"Ona: Rion, keranjang kita masih kosong. Ayo kita petik beberapa tangkai bunga mekar yang bercahaya di kebun dulu ya!"
+				]
+				StoryManager.start_dialogue(reminder, "Ona")
+	else:
+		if dist_p9 > 7.0:
+			_zero_flower_reminded = false
+
+func _start_scene_5_garden_sequence() -> void:
+	var player = get_parent().find_child("Player", true, false)
+	if player:
+		player.set_physics_process(false)
+		player.set_process_unhandled_input(false)
+		player.velocity = Vector3.ZERO
+		var anim_tree = player.get_node_or_null("AnimationTree")
+		if anim_tree:
+			anim_tree.set("parameters/StateMachine/Move/blend_position", 0.0)
+
+		# Pasangkan basket bunga di RionMesh
+		_attach_basket_to_player(player)
+
+	is_dialogue = true
+	velocity = Vector3.ZERO
+	play_animation("idle")
+
+	# Langkah 1: Ona dan Rion berjalan berdampingan dari depan bengkel ke Point 10
+	var p10_marker = null
+	if waypoints.size() > 9 and waypoints[9]:
+		p10_marker = waypoints[9]
+	else:
+		p10_marker = get_parent().find_child("Point10", true, false)
+
+	var target_p10 = p10_marker.global_position if p10_marker else Vector3(-146.5, 0.0, -9.8)
+
+	# Berjalan pelan berdampingan di jalur jalan aman (jarak rapat 0.9m)
+	var t_walk = create_tween().set_parallel(true)
+	var ona_start = global_position
+	var ona_dest = target_p10 + Vector3(0.45, 0, 0)
+	var dir_walk = (ona_dest - ona_start).normalized()
+	dir_walk.y = 0
+	if dir_walk.length_squared() > 0.01:
+		rotation.y = atan2(-dir_walk.x, -dir_walk.z)
+
+	_cutscene_walking = true
+	play_animation("walk")
+	t_walk.tween_property(self, "global_position", ona_dest, 3.5).set_trans(Tween.TRANS_SINE)
+
+	if player:
+		var p_start = player.global_position
+		var p_dest = target_p10 + Vector3(-0.45, 0, 0)
+		var p_dir = (p_dest - p_start).normalized()
+		p_dir.y = 0
+		var rion_mesh = player.get_node_or_null("RionMesh")
+		if rion_mesh and p_dir.length_squared() > 0.01:
+			rion_mesh.rotation.y = atan2(p_dir.x, p_dir.z)
+
+		t_walk.tween_property(player, "global_position", p_dest, 3.5).set_trans(Tween.TRANS_SINE)
+		var p_anim = player.get_node_or_null("AnimationTree")
+		if p_anim:
+			p_anim.set("parameters/StateMachine/Move/blend_position", 0.5)
+
+	await t_walk.finished
+	_cutscene_walking = false
+	play_animation("idle")
+	if player:
+		var p_anim = player.get_node_or_null("AnimationTree")
+		if p_anim:
+			p_anim.set("parameters/StateMachine/Move/blend_position", 0.0)
+
+	# Ona menoleh ke arah Rion untuk dialog
+	if player:
+		var dir_to_p = (player.global_position - global_position).normalized()
+		dir_to_p.y = 0
+		if dir_to_p.length_squared() > 0.01:
+			rotation.y = atan2(-dir_to_p.x, -dir_to_p.z)
+
+		# Rion menghadap ke arah Point 11 (Taman Bunga), bukan menghadap ke Ona
+		var rion_mesh = player.get_node_or_null("RionMesh")
+		if rion_mesh:
+			var p11_marker = null
+			if waypoints.size() > 10 and waypoints[10]:
+				p11_marker = waypoints[10]
+			else:
+				p11_marker = get_parent().find_child("Point11", true, false)
+			
+			var target_pos_p11 = p11_marker.global_position if p11_marker else Vector3(-154.86, 0.0, -12.25)
+			var dir_to_garden = (target_pos_p11 - player.global_position).normalized()
+			dir_to_garden.y = 0
+			if dir_to_garden.length_squared() > 0.01:
+				rion_mesh.rotation.y = atan2(dir_to_garden.x, dir_to_garden.z)
+
+	# Langkah 2: Dialog Pembuka Kebun Bunga
+	var garden_dialog_part1: Array[String] = [
+		"Ona: Wah, lihat deh, Rion! Bunga-bunga kosmik di sini sedang mekar semua. Ayo kita kumpulkan beberapa tangkai bunga untuk hiasan meja di dalam bengkel.",
+		"Rion: Waaah... bunganya beneran nyala kayak lampu kecil! Boleh aku petik, Ona?",
+		"Ona: Tentu saja boleh! Petik bunga yang sudah mekar besar saja ya, Rion...",
+		"Ona: Karena nektar bunganya sudah matang dan layak untuk kita petik.",
+		"Rion: Pluk. Hangat dan lembut banget pas dipegang... Rasanya telapak tanganku jadi kesemutan geli. Ternyata tanaman di planet ini unik-unik banget ya.",
+		"Ona: Sensor optikku mencatatnya sebagai pendaran cahaya yang stabil, dan aromanya menenangkan sistem sirkulasi energiku.",
+		"Ona: (Ona terdiam sejenak, memandangi bunga di tangannya dengan pandangan reflektif)",
+		"Ona: Rion... sebagai seonggok mesin yang terbuat dari logam dan kabel, terkadang aku merasa sangat penasaran... Seperti apa sebenarnya rasanya memiliki emosi di dalam hati?",
+		"Rion: Eh? Rasa emosi?",
+		"Ona: Iya. Sistemku hanya punya kalkulasi angka dan logika data. Tapi makhluk hidup sepertimu bisa merasakan banyak hal. Misalnya... hal apa sih yang biasanya paling bikin kamu merasa marah atau kesal?"
+	]
+
+	StoryManager.start_dialogue(garden_dialog_part1, "Ona")
+	await StoryManager.dialogue_finished
+
+	# Langkah 3: Kotak Input Refleksi NLP Kemarahan
+	if reflection_dialog == null:
+		var ex = get_parent().find_child("ReflectionDialog", true, false)
+		if ex:
+			reflection_dialog = ex
+		else:
+			var dlg_scene = load("res://scenes/ui/ReflectionDialog.tscn")
+			if dlg_scene:
+				reflection_dialog = dlg_scene.instantiate()
+				get_parent().add_child(reflection_dialog)
+
+	var user_written_anger := ""
+	var ona_anger_reply := ""
+
+	if reflection_dialog and reflection_dialog.has_method("show_anger_reflection_prompt"):
+		reflection_dialog.show_anger_reflection_prompt()
+		# Ambil hasil langsung dari sinyal (lambda GDScript capture by value → tidak bisa menulis balik)
+		var res_anger: Array = await reflection_dialog.anger_reflection_submitted
+		if res_anger.size() >= 2:
+			user_written_anger = str(res_anger[0])
+			ona_anger_reply = str(res_anger[1])
+
+	# Langkah 4: Respon Ona & Kisah Tuan Rallux Menjaga Emosi
+	var garden_dialog_part2: Array[String] = [
+		"Ona: Jadi hal seperti itu yang memicu luapan energi kemarahan di dalam pikiran ya... Menarik sekali.",
+		"Ona: Bagi mesin, eror biasanya membuat sistem berhenti bekerja.",
+		"Ona: Tapi pada makhluk hidup, rasa marah dan kesal ternyata adalah sinyal bahwa ada hal penting yang sedang terganggu.",
+		"Rion: Iya... rasanya kayak ada uap panas yang mau meledak keluar dari kepala kalau lagi kesal.",
+		"Ona: Itulah kenapa Tuan Rallux sangat hebat dalam menjaga emosi. Dulu, waktu aku baru pertama kali dirakit dan sistem kendaliku sering eror, aku pernah tanpa sengaja menjatuhkan setumpuk tabung kristal penelitian sampai pecah berantakan.",
+		"Rion: Hah?! Terus Tuan Rallux ngapain? Marah besar gak?!",
+		"Ona: (Menggeleng pelan) Sama sekali tidak. Beliau tidak pernah membiarkan kemarahan merusak keadaan. Beliau langsung memeriksa tanganku dan bertanya, 'Ona, kamu kaget ya?'",
+		"Ona: Beliau selalu bilang, barang yang rusak selalu bisa diperbaiki atau diganti, tapi perasaan kita jauh lebih berharga. Beliau sangat suka teka-teki, suka meracik ube matcha, dan paling senang menyambut teman baru.",
+		"Rion: (Tersenyum lega) Wah... ternyata Tuan Rallux memang sebaik dan sehangat itu ya... Aku jadi ngerasa tenang banget sekarang.",
+		"Ona: Tentu saja! Makanya, yuk tarik napas dalam-dalam... Nikmati segarnya angin dan pemandangan kebun yang tenang ini.",
+		"Rion: (Menarik napas panjang lalu mengembuskannya) Sejuk banget. Badanku rasanya jauh lebih ringan sekarang."
+	]
+
+	StoryManager.start_dialogue(garden_dialog_part2, "Ona")
+	await StoryManager.dialogue_finished
+
+	# Langkah 5: Aktifkan Gameplay Bebas & Pergantian Skybox Malam
+	is_dialogue = false
+	GameManager.garden_intro_done = true
+
+	if player:
+		player.set_physics_process(true)
+		player.set_process_unhandled_input(true)
+
+	if GameManager:
+		GameManager.update_flower_hud()
+
+	# Mulai transisi langit malam secara halus (18 detik agar dinikmati)
+	var sun = get_parent().find_child("DirectionalLight3D", true, false)
+	if sun and sun.has_method("transition_to_night"):
+		sun.transition_to_night(18.0)
+
+	# Ona sekarang menemani Rion memetik bunga di sekitar kebun
+	is_following_player = true
+	print("[Ona] Menemani Rion memetik bunga di kebun.")
+
+func _attach_basket_to_player(player: Node3D) -> void:
+	if player.find_child("FlowerBasket", true, false) != null:
+		return
+	var basket_scene = load("res://scenes/props/FlowerBasket.tscn")
+	if basket_scene:
+		var basket = basket_scene.instantiate()
+		basket.name = "FlowerBasket"
+		
+		# Pasang tepat pada tulang tangan kanan Rion (mixamorig_RightHand)
+		var skeleton = player.find_child("Skeleton3D", true, false) as Skeleton3D
+		if skeleton:
+			var bone_attach = skeleton.get_node_or_null("RightHandAttachment") as BoneAttachment3D
+			if bone_attach == null:
+				bone_attach = BoneAttachment3D.new()
+				bone_attach.name = "RightHandAttachment"
+				bone_attach.bone_name = "mixamorig_RightHand"
+				var b_idx = skeleton.find_bone("mixamorig_RightHand")
+				if b_idx != -1:
+					bone_attach.bone_idx = b_idx
+				skeleton.add_child(bone_attach)
+			bone_attach.add_child(basket)
+			# Posisi dan orientasi tepat pas digenggam tegak di tangan kanan Rion (skala lebih kecil proporsional)
+			basket.position = Vector3(-0.05, 0.14, 0.03)
+			basket.rotation_degrees = Vector3(-26.0, 121.0, -176.0)
+			if basket.has_method("set_base_scale"):
+				basket.set_base_scale(Vector3(0.32, 0.32, 0.32))
+			else:
+				basket.scale = Vector3(0.32, 0.32, 0.32)
+			print("[Ona] Keranjang bunga terpasang tepat pada tangan kanan Rion (mixamorig_RightHand)!")
+		else:
+			var rion_mesh = player.get_node_or_null("RionMesh")
+			if rion_mesh:
+				rion_mesh.add_child(basket)
+				basket.position = Vector3(0.24, 0.40, 0.18)
+				basket.rotation = Vector3.ZERO
+			else:
+				player.add_child(basket)
+				basket.position = Vector3(0.35, 0.45, 0.2)
+			if basket.has_method("set_base_scale"):
+				basket.set_base_scale(Vector3(0.35, 0.35, 0.35))
+			else:
+				basket.scale = Vector3(0.35, 0.35, 0.35)
+			print("[Ona] Keranjang bunga terpasang pada RionMesh!")
+
+## Pemicu Evaluasi Memori Saat Bunga Terkumpul atau Rion Kembali ke Depan Bengkel
+func trigger_flower_memory_evaluation() -> void:
+	if _is_evaluating_memory:
+		return
+	# Jika tidak ada bunga yang diambil, jangan trigger evaluasi!
+	if GameManager and GameManager.collected_flower_count == 0:
+		print("[Ona] Belum ada bunga yang dipetik, evaluasi dibatalkan.")
+		return
+
+	_is_evaluating_memory = true
+	is_following_player = false
+	is_moving = false
+	is_dialogue = true
+	velocity = Vector3.ZERO
+	play_animation("idle")
+
+	var player = get_parent().find_child("Player", true, false)
+	if player:
+		player.velocity = Vector3.ZERO
+		player.set_physics_process(false)
+		player.set_process_unhandled_input(false)
+		var p_anim = player.get_node_or_null("AnimationTree")
+		if p_anim:
+			p_anim.set("parameters/StateMachine/Move/blend_position", 0.0)
+
+		# Ona dan Rion saling berhadapan untuk percakapan evaluasi
+		var dir_to_p = (player.global_position - global_position).normalized()
+		dir_to_p.y = 0
+		if dir_to_p.length_squared() > 0.01:
+			rotation.y = atan2(-dir_to_p.x, -dir_to_p.z)
+
+		var rion_mesh = player.get_node_or_null("RionMesh")
+		if rion_mesh:
+			var dir_to_ona = (global_position - player.global_position).normalized()
+			dir_to_ona.y = 0
+			if dir_to_ona.length_squared() > 0.01:
+				rion_mesh.rotation.y = atan2(dir_to_ona.x, dir_to_ona.z)
+
+	# Ona menyambut Rion
+	var eval_intro: Array[String] = [
+		"Ona: (Menyambut Rion dengan senyum ramah) Kerja bagus, Rion! Kamu sudah menjelajahi kebun dengan teliti. Nah, sebelum kita bawa keranjang ini masuk ke dalam, coba kita ingat-ingat sebentar apa yang sudah kita kumpulkan.",
+		"Rion: Boleh! Ingat-ingat tentang apa, Ona?",
+		"Ona: Saat berkeliling tadi, kamu memetik berapa banyak tangkai bunga untuk dimasukkan ke dalam keranjang?"
+	]
+	StoryManager.start_dialogue(eval_intro, "Ona")
+	await StoryManager.dialogue_finished
+
+	# Input Evaluasi 2: Jumlah Bunga
+	var count_exact := false
+	var count_comment := ""
+	var total_bunga := GameManager.collected_flower_count if GameManager else 0
+
+	if reflection_dialog and reflection_dialog.has_method("show_count_evaluation_prompt"):
+		reflection_dialog.show_count_evaluation_prompt()
+		# CATATAN: lambda GDScript meng-capture variabel lokal BY VALUE, sehingga menulis
+		# ke variabel luar dari dalam lambda tidak berpengaruh. Hasil harus diambil
+		# langsung dari sinyal, kalau tidak jawaban benar akan selalu dianggap salah.
+		var res_count: Array = await reflection_dialog.count_evaluation_submitted
+		if res_count.size() >= 4:
+			count_exact = bool(res_count[1])
+			count_comment = str(res_count[2])
+			total_bunga = int(res_count[3])
+
+	# Respon Ona atas tebakan jumlah bunga
+	var count_response_lines: Array[String] = []
+	if count_exact:
+		count_response_lines = [
+			"Ona: Tepat sekali! Ada %d tangkai bunga di keranjangmu. Memorimu bekerja dengan sangat jeli, Rion." % total_bunga,
+			"Rion: (Tersenyum bangga) Hehe, aku beneran hitung satu per satu tadi pas memetiknya!"
+		]
+	else:
+		count_response_lines = [
+			"Ona: %s! Wajar banget kok kalau angkanya meleset. Di kebun yang luas dan indah seperti ini, perhatian kita memang gampang teralihkan ke mana-mana. Kalau kita hitung bersama di keranjang, totalnya ada %d tangkai." % [count_comment, total_bunga],
+			"Rion: Wah, iya ya... tadi aku terlalu asyik lihat kelopaknya yang bersinar.",
+			"Ona: Rasa penasaranmu itu hal yang keren, Rion. Tidak perlu buru-buru, yang penting kamu menikmatinya."
+		]
+
+	StoryManager.start_dialogue(count_response_lines, "Ona")
+	await StoryManager.dialogue_finished
+
+	# Pertanyaan Lanjutan: Warna Bunga
+	var color_intro: Array[String] = [
+		"Ona: Nah, satu tebakan lagi biar semakin seru. Kira-kira kamu masih ingat tidak, bunga-bunga yang kamu petik tadi warnanya apa?"
+	]
+	StoryManager.start_dialogue(color_intro, "Ona")
+	await StoryManager.dialogue_finished
+
+	# Input Evaluasi 3: Warna Bunga
+	var color_correct := false
+	if reflection_dialog and reflection_dialog.has_method("show_color_evaluation_prompt"):
+		reflection_dialog.show_color_evaluation_prompt()
+		# Sama seperti evaluasi jumlah: ambil hasil langsung dari sinyal (bukan lambda)
+		var res_color: Array = await reflection_dialog.color_evaluation_submitted
+		if res_color.size() >= 2:
+			color_correct = bool(res_color[1])
+
+	# Respon Warna Bunga (Target: Biru / Kosmik)
+	var color_response_lines: Array[String] = []
+	if color_correct:
+		color_response_lines = [
+			"Ona: (Tersenyum bangga dan bertepuk tangan pelan) Tepat sekali, Rion! Bunganya berwarna biru kosmik yang berkilau lembut.",
+			"Ona: Daya ingat dan pengamatan visualmu sangat hebat! Kamu memperhatikan detail warnanya dengan jeli meski kita tadi asyik berkeliling.",
+			"Rion: (Tersenyum lebar) Hehe, iya! Pendaran warna birunya kelihatan cantik banget kayak bintang malam di langit.",
+			"Ona: Warna biru yang menenangkan ini pasti akan membuat meja kerja di dalam bengkel terasa lebih hidup dan nyaman."
+		]
+	else:
+		color_response_lines = [
+			"Ona: Warna yang kamu sebutkan tadi terdengar sangat menarik kalau dibayangkan ada di kebun ini!",
+			"Ona: Tapi coba kita perhatikan keranjang bunga ini bersama-sama. Bunga-bunga kosmik yang kita petik tadi sebenarnya berwarna biru yang bersinar lembut.",
+			"Rion: Wah, iya ya! Karena pendaran cahayanya terang banget, aku sempat mengira warnanya agak berbeda.",
+			"Ona: Tidak apa-apa, Rion! Yang paling penting, kamu sudah berhasil mengumpulkan bunga-bunga mekar yang indah ini untuk kita bawa masuk."
+		]
+
+	StoryManager.start_dialogue(color_response_lines, "Ona")
+	await StoryManager.dialogue_finished
+
+	# Penutup Scene 5 & Transisi Tidur
+	await _run_sleep_transition(player)
+
+## Sekuens Layar Redup, Tidur di Bengkel, & Teks Keesokan Harinya
+func _run_sleep_transition(player: Node3D) -> void:
+	var closing_dialogue: Array[String] = [
+		"Ona: Lihat, langit malam sudah tiba. Udara di kebun mulai dingin. Yuk, kita bawa keranjang bunga ini masuk ke dalam. Kamu bisa beristirahat di sofa yang empuk.",
+		"Rion: Iya, Ona... Kakiku udah mulai pegal dan mataku mulai berat. Ayo kita masuk!"
+	]
+	StoryManager.start_dialogue(closing_dialogue, "Ona")
+	await StoryManager.dialogue_finished
+
+	# Fade to Black pekat
+	if fade_rect == null:
+		fade_rect = get_parent().find_child("FadeRect", true, false)
+
+	if fade_rect:
+		fade_rect.mouse_filter = Control.MOUSE_FILTER_STOP
+		var fade_tw = create_tween()
+		fade_tw.tween_property(fade_rect, "modulate:a", 1.0, 1.8)
+		await fade_tw.finished
+
+	# Dialog Rion mengantuk
+	var sleepy_dialog: Array[String] = [
+		"Rion: Tempat ini... aman banget... Hoaaam..."
+	]
+	StoryManager.start_dialogue(sleepy_dialog, "Rion")
+	await StoryManager.dialogue_finished
+
+	# Buat UI Narasi Layar Hitam
+	var overlay = CanvasLayer.new()
+	overlay.layer = 130
+	var panel = ColorRect.new()
+	panel.set_anchors_preset(Control.PRESET_FULL_RECT)
+	panel.color = Color.BLACK
+	overlay.add_child(panel)
+
+	var center_box = CenterContainer.new()
+	center_box.set_anchors_preset(Control.PRESET_FULL_RECT)
+	panel.add_child(center_box)
+
+	var label = Label.new()
+	label.horizontal_alignment = HORIZONTAL_ALIGNMENT_CENTER
+	label.vertical_alignment = VERTICAL_ALIGNMENT_CENTER
+	label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
+	label.custom_minimum_size = Vector2(800, 200)
+	label.add_theme_font_size_override("font_size", 22)
+	label.add_theme_color_override("font_color", Color(0.9, 0.95, 1.0, 1.0))
+	label.text = "\"Dikelilingi kehangatan bengkel dan aroma kayu manis yang menenangkan, Rion tertidur pulas tanpa rasa takut lagi...\""
+	center_box.add_child(label)
+
+	get_tree().root.add_child(overlay)
+
+	# Tampilkan teks narasi tidur selama 3.5 detik
+	await get_tree().create_timer(3.5).timeout
+
+	# JEDA HENING 2 DETIK
+	label.modulate.a = 0.0
+	await get_tree().create_timer(2.0).timeout
+
+	# TEKS MUNCUL DI TENGAH LAYAR: KEESOKAN HARINYA... Selama 3 detik
+	label.text = "☀️ KEESOKAN HARINYA..."
+	label.add_theme_font_size_override("font_size", 32)
+	label.add_theme_color_override("font_color", Color(1.0, 0.9, 0.4, 1.0))
+	var tw_txt = create_tween()
+	tw_txt.tween_property(label, "modulate:a", 1.0, 0.8)
+	await get_tree().create_timer(3.0).timeout
+
+	# Selesai transisi tidur
+	GameManager.sleep_transition_done = true
+	print("[Ona] Transisi tidur Scene 5 selesai.")

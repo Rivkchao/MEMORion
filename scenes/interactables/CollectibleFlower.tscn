@@ -1,0 +1,66 @@
+[gd_scene format=3 uid="uid://bd08qj4b0y4ee"]
+
+[ext_resource type="Script" path="res://scenes/interactables/CollectibleFlower.gd" id="1_flwscript"]
+[ext_resource type="PackedScene" uid="uid://c30bqjelcliiw" path="res://Distribute/Flower.tscn" id="2_flwmesh"]
+
+[sub_resource type="CylinderShape3D" id="CylinderShape3D_flw"]
+height = 1.6
+radius = 0.9
+
+[sub_resource type="ParticleProcessMaterial" id="ParticleProcessMaterial_sparkle"]
+emission_shape = 1
+emission_sphere_radius = 0.5
+direction = Vector3(0, 1, 0)
+spread = 35.0
+initial_velocity_min = 0.3
+initial_velocity_max = 0.8
+gravity = Vector3(0, 0.2, 0)
+scale_min = 0.05
+scale_max = 0.12
+color = Color(0.4, 0.9, 1.0, 0.85)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_glowdot"]
+transparency = 1
+shading_mode = 0
+albedo_color = Color(0.4, 0.9, 1.0, 0.9)
+
+[sub_resource type="SphereMesh" id="SphereMesh_sparkle"]
+material = SubResource("StandardMaterial3D_glowdot")
+radius = 0.04
+height = 0.08
+radial_segments = 6
+rings = 4
+
+[node name="CollectibleFlower" type="StaticBody3D"]
+collision_layer = 4
+collision_mask = 2
+script = ExtResource("1_flwscript")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.8, 0)
+shape = SubResource("CylinderShape3D_flw")
+
+[node name="Flower_3_Group2" parent="." instance=ExtResource("2_flwmesh")]
+transform = Transform3D(1.15, 0, 0, 0, 1.15, 0, 0, 0, 1.15, 0, 0, 0)
+
+[node name="GlowParticles" type="GPUParticles3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+amount = 12
+lifetime = 1.4
+process_material = SubResource("ParticleProcessMaterial_sparkle")
+draw_pass_1 = SubResource("SphereMesh_sparkle")
+
+[node name="OmniLight3D" type="OmniLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.9, 0)
+light_color = Color(0.25, 0.85, 1.0, 1.0)
+light_energy = 0.8
+omni_range = 2.2
+
+[node name="Label3D" type="Label3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 1.8, 0)
+billboard = 1
+font_size = 40
+outline_size = 6
+outline_modulate = Color(0, 0, 0, 1)
+text = "✦ Petik Bunga (E)"
+visible = false

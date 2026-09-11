@@ -2,10 +2,15 @@
 extends CanvasLayer
 
 signal reflection_submitted(sentiment: String, user_text: String, ai_reply: String)
+signal anger_reflection_submitted(user_text: String, ai_reply: String)
+signal count_evaluation_submitted(user_text: String, is_exact: bool, comment: String, counted_number: int)
+signal color_evaluation_submitted(user_text: String, is_correct: bool)
 signal badge_closed
 
 @onready var backdrop: ColorRect = $Backdrop
 @onready var reflection_card: Control = $CardContainer/ReflectionCard
+@onready var header_label: Label = $CardContainer/ReflectionCard/Margin/VBox/HeaderLabel
+@onready var question_label: Label = $CardContainer/ReflectionCard/Margin/VBox/QuestionLabel
 @onready var reflection_input: LineEdit = $CardContainer/ReflectionCard/Margin/VBox/InputContainer/ReflectionInput
 @onready var hint_label: Label = $CardContainer/ReflectionCard/Margin/VBox/InputContainer/HintLabel
 @onready var error_label: Label = $CardContainer/ReflectionCard/Margin/VBox/InputContainer/ErrorLabel
@@ -17,6 +22,7 @@ signal badge_closed
 var is_waiting_input: bool = false
 var is_waiting_badge: bool = false
 var is_processing: bool = false
+var current_dialog_mode: String = "general_reflection"
 
 # Kata-kata kasar / toxic / hinaan yang dilarang
 const PROFANITY_LIST: Array[String] = [
@@ -61,6 +67,49 @@ func _ready() -> void:
 	badge_close_btn.pressed.connect(_on_badge_close_pressed)
 
 func show_reflection_prompt() -> void:
+	current_dialog_mode = "general_reflection"
+	if header_label:
+		header_label.text = "✦ REFLEKSI DIRI BERSAMA ONA ✦"
+	if question_label:
+		question_label.text = "Bagaimana perasaanmu setelah berhasil melewati rintangan sungai tadi?"
+	if reflection_input:
+		reflection_input.placeholder_text = "Ketik apa yang sedang kamu rasakan di sini..."
+	_open_prompt_card()
+
+## Kotak Refleksi Kemarahan di Kebun Bunga (Scene 5)
+func show_anger_reflection_prompt() -> void:
+	current_dialog_mode = "anger_reflection"
+	if header_label:
+		header_label.text = "✦ KOTAK INPUT REFLEKSI DIRI ✦"
+	if question_label:
+		question_label.text = "Menurutmu, hal apa yang biasanya membuat seseorang merasa marah?"
+	if reflection_input:
+		reflection_input.placeholder_text = "Ceritakan hal apa yang biasanya membuat marah..."
+	_open_prompt_card()
+
+## Evaluasi Memori Jumlah Bunga yang Dipetik (Scene 5)
+func show_count_evaluation_prompt() -> void:
+	current_dialog_mode = "flower_count"
+	if header_label:
+		header_label.text = "✦ EVALUASI JUMLAH BUNGA ✦"
+	if question_label:
+		question_label.text = "Berapa banyak bunga yang telah kamu kumpulkan di kebun tadi?"
+	if reflection_input:
+		reflection_input.placeholder_text = "Ketik angka atau sebutan jumlahnya (misal: 3 / tiga)..."
+	_open_prompt_card()
+
+## Evaluasi Memori Warna Bunga (Scene 5)
+func show_color_evaluation_prompt() -> void:
+	current_dialog_mode = "flower_color"
+	if header_label:
+		header_label.text = "✦ EVALUASI WARNA BUNGA ✦"
+	if question_label:
+		question_label.text = "Bunga-bunga yang kamu kumpulkan tadi warnanya apa saja?"
+	if reflection_input:
+		reflection_input.placeholder_text = "Ketik warna bunga yang kamu ingat..."
+	_open_prompt_card()
+
+func _open_prompt_card() -> void:
 	show()
 	badge_card.hide()
 	reflection_card.show()
@@ -102,7 +151,7 @@ func _validate_and_submit(raw_text: String) -> void:
 
 	# 1. Cek jika kosong
 	if cleaned.is_empty():
-		_show_validation_error("Silakan ketik apa yang kamu rasakan ya...")
+		_show_validation_error("Silakan ketik jawabanmu terlebih dahulu ya...")
 		return
 
 	# 2. Cek kata kasar / profanity
@@ -113,31 +162,32 @@ func _validate_and_submit(raw_text: String) -> void:
 			if char.is_valid_identifier() or char in ["-", "_"]:
 				clean_w += char
 		if clean_w in PROFANITY_LIST or w in PROFANITY_LIST:
-			_show_validation_error("Yuk gunakan kata-kata yang sopan dan ceritakan perasaanmu yang sebenarnya.")
+			_show_validation_error("Yuk gunakan kata-kata yang sopan dan baik.")
 			return
 
 	for bad in PROFANITY_LIST:
 		if bad in lower and (lower.begins_with(bad + " ") or lower.ends_with(" " + bad) or (" " + bad + " ") in lower or lower == bad):
-			_show_validation_error("Yuk gunakan kata-kata yang sopan dan ceritakan perasaanmu yang sebenarnya.")
+			_show_validation_error("Yuk gunakan kata-kata yang sopan dan baik.")
 			return
 
-	# 3. Cek kata nonsense / spam / terlalu singkat
-	if words.size() == 1 and (words[0] in NONSENSE_WORDS or words[0].length() < 3):
-		_show_validation_error("Ceritakan sedikit lebih banyak tentang perasaanmu melewati sungai tadi ya!")
-		return
-
-	# Cek jika hanya huruf acak berulang tanpa spasi (misal 'asdfghjk', 'aaaaaa')
-	if words.size() == 1 and words[0].length() > 6:
-		var vowels = 0
-		for ch in words[0]:
-			if ch in ["a", "i", "u", "e", "o"]:
-				vowels += 1
-		if vowels == 0:
-			_show_validation_error("Tolong ceritakan dengan kalimat yang jelas ya, Rion.")
+	# Cabang validasi sesuai mode
+	if current_dialog_mode == "general_reflection":
+		if words.size() == 1 and (words[0] in NONSENSE_WORDS or words[0].length() < 3):
+			_show_validation_error("Ceritakan sedikit lebih banyak tentang perasaanmu melewati sungai tadi ya!")
 			return
+		_process_reflection(cleaned)
 
-	# Jika lolos validasi, proses refleksi (AI / Fallback)
-	_process_reflection(cleaned)
+	elif current_dialog_mode == "anger_reflection":
+		if words.size() == 1 and (words[0] in NONSENSE_WORDS or words[0].length() < 2):
+			_show_validation_error("Ceritakan hal apa yang biasanya membuat seseorang kesal atau marah...")
+			return
+		_process_anger_reflection(cleaned)
+
+	elif current_dialog_mode == "flower_count":
+		_process_flower_count_eval(cleaned)
+
+	elif current_dialog_mode == "flower_color":
+		_process_flower_color_eval(cleaned)
 
 func _show_validation_error(msg: String) -> void:
 	if error_label:
@@ -182,18 +232,123 @@ func _process_reflection(user_text: String) -> void:
 		else:
 			ai_reply = "Perasaan lelah atau tegang itu sangat wajar, Rion. Yang paling membanggakan adalah kamu tidak menyerah dan berhasil sampai di seberang."
 
+	_close_and_emit(func(): reflection_submitted.emit(sentiment, user_text, ai_reply))
+
+## Pemrosesan Refleksi Kemarahan (Scene 5)
+func _process_anger_reflection(user_text: String) -> void:
+	is_processing = true
+	reflection_input.editable = false
+	submit_btn.disabled = true
+	if error_label:
+		error_label.hide()
+	if hint_label:
+		hint_label.text = "✦ Ona sedang memahami sudut pandangmu... ✦"
+		hint_label.modulate = Color(0.4, 0.9, 1.0, 1.0)
+
+	var ai_reply := "Jadi hal seperti itu yang memicu luapan energi kemarahan di dalam pikiran ya... Menarik sekali. Bagi mesin, eror biasanya membuat sistem berhenti bekerja. Tapi pada makhluk hidup, rasa marah dan kesal ternyata adalah sinyal bahwa ada hal penting yang sedang terganggu."
+
+	_close_and_emit(func(): anger_reflection_submitted.emit(user_text, ai_reply))
+
+## Evaluasi Jumlah Bunga yang Dipetik (Scene 5)
+func _process_flower_count_eval(user_text: String) -> void:
+	is_processing = true
+	reflection_input.editable = false
+	submit_btn.disabled = true
+
+	var actual_count: int = GameManager.collected_flower_count if GameManager else 0
+	var guessed_number: int = _parse_number_from_text(user_text)
+	var diff: int = abs(guessed_number - actual_count) if guessed_number >= 0 else 999
+	var is_exact: bool = (guessed_number == actual_count and guessed_number >= 0)
+	var comment := ""
+
+	if is_exact:
+		comment = "Tepat sekali!"
+	elif diff <= 2:
+		comment = "Hampir tepat sasaran, tebakanmu tipis banget"
+	elif diff <= 10:
+		comment = "Kelihatannya ramai dan banyak sekali ya bunganya"
+	else:
+		comment = "Wah, serasa kita memborong seisi kebun bintang sekaligus ya"
+
+	_close_and_emit(func(): count_evaluation_submitted.emit(user_text, is_exact, comment, actual_count))
+
+## Evaluasi Warna Bunga yang Dipetik (Scene 5: Target Warna = Biru)
+func _process_flower_color_eval(user_text: String) -> void:
+	is_processing = true
+	reflection_input.editable = false
+	submit_btn.disabled = true
+
+	var lower = user_text.to_lower().strip_edges()
+	var words = lower.split(" ", false)
+	var is_correct := false
+	
+	# Target warna adalah "biru" (dengan variasi seperti cyan, toska, kosmik, blue)
+	var target_keywords = ["biru", "cyan", "toska", "blue", "kosmik"]
+	for kw in target_keywords:
+		if kw in lower:
+			is_correct = true
+			break
+
+	# Cek toleransi Levenshtein distance untuk kata typo seperti "bilu", "briu", "birus", "biruu"
+	var nlp_mgr = get_node_or_null("/root/NLPManager")
+	if not is_correct:
+		for w in words:
+			var clean_w := ""
+			for ch in w:
+				if ch.is_subsequence_of("abcdefghijklmnopqrstuvwxyz"):
+					clean_w += ch
+			if clean_w.is_empty():
+				continue
+			
+			if nlp_mgr and nlp_mgr.has_method("levenshtein"):
+				# "bilu", "briu", "biruu", "biur" jarak Levenshtein-nya <= 1 (atau transposisi huruf) terhadap "biru"
+				if nlp_mgr.levenshtein(clean_w, "biru") <= 1 or clean_w in ["briu", "biur"]:
+					is_correct = true
+					break
+				if clean_w.length() >= 4 and nlp_mgr.levenshtein(clean_w, "blue") <= 1:
+					is_correct = true
+					break
+			else:
+				# Fallback jika NLPManager tidak ada
+				if clean_w in ["bilu", "briu", "biur", "biruu", "birus", "blu", "bloo"]:
+					is_correct = true
+					break
+
+	_close_and_emit(func(): color_evaluation_submitted.emit(user_text, is_correct))
+
+func _close_and_emit(emit_cb: Callable) -> void:
 	is_waiting_input = false
 	is_processing = false
 
-	# Sembunyikan dialog card
 	if reflection_card:
 		reflection_card.hide()
 	if backdrop:
 		backdrop.modulate.a = 0.0
 	hide()
 
-	# Emit hasil analisis lengkap: sentiment, teks asli pemain, dan balasan personal Ona
-	reflection_submitted.emit(sentiment, user_text, ai_reply)
+	if emit_cb.is_valid():
+		emit_cb.call()
+
+func _parse_number_from_text(text: String) -> int:
+	var lower = text.to_lower().strip_edges()
+	var word_to_num = {
+		"satu": 1, "dua": 2, "tiga": 3, "empat": 4, "lima": 5,
+		"enam": 6, "tujuh": 7, "delapan": 8, "sembilan": 9, "sepuluh": 10,
+		"nol": 0, "kosong": 0
+	}
+	for word in word_to_num.keys():
+		if word in lower:
+			return word_to_num[word]
+
+	# Coba ekstrak digit angka
+	var digits := ""
+	for ch in lower:
+		if ch.is_valid_int():
+			digits += ch
+	if not digits.is_empty():
+		return digits.to_int()
+
+	return -1
 
 func _request_ai_reflection(text: String, ai_mgr: Node) -> Dictionary:
 	var http_request := HTTPRequest.new()

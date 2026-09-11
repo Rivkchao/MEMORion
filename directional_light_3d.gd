@@ -190,3 +190,22 @@ func _update_player_light(t: float) -> void:
 
 	player_light.light_energy = target_energy
 	player_light.visible = target_energy > 0.01
+
+## Panggil fungsi ini untuk mempercepat waktu secara halus ke malam hari (t = 0.65)
+func transition_to_night(duration: float = 10.0) -> void:
+	var current_t: float = fmod(elapsed, cycle_duration) / cycle_duration
+	var target_t: float = 0.65
+	var target_elapsed = target_t * cycle_duration
+	if target_elapsed < elapsed:
+		target_elapsed += cycle_duration
+	var tween = create_tween()
+	tween.tween_property(self, "elapsed", target_elapsed, duration).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_IN_OUT)
+	await tween.finished
+	if GameManager:
+		GameManager.garden_night_active = true
+
+## Cek apakah saat ini sudah malam
+func is_night_time() -> bool:
+	var t: float = fmod(elapsed, cycle_duration) / cycle_duration
+	return t >= 0.55 and t <= 0.90
+

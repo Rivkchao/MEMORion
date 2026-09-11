@@ -20,6 +20,13 @@ var unpacking_rak1_done: bool = false
 var unpacking_completed: bool = false
 var collected_fragments: Dictionary = {}
 
+# State Scene 5 (Kebun Bunga Kosmik & Malam Hari)
+var garden_intro_done: bool = false
+var collected_flower_count: int = 0
+var max_collectible_flowers: int = 10
+var garden_night_active: bool = false
+var sleep_transition_done: bool = false
+
 func set_spawn_override(pos: Vector3, for_scene_name: String = "LEV1") -> void:
 	spawn_override_position = pos
 	spawn_override_scene = for_scene_name
@@ -58,3 +65,9 @@ func add_progress() -> void:
 func _on_objective_complete() -> void:
 	print("Objective complete!")
 	StoryManager.start_dialogue(["Hebat! Kamu berhasil mengumpulkan semua bintang!"], "Rion")
+
+func update_flower_hud() -> void:
+	if hud:
+		hud.set_objective("Petik bunga mekar di kebun bersama Ona (Tekan E di dekat bunga)")
+		if hud.has_method("set_progress"):
+			hud.set_progress(collected_flower_count, max_collectible_flowers, "bunga")
