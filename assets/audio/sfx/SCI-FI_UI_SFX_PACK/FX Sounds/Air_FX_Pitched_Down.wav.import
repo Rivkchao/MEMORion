@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://cveak1acfknd2"
+path="res://.godot/imported/Air_FX_Pitched_Down.wav-24788d1df18e188dd168aac3834a21f4.sample"
+
+[deps]
+
+source_file="res://assets/audio/sfx/SCI-FI_UI_SFX_PACK/FX Sounds/Air_FX_Pitched_Down.wav"
+dest_files=["res://.godot/imported/Air_FX_Pitched_Down.wav-24788d1df18e188dd168aac3834a21f4.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=2

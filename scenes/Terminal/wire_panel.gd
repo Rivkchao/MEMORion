@@ -302,6 +302,8 @@ func _gui_input(event: InputEvent) -> void:
 					connections[dragging_from] = i
 					var is_pair_correct = (right_order[i] == dragging_from)
 					correct_status[dragging_from] = is_pair_correct
+					if AudioManager:
+						AudioManager.play_ui_click()
 					break
 			
 			dragging_from = -1
@@ -326,6 +328,14 @@ func _check_complete() -> void:
 			break
 	
 	is_complete = true
+	if all_correct:
+		if AudioManager:
+			AudioManager.play_puzzle_solved()
+	else:
+		if AudioManager:
+			AudioManager.play_glitch()
+			AudioManager.play_puzzle_wrong()
+
 	await get_tree().create_timer(0.8).timeout
 	puzzle_completed.emit(all_correct)
 	
@@ -342,4 +352,6 @@ func _check_complete() -> void:
 		get_parent().hide()
 
 func _on_close_pressed() -> void:
+	if AudioManager:
+		AudioManager.play_ui_click()
 	get_parent().hide()

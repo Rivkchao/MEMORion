@@ -1,6 +1,8 @@
 # RockPuzzleManager.gd
 extends Node
 
+const BGM_PUZZLE = preload("res://assets/audio/bgm/meditation_ambient.mp3")
+
 signal puzzle_completed
 
 var is_puzzle_active: bool = false
@@ -107,6 +109,9 @@ func start_puzzle() -> void:
 	has_triggered_distraction = false
 	current_step = 0
 	is_resetting = false
+
+	if AudioManager:
+		AudioManager.push_bgm(BGM_PUZZLE, 1.5, -4.0)
 
 	_set_gameplay_ui_visible(false)
 	_generate_sequence()
@@ -228,6 +233,9 @@ func _play_sequence_preview() -> void:
 		var slot_idx = correct_sequence[step_idx]
 		var target_slot = slots[slot_idx]
 
+		if AudioManager:
+			AudioManager.play_puzzle_tone(slot_idx)
+
 		target_slot.set_highlight(true, step_idx + 1)
 		await get_tree().create_timer(0.7).timeout
 		target_slot.set_highlight(false)
@@ -258,16 +266,23 @@ func on_rock_placed(placed_slot: Node3D, rock: Node3D) -> void:
 		if rock.has_method("set_solved"):
 			rock.set_solved()
 
+		if current_step >= correct_sequence.size():
+			if AudioManager:
+				AudioManager.play_puzzle_solved()
+			_on_complete()
+		else:
+			if AudioManager:
+				AudioManager.play_puzzle_step_correct()
+
 		if current_step == 1 and not has_triggered_distraction:
 			has_triggered_distraction = true
 			_trigger_distraction()
-
-		if current_step >= correct_sequence.size():
-			_on_complete()
 	else:
 		_on_wrong_step(placed_slot, rock)
 
 func _trigger_distraction() -> void:
+	if AudioManager:
+		AudioManager.play_glitch()
 	if has_node("/root/RockDistractionOverlay"):
 		get_node("/root/RockDistractionOverlay").show_distraction()
 
@@ -277,6 +292,9 @@ func _on_wrong_step(slot: Node3D, rock: Node3D) -> void:
 	is_resetting = true
 	is_previewing = true
 	dragging_rock = null
+
+	if AudioManager:
+		AudioManager.play_puzzle_wrong()
 
 	# Hentikan semua drag yang sedang berlangsung
 	for r in rocks:
@@ -308,6 +326,9 @@ func _on_complete() -> void:
 	is_puzzle_done = true
 	GameManager.rock_puzzle_done = true
 	puzzle_completed.emit()
+
+	if AudioManager:
+		AudioManager.pop_bgm(2.0)
 
 	for slot in slots:
 		slot.hide_slot()

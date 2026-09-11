@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://bv36rim40hv4i"
+path="res://.godot/imported/Tone2B.wav-2e904ecc2e4ad33eaf75e27f6d2bc75d.sample"
+
+[deps]
+
+source_file="res://assets/audio/sfx/SCI-FI_UI_SFX_PACK/Tone2/Basic Tones/Tone2B.wav"
+dest_files=["res://.godot/imported/Tone2B.wav-2e904ecc2e4ad33eaf75e27f6d2bc75d.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=2

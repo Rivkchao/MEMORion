@@ -1,0 +1,24 @@
+[remap]
+
+importer="wav"
+type="AudioStreamWAV"
+uid="uid://d0lpr8p5hu1n5"
+path="res://.godot/imported/Tone1C_Double.wav-fa7b9eda710025646603adab63d16953.sample"
+
+[deps]
+
+source_file="res://assets/audio/sfx/SCI-FI_UI_SFX_PACK/Tone1/Basic Tones/Tone1C_Double.wav"
+dest_files=["res://.godot/imported/Tone1C_Double.wav-fa7b9eda710025646603adab63d16953.sample"]
+
+[params]
+
+force/8_bit=false
+force/mono=false
+force/max_rate=false
+force/max_rate_hz=44100
+edit/trim=false
+edit/normalize=false
+edit/loop_mode=0
+edit/loop_begin=0
+edit/loop_end=-1
+compress/mode=2

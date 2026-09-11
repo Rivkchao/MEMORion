@@ -26,6 +26,8 @@ var last_safe_position: Vector3 = Vector3.ZERO
 var held_item: Carryable3D = null
 var auto_target: Vector3 = Vector3.ZERO
 var is_auto_moving: bool = false
+var _footstep_timer: float = 0.0
+var _was_on_floor: bool = true
 
 func auto_move_to(target_pos: Vector3) -> void:
 	auto_target = target_pos
@@ -104,6 +106,7 @@ func _physics_process(delta: float) -> void:
 	move_and_slide()
 	_handle_rotation(delta)
 	_handle_animation(delta)
+	_handle_footsteps(delta)
 	_check_interact_prompt()
 	_check_fall()
 
@@ -194,7 +197,35 @@ func _handle_jump() -> void:
 		
 		# Picu animasi lompat
 		anim_tree.set("parameters/JumpShot/request", AnimationNodeOneShot.ONE_SHOT_REQUEST_FIRE)
-		
+		if AudioManager:
+			AudioManager.play_jump()
+
+func _handle_footsteps(delta: float) -> void:
+	var on_floor := is_on_floor()
+	
+	# Deteksi pendaratan (landing)
+	if not _was_on_floor and on_floor:
+		if velocity.y <= 0.0:
+			if AudioManager:
+				AudioManager.play_land()
+	_was_on_floor = on_floor
+
+	if not on_floor:
+		_footstep_timer = 0.0
+		return
+
+	var horizontal_speed := Vector2(velocity.x, velocity.z).length()
+	if horizontal_speed > 0.5:
+		var is_sprinting := current_speed > (walk_speed + 1.0)
+		var interval := 0.35 if is_sprinting else 0.50
+		_footstep_timer += delta
+		if _footstep_timer >= interval:
+			_footstep_timer = 0.0
+			if AudioManager:
+				AudioManager.play_footstep(-8.0 if not is_sprinting else -5.0)
+	else:
+		_footstep_timer = 0.0
+
 func _handle_rotation(delta: float) -> void:
 	var move_dir = Vector3(velocity.x, 0, velocity.z)
 	if move_dir.length() > 0.1:

@@ -109,6 +109,8 @@ func pick_up() -> void:
 		current_slot = null
 	is_dragging = true
 	RockPuzzleManager.dragging_rock = self
+	if AudioManager:
+		AudioManager.play_rock_pickup()
 	_snap_to_cursor()
 
 func _snap_to_cursor() -> void:
@@ -136,6 +138,8 @@ func drop() -> void:
 			.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
 		_tween.parallel().tween_property(self, "global_rotation", nearest_slot.global_rotation, 0.2)\
 			.set_trans(Tween.TRANS_QUAD).set_ease(Tween.EASE_OUT)
+		if AudioManager:
+			AudioManager.play_rock_impact()
 		nearest_slot.try_place(self)
 	else:
 		return_to_original()

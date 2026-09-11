@@ -351,6 +351,8 @@ func _try_interact_pickup() -> void:
 
 	# Ambil item
 	held_item = nearest_item
+	if AudioManager:
+		AudioManager.play_rock_pickup()
 
 	# Highlight slot yang cocok
 	_highlight_matching_slots(
@@ -404,6 +406,8 @@ func _try_interact_place() -> void:
 	item_to_snap.is_placed = true
 
 	matching_slot.snap_item(item_to_snap)
+	if AudioManager:
+		AudioManager.play_puzzle_step_correct()
 	await matching_slot.item_snap_finished
 	current_placed_items += 1
 	print(
@@ -472,8 +476,9 @@ func _check_phase_finish() -> void:
 		return
 
 	# PHASE SELESAI
-
 	phase_completed = true
+	if AudioManager:
+		AudioManager.play_puzzle_solved()
 
 
 	# Pastikan tidak ada item yang sedang dipegang

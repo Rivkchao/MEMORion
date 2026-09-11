@@ -33,6 +33,10 @@ func _ready() -> void:
 	# Connect tombol
 	login_btn.pressed.connect(_on_login)
 	reg_btn.pressed.connect(_on_register)
+	tab_container.tab_changed.connect(func(_idx):
+		if AudioManager:
+			AudioManager.play_ui_click()
+	)
 	
 	# Shortcut Enter untuk submit
 	login_username.text_submitted.connect(func(_t): login_password.grab_focus())
@@ -58,10 +62,14 @@ func _ready() -> void:
 	tween.tween_property(card, "scale", Vector2.ONE, 0.5).set_trans(Tween.TRANS_BACK).set_ease(Tween.EASE_OUT)
 
 func _on_login() -> void:
+	if AudioManager:
+		AudioManager.play_ui_click()
 	var username = login_username.text.strip_edges()
 	var password = login_password.text.strip_edges()
 	
 	if username.is_empty() or password.is_empty():
+		if AudioManager:
+			AudioManager.play_puzzle_wrong()
 		login_feedback.text = "Username dan password tidak boleh kosong!"
 		login_feedback.modulate = Color.RED
 		return
@@ -70,20 +78,28 @@ func _on_login() -> void:
 	SaveManager.login(username, password)
 
 func _on_register() -> void:
+	if AudioManager:
+		AudioManager.play_ui_click()
 	var username = reg_username.text.strip_edges()
 	var password = reg_password.text.strip_edges()
 	
 	if username.is_empty() or password.is_empty():
+		if AudioManager:
+			AudioManager.play_puzzle_wrong()
 		reg_feedback.text = "Username dan password tidak boleh kosong!"
 		reg_feedback.modulate = Color.RED
 		return
 	
 	if username.length() < 3:
+		if AudioManager:
+			AudioManager.play_puzzle_wrong()
 		reg_feedback.text = "Username minimal 3 karakter!"
 		reg_feedback.modulate = Color.RED
 		return
 	
 	if password.length() < 6:
+		if AudioManager:
+			AudioManager.play_puzzle_wrong()
 		reg_feedback.text = "Password minimal 6 karakter!"
 		reg_feedback.modulate = Color.RED
 		return
@@ -93,6 +109,8 @@ func _on_register() -> void:
 
 func _on_login_success() -> void:
 	_set_loading(false)
+	if AudioManager:
+		AudioManager.play_ui_confirm()
 	login_feedback.text = "Berhasil masuk! Memuat data..."
 	login_feedback.modulate = Color.GREEN
 	await get_tree().create_timer(1.0).timeout
@@ -100,11 +118,15 @@ func _on_login_success() -> void:
 
 func _on_login_failed(reason: String) -> void:
 	_set_loading(false)
+	if AudioManager:
+		AudioManager.play_puzzle_wrong()
 	login_feedback.text = reason
 	login_feedback.modulate = Color.RED
 
 func _on_register_success() -> void:
 	_set_loading(false)
+	if AudioManager:
+		AudioManager.play_ui_confirm()
 	reg_feedback.text = "Akun berhasil dibuat! Selamat datang!"
 	reg_feedback.modulate = Color.GREEN
 	# Langsung masuk game
@@ -113,6 +135,8 @@ func _on_register_success() -> void:
 
 func _on_register_failed(reason: String) -> void:
 	_set_loading(false)
+	if AudioManager:
+		AudioManager.play_puzzle_wrong()
 	reg_feedback.text = reason
 	reg_feedback.modulate = Color.RED
 

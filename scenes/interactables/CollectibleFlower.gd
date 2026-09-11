@@ -62,6 +62,9 @@ func collect() -> void:
 	is_collected = true
 	hide_prompt()
 	
+	if AudioManager:
+		AudioManager.play_item_pickup()
+
 	if GameManager:
 		GameManager.collected_flower_count += 1
 		print("[CollectibleFlower] Bunga terkumpul: ", GameManager.collected_flower_count, " / ", GameManager.max_collectible_flowers)

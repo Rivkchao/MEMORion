@@ -1,6 +1,12 @@
 extends Node3D
 
+const BGM_LEVEL1_EXPLORATION = preload("res://assets/audio/bgm/meditation_main.mp3")
+
 func _ready() -> void:
+	if AudioManager:
+		AudioManager.play_bgm(BGM_LEVEL1_EXPLORATION, 2.0, -4.0)
+		AudioManager.play_ambience(AudioManager.AMBIENCE_WIND, 2.0, -8.0)
+
 	# Cari node WirePuzzle & HUD secara dinamis
 	var wire_puzzle_node = find_child("WirePuzzle", true, false)
 	var dialogue_node = find_child("DialogueBox", true, false)

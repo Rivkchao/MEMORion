@@ -145,6 +145,9 @@ func next() -> void:
 		_on_typing_done()
 		return
 	
+	if AudioManager:
+		AudioManager.play_dialogue_blip()
+
 	# 2. Jika masih ada baris sisa di bawahnya:
 	var total_lines = dialogue_label.get_line_count()
 	if dialogue_label.lines_skipped + MAX_LINES < total_lines:

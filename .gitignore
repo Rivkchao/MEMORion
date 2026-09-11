@@ -4,3 +4,6 @@
 
 # API Keys - jangan di-commit!
 api_config.cfg
+
+# Agent CLI directory
+.agents/

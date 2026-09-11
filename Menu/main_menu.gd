@@ -17,10 +17,14 @@ extends Control
 
 const HOVER_COLOR: Color = Color(0.77, 0.26, 0.92)
 const INSTAGRAM_URL: String = "https://www.instagram.com/memorion.plus"
+const MENU_BGM = preload("res://assets/audio/bgm/meditation_main.mp3")
 
 func _ready() -> void:
 	_start_logo_flip_animation()
 	
+	if AudioManager:
+		AudioManager.play_bgm(MENU_BGM, 1.5, -4.0)
+
 	if Engine.is_editor_hint():
 		return
 	
@@ -50,6 +54,8 @@ func _setup_button_hover(btn: Button) -> void:
 	btn.mouse_entered.connect(func():
 		btn.add_theme_color_override("font_color", HOVER_COLOR)
 		btn.add_theme_color_override("font_hover_color", HOVER_COLOR)
+		if AudioManager:
+			AudioManager.play_ui_hover()
 	)
 	
 	btn.mouse_exited.connect(func():
@@ -61,6 +67,8 @@ func _setup_button_hover(btn: Button) -> void:
 	# Sentuhan responsif pada mobile & klik mouse
 	btn.button_down.connect(func():
 		btn.add_theme_color_override("font_color", HOVER_COLOR)
+		if AudioManager:
+			AudioManager.play_ui_click()
 		var tween = create_tween()
 		tween.tween_property(btn, "scale", Vector2(0.95, 0.95), 0.08).set_ease(Tween.EASE_OUT)
 	)
@@ -84,12 +92,18 @@ func _start_logo_flip_animation() -> void:
 	flip_tween.tween_property(logo_rect, "scale:x", 1.0, 0.4).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 
 func _on_mulai_game() -> void:
+	if AudioManager:
+		AudioManager.play_ui_confirm()
 	LoadingScreen.load_scene(game_scene)
 
 func _on_muat_game() -> void:
+	if AudioManager:
+		AudioManager.play_ui_confirm()
 	LoadingScreen.load_scene(game_scene)
 
 func _on_lanjut_game() -> void:
+	if AudioManager:
+		AudioManager.play_ui_confirm()
 	LoadingScreen.load_scene(game_scene)
 
 func _on_pengaturan() -> void:
@@ -100,3 +114,4 @@ func _on_keluar() -> void:
 
 func _on_instagram() -> void:
 	OS.shell_open(INSTAGRAM_URL)
+
