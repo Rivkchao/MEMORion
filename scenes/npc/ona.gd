@@ -1245,7 +1245,7 @@ func _run_sleep_transition(player: Node3D) -> void:
 	label.text = "\"Dikelilingi kehangatan bengkel dan aroma kayu manis yang menenangkan, Rion tertidur pulas tanpa rasa takut lagi...\""
 	center_box.add_child(label)
 
-	get_tree().root.add_child(overlay)
+	get_parent().add_child(overlay)
 
 	# Tampilkan teks narasi tidur selama 3.5 detik
 	await get_tree().create_timer(3.5).timeout
@@ -1265,3 +1265,10 @@ func _run_sleep_transition(player: Node3D) -> void:
 	# Selesai transisi tidur
 	GameManager.sleep_transition_done = true
 	print("[Ona] Transisi tidur Scene 5 selesai.")
+
+	# Pagi berikutnya: Rion bangun di bengkel (R1) dan bebas mengerjakan misi bengkel.
+	GameManager.set_spawn_override(Vector3(-68.10683, 0.114290714, -43.697), "R1")
+	if has_node("/root/LoadingScreen"):
+		LoadingScreen.load_scene("res://R1.tscn")
+	else:
+		get_tree().change_scene_to_file("res://R1.tscn")

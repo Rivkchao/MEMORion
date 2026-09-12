@@ -30,7 +30,7 @@ enum MobileControlsMode {
 }
 
 # --- State Pengaturan ---
-var brightness: float = 1.0 # 0.5 (gelap) hingga 1.5 (terang)
+var brightness: float = 1.0 # 0.0 (gelap total) hingga 1.0 (normal/terang penuh)
 var volume_general: float = 0.8 # 0.0 - 1.0 (Master)
 var volume_bgm: float = 0.8 # 0.0 - 1.0 (Music)
 var volume_sfx: float = 0.8 # 0.0 - 1.0 (SFX)
@@ -86,20 +86,17 @@ func _setup_brightness_overlay() -> void:
 # Brightness Control
 # ----------------------------------------------------
 func set_brightness(val: float) -> void:
-	brightness = clampf(val, 0.5, 1.5)
+	brightness = clampf(val, 0.0, 1.0)
 	_apply_brightness()
 
 func _apply_brightness() -> void:
 	if _brightness_rect == null:
 		return
-	
-	if brightness < 0.99:
-		var alpha: float = (1.0 - brightness) * 0.75
-		_brightness_rect.color = Color(0.0, 0.0, 0.0, alpha)
-		_brightness_rect.visible = true
-	elif brightness > 1.01:
-		var alpha: float = (brightness - 1.0) * 0.45
-		_brightness_rect.color = Color(1.0, 1.0, 1.0, alpha)
+
+	# 1.0 = terang normal. Menurunkan nilai -> overlay hitam (menggelapkan), bukan memutihkan.
+	var dim: float = clampf(1.0 - brightness, 0.0, 1.0)
+	if dim > 0.0:
+		_brightness_rect.color = Color(0.0, 0.0, 0.0, dim)
 		_brightness_rect.visible = true
 	else:
 		_brightness_rect.color = Color(0.0, 0.0, 0.0, 0.0)
@@ -266,7 +263,7 @@ func load_settings(apply_display: bool = true) -> void:
 	var err = config.load(CONFIG_PATH)
 	
 	if err == OK:
-		brightness = config.get_value("display", "brightness", 1.0)
+		brightness = clampf(config.get_value("display", "brightness", 1.0), 0.0, 1.0)
 		resolution_index = config.get_value("display", "resolution_index", 0)
 		window_mode_index = config.get_value("display", "window_mode_index", 0)
 		volume_general = config.get_value("audio", "volume_general", 0.8)

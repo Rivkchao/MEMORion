@@ -16,6 +16,8 @@ var current_total_items: int = 0
 var current_placed_items: int = 0
 var phase_completed: bool = false
 var waiting_for_dialog: bool = false
+var waiting_for_tasks: bool = false
+var _last_missing_log: String = ""
 
 signal rak1_completed
 signal all_completed
@@ -34,7 +36,15 @@ func _ready() -> void:
 		_restore_all_completed()
 	elif GameManager.unpacking_rak1_done:
 		_restore_rak1_completed()
-		_setup_phase(2)
+		if _are_prerequisite_tasks_done():
+			_setup_phase(2)
+		else:
+			phase_completed = true
+			waiting_for_tasks = true
+			_set_container_interaction(rak1_container, false)
+			if rak2_container:
+				_hide_items(rak2_container)
+				_set_container_interaction(rak2_container, false)
 	else:
 		_setup_phase(1)
 
@@ -43,7 +53,7 @@ func _on_story_dialogue_finished() -> void:
 		waiting_for_dialog = false
 		if not GameManager.collected_fragments.get("unpacking_rak1", false):
 			await FragmentBox.show_fragment("unpacking_rak1")
-		continue_to_next_phase()
+		_begin_waiting_for_tasks()
 	elif current_phase == 2 and waiting_for_dialog:
 		waiting_for_dialog = false
 		if not GameManager.collected_fragments.get("unpacking_rak2", false):
@@ -166,6 +176,15 @@ func _set_container_interaction(container: Node3D, is_active: bool) -> void:
 			)
 
 func _process(delta: float) -> void:
+
+	if waiting_for_tasks:
+		if _are_prerequisite_tasks_done():
+			_begin_phase_2()
+		else:
+			var missing := _missing_prerequisites()
+			if missing != _last_missing_log:
+				_last_missing_log = missing
+				print("[Unpacking] Rak 2 terkunci. Sisa syarat: ", missing)
 
 	if held_item == null:
 		return
@@ -538,6 +557,54 @@ func continue_to_next_phase() -> void:
 	if current_phase == 1:
 		waiting_for_dialog = false
 		_setup_phase(2)
+
+func _are_prerequisite_tasks_done() -> bool:
+	# Urutan misi: Rak 1 -> Terminal -> Tuas Crusher -> Tuas Ona Program -> Rak 2
+	return GameManager.terminal_puzzle_done \
+		and GameManager.solved_levers.get("CrusherRoom_Lever", false) \
+		and GameManager.solved_levers.get("OnaProgramRoom_Lever", false)
+
+func _missing_prerequisites() -> String:
+	var missing: Array[String] = []
+	if not GameManager.terminal_puzzle_done:
+		missing.append("Terminal")
+	if not GameManager.solved_levers.get("CrusherRoom_Lever", false):
+		missing.append("Tuas Crusher")
+	if not GameManager.solved_levers.get("OnaProgramRoom_Lever", false):
+		missing.append("Tuas Ona Program")
+	return ", ".join(missing)
+
+func _begin_waiting_for_tasks() -> void:
+	phase_completed = true
+	if _are_prerequisite_tasks_done():
+		_begin_phase_2()
+		return
+
+	waiting_for_tasks = true
+	_set_container_interaction(rak1_container, false)
+	if rak2_container:
+		_hide_items(rak2_container)
+		_set_container_interaction(rak2_container, false)
+
+	print("[Unpacking] Rak 1 selesai. Menunggu terminal & tuas Crusher/Ona Program sebelum Rak 2.")
+	if GameManager:
+		GameManager.set_objective(
+			"Nyalakan Terminal, tarik Tuas Crusher & Tuas Ona Program, lalu rapikan Rak 2",
+			0,
+			""
+		)
+
+func _begin_phase_2() -> void:
+	if current_phase == 2:
+		return
+	waiting_for_tasks = false
+	_setup_phase(2)
+	if GameManager:
+		GameManager.set_objective(
+			"Rapikan Rak 2 (angkut semua barang ke slot yang benar)",
+			0,
+			""
+		)
 
 func _restore_rak1_completed() -> void:
 	if rak1_container:

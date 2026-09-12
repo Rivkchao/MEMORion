@@ -95,6 +95,20 @@ func _setup_gameplay_state() -> void:
 		if fire_node:
 			fire_node.visible = true
 
+	# Hari berikutnya di bengkel (R1): arahkan Rion mengerjakan misi secara berurutan.
+	if has_node("StoryPointing2") and has_node("Rallux") and not GameManager.unpacking_completed:
+		if not GameManager.unpacking_rak1_done:
+			GameManager.set_objective("Rapikan Rak 1 (angkut semua barang ke slot yang benar)", 0, "")
+		elif not _workshop_tasks_done():
+			GameManager.set_objective("Nyalakan Terminal, tarik Tuas Crusher & Tuas Ona Program, lalu rapikan Rak 2", 0, "")
+		else:
+			GameManager.set_objective("Rapikan Rak 2 (angkut semua barang ke slot yang benar)", 0, "")
+
+func _workshop_tasks_done() -> bool:
+	return GameManager.terminal_puzzle_done \
+		and GameManager.solved_levers.get("CrusherRoom_Lever", false) \
+		and GameManager.solved_levers.get("OnaProgramRoom_Lever", false)
+
 var _fade_layer: CanvasLayer = null
 var _fade_color_rect: ColorRect = null
 
