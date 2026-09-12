@@ -301,7 +301,7 @@ func _build_positive_regulation(text: String) -> String:
 	elif "dihina" in lower or "diejek" in lower or "direndahkan" in lower or "diprovokasi" in lower:
 		parts.append("Ucapan orang lain tidak menentukan nilai dirimu. Justru karena kamu tahu mana yang tidak pantas, kamu sedang menjaga harga dirimu.")
 	elif "dikhianati" in lower or "dibohongi" in lower or "kecewa" in lower:
-		parts.append("Kamu berani percaya — itu kekuatan, bukan kelemahan. Rasa kecewa justru menunjukkan kamu orang yang peduli.")
+		parts.append("Kamu berani percaya, dan itu kekuatan, bukan kelemahan. Rasa kecewa justru menunjukkan kamu orang yang peduli.")
 	elif "sakit hati" in lower or "tersinggung" in lower or "dilanggar" in lower:
 		parts.append("Rasa sakit hati berarti ada hal berharga di dalam dirimu yang ingin dijaga. Itu tanda kamu punya nilai dan batas yang sehat.")
 	elif "lelah" in lower or "capek" in lower or "putus asa" in lower:
@@ -309,7 +309,7 @@ func _build_positive_regulation(text: String) -> String:
 	else:
 		parts.append("Di balik rasa itu ada sesuatu yang peduli dan berharga dalam dirimu.")
 
-	parts.append("Jadi bukan kelemahan ya — ini kesempatanmu memilih respons yang baik dan menjaga dirimu.")
+	parts.append("Jadi bukan kelemahan ya, ini kesempatanmu memilih respons yang baik dan menjaga dirimu.")
 	return " ".join(parts)
 
 ## Evaluasi Jumlah Bunga yang Dipetik (Scene 5)
@@ -434,6 +434,8 @@ Tugasmu:
 1. Tentukan sentimen emosinya ("positif" jika merasa senang/lega/bangga/percaya diri, atau "negatif" jika merasa lelah/kesal/pusing/sulit/takut).
 2. Berikan 1 atau maksimal 2 kalimat balasan LANGSUNG dari Ona yang merespons secara spesifik apa yang dirasakan atau diceritakan Rion dengan penuh empati dan apresiasi.
 
+Gaya bahasa: hangat, sederhana untuk anak, dan JANGAN gunakan tanda pisah panjang (— atau –); gunakan koma atau titik.
+
 Aturan Output:
 WAJIB balas HANYA format JSON persis seperti ini:
 {
@@ -506,10 +508,11 @@ Rion menjawab pertanyaan: "Menurutmu, hal apa yang biasanya membuat seseorang me
 Jawaban Rion: "%s"
 
 Tugasmu (regulasi positif / psikoedukasi emosi):
-1. Validasi dulu perasaannya — tegaskan bahwa marah/kesal itu wajar dan tidak salah.
+1. Validasi dulu perasaannya: tegaskan bahwa marah/kesal itu wajar dan tidak salah.
 2. Reframe hal negatif, kegagalan, atau kesalahan menjadi sisi positif. Contoh: jika Rion marah karena sering gagal, ubah menjadi "kamu bukan gagal, kamu kuat karena terus mau mencoba".
 3. Beri 1-2 kalimat hangat yang menumbuhkan self-esteem dan karakter baik.
 Gunakan bahasa Indonesia sederhana untuk anak.
+JANGAN gunakan tanda pisah panjang (— atau –) dalam balasan.
 
 Balas HANYA JSON: { "reply": "<balasan Ona>" }
 """ % text

@@ -82,12 +82,16 @@ func _setup_gameplay_state() -> void:
 	if has_node("RocketCamera"):
 		var capsule = find_child("RionCapsule", true, false)
 		if capsule:
-			capsule.visible = true
-			capsule.global_position = Vector3(106.118, -0.096, 25.87)
-			capsule.rotation = Vector3(0, 0, deg_to_rad(9.5))
+			# Hentikan animasi dulu supaya posisi kapsul tidak dikembalikan ke posisi langit
 			var c_anim: AnimationPlayer = capsule.get_node_or_null("AnimationPlayer")
 			if c_anim:
 				c_anim.stop()
+			capsule.visible = true
+			capsule.global_position = Vector3(106.118, -0.096, 25.87)
+			capsule.rotation = Vector3(0, 0, deg_to_rad(9.5))
+			var kap = capsule.find_child("KapsulRion", true, false)
+			if kap:
+				kap.visible = true
 			var smoke = capsule.find_child("Smoke", true, false)
 			if smoke:
 				smoke.visible = true
@@ -599,7 +603,7 @@ func _play_workshop_intro() -> void:
 	var p3_dialog_1: Array[String] = [
 		"Rallux: \"Eh? Ona! Kamu sudah kembali dari jalan-jalan di hutan?\"",
 		"Rallux: \"Oho! Dan siapa teman baru di sampingmu ini?\"",
-		"_(Rion langsung menarik jubah Ona lebih erat, menyembunyikan wajahnya karena masih ragu dan malu pada orang asing)_"
+		"Rion langsung menarik jubah Ona lebih erat, menyembunyikan wajahnya karena masih ragu dan malu pada orang asing"
 	]
 	StoryManager.start_dialogue(p3_dialog_1, "Rallux")
 	await StoryManager.dialogue_finished
@@ -628,7 +632,7 @@ func _play_workshop_intro() -> void:
 		"Ona: \"Selamat sore, Tuan Rallux. Kenalkan, ini adalah teman baru kita. Namanya Rion. Dia masih agak malu dan berhati-hati saat bertemu dengan orang baru.\"",
 		"Rallux: \"Ah, wajar sekali! Kalau aku jadi Rion dan tiba-tiba melihat orang asing tak dikenal, aku juga pasti memilih sembunyi dulu di balik punggungmu, Ona.\"",
 		"Rallux: \"Halo, Rion. Senang sekali bisa menyambutmu di sini. Anggap saja tempat ini seperti ruang bermainmu sendiri ya. Kamu bebas melihat-lihat, duduk di sana, atau sekadar menikmati wangi matcha di bengkel ini.\"",
-		"_(Rallux memperhatikan tubuh Rion yang masih tampak kaku dan tegang)_",
+		"Rallux memperhatikan tubuh Rion yang masih tampak kaku dan tegang",
 		"Rallux: \"Ona, bagaimana kalau kamu ajak Rion jalan-jalan santai dulu di sekitar kebun luar? Supaya Rion bisa menghirup udara segar dan merasa lebih rileks dulu.\"",
 		"Ona: \"Ide yang sangat bagus, Tuan Rallux. Udara sore di luar sangat sejuk dan menenangkan.\"",
 		"Ona: \"Ayo, Rion... kita jalan-jalan santai di luar sebentar, mau?\"",
@@ -732,7 +736,26 @@ func _play_lev1_flashback() -> void:
 		camera_rig.set_process(false)
 		camera_rig.set_process_unhandled_input(false)
 	if capsule:
+		# Hentikan animasi DULU, baru set posisi (kalau tidak, animasi bisa mengembalikan
+		# kapsul ke posisi awalnya di udara).
+		var cap_anim = capsule.get_node_or_null("AnimationPlayer")
+		if cap_anim:
+			cap_anim.stop()
+			cap_anim.autoplay = ""
 		capsule.visible = true
+		capsule.global_position = Vector3(106.118, -0.096, 25.87)
+		capsule.rotation = Vector3(0.0, 0.0, deg_to_rad(9.5))
+		var kap = capsule.find_child("KapsulRion", true, false)
+		if kap:
+			kap.visible = true
+
+	# Pastikan efek api di lokasi crash tetap tampil saat kilas balik
+	for fire_name in ["Fire1", "Fire2", "Fire3"]:
+		var fire_node = find_child(fire_name, true, false)
+		if fire_node:
+			fire_node.visible = true
+			if fire_node is GPUParticles3D:
+				fire_node.emitting = true
 
 	var cap_pos: Vector3 = capsule.global_position if capsule else Vector3(106.118, 0.0, 25.87)
 	cap_pos.y = 0.0
@@ -745,6 +768,7 @@ func _play_lev1_flashback() -> void:
 	if rallux_scene:
 		rally = rallux_scene.instantiate() as Node3D
 		add_child(rally)
+		rally.scale = Vector3(2.0, 2.0, 2.0)
 		rally.global_position = rallux_point.global_position if rallux_point else (cap_pos + Vector3(2.4, 0.0, 2.8))
 		var d_r: Vector3 = cap_pos - rally.global_position
 		d_r.y = 0.0
@@ -754,12 +778,25 @@ func _play_lev1_flashback() -> void:
 			rally.play_animation("idle")
 
 	var cam: Camera3D = null
+	var cam_point: Node3D = find_child("FlashbackCameraPoint", true, false) as Node3D
+	var look_point: Node3D = find_child("FlashbackLookPoint", true, false) as Node3D
 	if camera_rig:
 		cam = camera_rig.find_child("*Camera*", true, false) as Camera3D
 		if cam:
 			cam.make_current()
-		camera_rig.global_position = cap_pos + Vector3(5.0, 3.2, 7.5)
-		camera_rig.look_at(cap_pos + Vector3(0.0, 1.4, 0.0), Vector3.UP)
+		# Posisi kamera: pakai marker FlashbackCameraPoint kalau ada (biar sesuai marker),
+		# kalau tidak ada baru fallback ke sekitar Rallux.
+		if cam_point:
+			camera_rig.global_position = cam_point.global_position
+		else:
+			var focus_cam: Vector3 = rallux_point.global_position if rallux_point else cap_pos
+			camera_rig.global_position = focus_cam + Vector3(4.5, 2.8, 6.0)
+		# Titik pandang: pakai FlashbackLookPoint kalau ada, kalau tidak arahkan ke Rallux.
+		if look_point:
+			camera_rig.look_at(look_point.global_position, Vector3.UP)
+		else:
+			var focus_look: Vector3 = rallux_point.global_position if rallux_point else cap_pos
+			camera_rig.look_at(focus_look + Vector3(0.0, 1.4, 0.0), Vector3.UP)
 
 	var fade_rect = _get_or_create_fade_rect()
 	fade_rect.modulate.a = 1.0
@@ -903,6 +940,37 @@ func _play_r1_morning_intro() -> void:
 	StoryManager.start_dialogue(rion_wake, "Rion")
 	await StoryManager.dialogue_finished
 
+	# 4b. CUTSCENE PENGECEKAN KESEHATAN oleh Rallux (di ruang kerja bengkel)
+	await _fade_screen_out(0.3)
+	if rallux and player:
+		rallux.global_position = rion_target + dir_to_capsule * 2.8
+		var d_ral: Vector3 = player.global_position - rallux.global_position
+		d_ral.y = 0.0
+		if d_ral.length_squared() > 0.01:
+			rallux.rotation.y = atan2(d_ral.x, d_ral.z)
+		if rallux.has_method("play_animation"):
+			rallux.play_animation("idle")
+	if camera_rig:
+		var side: Vector3 = Vector3(-dir_to_capsule.z, 0.0, dir_to_capsule.x)
+		camera_rig.global_position = rion_target + side * 4.5 + Vector3(0.0, 2.8, 0.0)
+		camera_rig.look_at(rion_target + dir_to_capsule * 1.4 + Vector3(0.0, 1.3, 0.0), Vector3.UP)
+	await _fade_screen_in(0.35)
+
+	var health_dialog: Array[String] = [
+		"Rallux: \"Sebelum sarapan, sini dulu ya. Aku periksa ringan kondisi tubuhmu — tarik napas biasa saja.\"",
+		"Rion: \"Boleh, Tuan Rallux! Aku siap!\"",
+		"Rallux: \"Denyut nadi stabil, refleksmu cepat, suhunya normal. Tubuhmu sehat, Rion!\"",
+		"Rallux: \"Tapi ada satu hal menarik... cara kerja otakmu luar biasa.\"",
+		"Rion: \"Eh? Kenapa memangnya?\"",
+		"Rallux: \"Otakmu bergerak lebih cepat dari kebanyakan orang. Ide-idenya lincah melompat, rasa penasaranmu besar, dan energimu berlimpah. Itu hadiah istimewa!\"",
+		"Rallux: \"Kadang otak yang super cepat suka gampang bosan, gampang teralih, atau lupa hal kecil. Itu wajar banget — bukan berarti ada yang salah denganmu.\"",
+		"Rallux: \"Kita tinggal belajar bermain dengan caranya. Di bengkel ini kita latih pelan-pelan lewat kegiatan seru: menata barang, menebak pola, dan menyelesaikan teka-teki kecil.\"",
+		"Rallux: \"Anggap saja ini permainan, ya! Kalau bingung, Ona dan aku siap membantu.\"",
+		"Rion: \"Wah, jadi kayak main game gitu ya?! Aku suka! Ayo kita mulai!\""
+	]
+	StoryManager.start_dialogue(health_dialog, "Rallux")
+	await StoryManager.dialogue_finished
+
 	# 5. KAMERA PINDAH KE BELAKANG RION, MENGARAH KE KAPSUL RION
 	if camera_rig:
 		var perp: Vector3 = Vector3(-dir_to_capsule.z, 0.0, dir_to_capsule.x)
@@ -921,6 +989,28 @@ func _play_r1_morning_intro() -> void:
 		if d2.length_squared() > 0.01:
 			rallux.rotation.y = atan2(d2.x, d2.z)
 
+	# Fadeout, lalu Ona berjalan dulu ke Point5 (di samping Rion, tidak terlalu dekat Rallux)
+	await _fade_screen_out(0.3)
+	await _fade_screen_in(0.35)
+	if ona and player:
+		var side_ona: Vector3 = Vector3(-dir_to_capsule.z, 0.0, dir_to_capsule.x)
+		var ona_target: Vector3 = rion_target + side_ona * 2.2
+		var walk_dir: Vector3 = ona_target - ona.global_position
+		walk_dir.y = 0.0
+		if walk_dir.length_squared() > 0.01:
+			ona.rotation.y = atan2(-walk_dir.x, -walk_dir.z)
+		if ona.has_method("play_animation"):
+			ona.play_animation("run")
+		var ona_walk := create_tween()
+		ona_walk.tween_property(ona, "global_position", ona_target, 1.6).set_trans(Tween.TRANS_SINE)
+		await ona_walk.finished
+		var look_rion: Vector3 = player.global_position - ona.global_position
+		look_rion.y = 0.0
+		if look_rion.length_squared() > 0.01:
+			ona.rotation.y = atan2(-look_rion.x, -look_rion.z)
+		if ona.has_method("play_animation"):
+			ona.play_animation("idle")
+
 	var greeting: Array[String] = [
 		"Ona: \"Selamat pagi, Rion! Nyenyak tidurnya semalam?\"",
 		"Rion: \"Selamat pagi! Tidurku nyenyak banget... Kasurnya empuk dan gak dingin sama sekali!\"",
@@ -932,26 +1022,23 @@ func _play_r1_morning_intro() -> void:
 	StoryManager.start_dialogue(greeting, "Rion")
 	await StoryManager.dialogue_finished
 
-	# 6. Rallux berjalan keluar sendiri (kamera TIDAK mengikuti)
+	# 6. Rallux keluar sendiri lewat Point5 -> Point3 -> Point2 -> Point1 -> Point4
+	# (kamera TIDAK mengikuti; rutenya lewat titik-titik jalan supaya tidak menabrak objek)
 	if rallux:
 		var route: Array[Vector3] = [rallux.global_position]
 		if storypoints:
-			for pname in ["Point3", "Point2", "Point1"]:
+			for pname in ["Point5", "Point3", "Point2", "Point1", "Point4"]:
 				var m: Node3D = storypoints.get_node_or_null(pname) as Node3D
 				if m:
 					route.append(m.global_position)
-		var door_node: Node3D = find_child("quitdoor", true, false) as Node3D
-		if door_node:
-			route.append(door_node.global_position)
 		_run_rallux_leave(rallux, route, 8.0)
 
-	# Rion menghampiri Ona dengan menempati posisi awal Rallux
+	# Kamera menyorot Rion & Ona untuk dialog inisiatif (mereka sudah di Point5)
 	if player and ona:
-		await _walk_with_follow_camera(player, rallux_pos, camera_rig, 6.0)
-		# Kamera kembali ke posisi yang sama seperti dialog Ona & Rallux
 		if camera_rig:
-			camera_rig.global_position = cap_pos + Vector3(0.0, 2.6, 9.0)
-			camera_rig.look_at(cap_pos + Vector3(0.0, 1.2, 0.0), Vector3.UP)
+			var side_cam: Vector3 = Vector3(-dir_to_capsule.z, 0.0, dir_to_capsule.x)
+			camera_rig.global_position = rion_target + dir_to_capsule * 7.0 + side_cam * 2.0 + Vector3(0.0, 2.8, 0.0)
+			camera_rig.look_at(rion_target + Vector3(0.0, 1.3, 0.0), Vector3.UP)
 		# Rion & Ona saling berhadapan
 		var face_dir: Vector3 = ona.global_position - player.global_position
 		face_dir.y = 0.0

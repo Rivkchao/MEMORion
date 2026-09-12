@@ -1206,15 +1206,18 @@ func trigger_flower_memory_evaluation() -> void:
 ## Sekuens Layar Redup, Tidur di Bengkel, & Teks Keesokan Harinya
 func _run_sleep_transition(player: Node3D) -> void:
 	var closing_dialogue: Array[String] = [
-		"Ona: Lihat, langit malam sudah tiba. Udara di kebun mulai dingin. Yuk, kita bawa keranjang bunga ini masuk ke dalam. Kamu bisa beristirahat di sofa yang empuk.",
-		"Rion: Iya, Ona... Kakiku udah mulai pegal dan mataku mulai berat. Ayo kita masuk!"
+		"Ona: Lihat, langit malam sudah tiba. Udara di kebun mulai dingin. Yuk, kita bawa keranjang bunga ini masuk ke dalam.",
+		"Rion: Tapi aku masih semangat banget, Ona! Kepalaku masih penuh ide dan badanku masih mau lari-lari terus!",
+		"Ona: Aku tahu kamu punya energi lebih, Rion. Itu hal yang hebat. Tapi istirahat bukan berarti berhenti, ya. Istirahat itu cara menjaga energi yang berlebih supaya besok bisa dipakai dengan tenang dan menyenangkan.",
+		"Ona: Yuk, kita tarik napas pelan-pelan sambil berbaring di sofa empuk. Kalau sudah waktunya, energimu akan tersusun rapi lagi.",
+		"Rion: Oke deh, Ona! Aku masih ingin bergerak, tapi kalau kamu bilang memang sudah waktunya istirahat... Ayo kita masuk!"
 	]
 	StoryManager.start_dialogue(closing_dialogue, "Ona")
 	await StoryManager.dialogue_finished
 
 	# Dialog Rion mengantuk (tampil dulu, baru fade ke hitam)
 	var sleepy_dialog: Array[String] = [
-		"Rion: Tempat ini... aman banget... Hoaaam..."
+		"Rion: Tempat ini... aman banget... Hoaaam... Walau masih ada energi... mataku... mulai... berat..."
 	]
 	StoryManager.start_dialogue(sleepy_dialog, "Rion")
 	await StoryManager.dialogue_finished

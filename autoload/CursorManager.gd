@@ -3,7 +3,7 @@ extends Node
 ## Menyembunyikan kursor setelah 2 detik tanpa pergerakan,
 ## dan menampilkannya kembali begitu kursor digerakkan.
 
-const IDLE_LIMIT: float = 2.0
+const IDLE_LIMIT: float = 999.0
 
 var _idle_time: float = 0.0
 var _hidden: bool = false

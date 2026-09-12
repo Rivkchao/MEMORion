@@ -7,6 +7,11 @@ extends CanvasLayer
 @export var avatar_happy: Texture2D
 @export var avatar_kagum: Texture2D
 
+# Sprite per karakter (dari folder Fonts). Tidak perlu ganti-ganti per emosi.
+var avatar_ona: Texture2D = load("res://Fonts/Ona.png")
+var avatar_rion: Texture2D = load("res://Fonts/RionKagum.png")
+var avatar_rallux: Texture2D = load("res://Fonts/Rallux.png")
+
 const MAX_LINES: int = 4
 
 var lines: Array[String] = []
@@ -73,11 +78,15 @@ func _show_line() -> void:
 		current_speaker = "Ona"
 		display_text = raw_text.substr(4).strip_edges()
 		name_label.modulate = Color(0.85, 0.55, 1.0, 1.0)
+		if avatar_ona:
+			avatar.texture = avatar_ona
 		avatar.visible = true
 	elif raw_text.begins_with("Rion:"):
 		current_speaker = "Rion"
 		display_text = raw_text.substr(5).strip_edges()
 		name_label.modulate = Color(0.4, 0.85, 1.0, 1.0)
+		if avatar_rion:
+			avatar.texture = avatar_rion
 		avatar.visible = true
 	elif raw_text.begins_with("Rallux:") or raw_text.begins_with("Rallux (") or raw_text.begins_with("Rallux:"):
 		current_speaker = "Rallux"
@@ -86,8 +95,10 @@ func _show_line() -> void:
 			display_text = raw_text.substr(colon_idx + 1).strip_edges()
 		else:
 			display_text = raw_text.substr(6).strip_edges()
-		name_label.modulate = Color(1.0, 0.65, 0.2, 1.0) # Orange / warm amber
-		avatar.visible = false
+		name_label.modulate = Color(1.0, 0.65, 0.2, 1.0)
+		if avatar_rallux:
+			avatar.texture = avatar_rallux
+		avatar.visible = true
 	elif raw_text == "TANG! KLATAK!" or raw_text.begins_with("TANG!") or raw_text.begins_with("*Suara"):
 		current_speaker = "Efek Suara"
 		display_text = raw_text

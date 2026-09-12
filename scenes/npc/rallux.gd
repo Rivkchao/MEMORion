@@ -23,4 +23,3 @@ func play_animation(animation_name: String) -> void:
 		_playback.travel(animation_name)
 	elif animation_player and animation_player.current_animation != animation_name:
 		animation_player.play(animation_name)
-
