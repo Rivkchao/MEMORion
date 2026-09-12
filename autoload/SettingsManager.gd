@@ -144,33 +144,31 @@ func set_window_mode(index: int) -> void:
 	window_mode_changed.emit(window_mode_index)
 
 func _apply_resolution() -> void:
+	var win = get_tree().root
+	if win == null:
+		return
+
 	var res = RESOLUTIONS[resolution_index]
 	var target_size = Vector2i(res["width"], res["height"])
-	
-	# 1. Terapkan Resolution Scaling
-	var win = get_tree().root
-	if win:
-		win.content_scale_size = target_size
-		# Di renderer GL Compatibility, mode VIEWPORT benar-benar merender 3D di resolusi lebih rendah (720p/540p), memangkas beban GPU 50-75%
-		if resolution_index > 0:
-			win.content_scale_mode = Window.CONTENT_SCALE_MODE_VIEWPORT
-		else:
-			win.content_scale_mode = Window.CONTENT_SCALE_MODE_CANVAS_ITEMS
 
-		# Juga terapkan scaling_3d untuk backend Vulkan jika aktif
-		win.scaling_3d_mode = Viewport.SCALING_3D_MODE_BILINEAR
-		match resolution_index:
-			0: # Tinggi (1080p / 100%)
-				win.scaling_3d_scale = 1.0
-				RenderingServer.directional_shadow_atlas_set_size(2048, true)
-			1: # Sedang (720p / ~67%)
-				win.scaling_3d_scale = 0.67
-				RenderingServer.directional_shadow_atlas_set_size(1024, true)
-			2: # Rendah (540p / 50%)
-				win.scaling_3d_scale = 0.50
-				RenderingServer.directional_shadow_atlas_set_size(512, true)
-	
-	# 2. Sesuaikan ukuran jendela hanya jika dalam mode Jendela (Windowed) pada desktop
+	# Selalu pakai canvas_items agar UI & input tetap satu layer (tidak terduplikasi / terkunci).
+	# Beban render 3D dikurangi lewat scaling_3d, bukan dengan viewport terpisah.
+	win.content_scale_mode = Window.CONTENT_SCALE_MODE_CANVAS_ITEMS
+	win.content_scale_size = Vector2i(1920, 1080)
+
+	win.scaling_3d_mode = Viewport.SCALING_3D_MODE_BILINEAR
+	match resolution_index:
+		0: # Tinggi (1080p / 100%)
+			win.scaling_3d_scale = 1.0
+			RenderingServer.directional_shadow_atlas_set_size(2048, true)
+		1: # Sedang (720p / ~67%)
+			win.scaling_3d_scale = 0.67
+			RenderingServer.directional_shadow_atlas_set_size(1024, true)
+		2: # Rendah (540p / 50%)
+			win.scaling_3d_scale = 0.50
+			RenderingServer.directional_shadow_atlas_set_size(512, true)
+
+	# Sesuaikan ukuran jendela hanya jika dalam mode Jendela (Windowed) pada desktop
 	if window_mode_index == 0 and not OS.has_feature("mobile") and not OS.has_feature("web"):
 		if win:
 			var current_size = DisplayServer.window_get_size()
