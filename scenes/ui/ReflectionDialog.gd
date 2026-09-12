@@ -53,6 +53,24 @@ const NEGATIVE_KEYWORDS: Array[String] = [
 	"kecewa", "gemetar", "keringetan", "nangis"
 ]
 
+# Kata kunci relevansi: jawaban harus berhubungan dengan pertanyaan Ona
+const RELEVANT_GENERAL: Array[String] = [
+	"senang", "lega", "takut", "susah", "sulit", "capek", "lelah", "bangga", "tegang",
+	"panik", "cemas", "berhasil", "bisa", "gagal", "mudah", "gampang", "seru", "jengkel",
+	"kesal", "marah", "sedih", "tenang", "debar", "grogi", "gugup", "nyaman", "aman",
+	"kaget", "keringat", "napas", "nafas", "biasa", "santai", "deg", "rasa",
+	"sungai", "air", "batu", "lampu", "kedip", "pola", "lompat", "melompat", "nyebrang",
+	"menyeberang", "seberang", "rintangan", "planet", "hutan", "jalan", "perasaan"
+]
+
+const RELEVANT_ANGER: Array[String] = [
+	"marah", "kesal", "jengkel", "emosi", "geram", "benci", "dongkol", "kecewa",
+	"frustasi", "frustrasi", "dendam", "tersinggung", "dihina", "diejek", "direndahkan",
+	"dihargai", "dikhianati", "dibohongi", "diprovokasi", "diganggu", "dilanggar",
+	"orang", "seseorang", "teman", "keluarga", "ketika", "saat", "kalau", "jika",
+	"bila", "karena", "gara", "perilaku", "sikap", "ucapan", "kata"
+]
+
 func _ready() -> void:
 	add_to_group("reflection_dialog")
 	hide()
@@ -145,6 +163,20 @@ func _on_input_submitted(text: String) -> void:
 		return
 	_validate_and_submit(text)
 
+func _has_relevant_keyword(lower: String, words: PackedStringArray, keys: Array[String]) -> bool:
+	var nlp_mgr = get_node_or_null("/root/NLPManager") if is_inside_tree() else null
+	for k in keys:
+		if k.find(" ") != -1:
+			if k in lower:
+				return true
+		else:
+			for w in words:
+				if w == k:
+					return true
+				if nlp_mgr and nlp_mgr.has_method("levenshtein") and w.length() >= 4 and nlp_mgr.levenshtein(w, k) <= 1:
+					return true
+	return false
+
 func _validate_and_submit(raw_text: String) -> void:
 	var cleaned = raw_text.strip_edges()
 	var lower = cleaned.to_lower()
@@ -172,14 +204,14 @@ func _validate_and_submit(raw_text: String) -> void:
 
 	# Cabang validasi sesuai mode
 	if current_dialog_mode == "general_reflection":
-		if words.size() == 1 and (words[0] in NONSENSE_WORDS or words[0].length() < 3):
-			_show_validation_error("Ceritakan sedikit lebih banyak tentang perasaanmu melewati sungai tadi ya!")
+		if words.size() < 3 or not _has_relevant_keyword(lower, words, RELEVANT_GENERAL):
+			_show_validation_error("Jawab sesuai pertanyaan Ona ya: ceritakan perasaanmu saat melewati sungai tadi.")
 			return
 		_process_reflection(cleaned)
 
 	elif current_dialog_mode == "anger_reflection":
-		if words.size() == 1 and (words[0] in NONSENSE_WORDS or words[0].length() < 2):
-			_show_validation_error("Ceritakan hal apa yang biasanya membuat seseorang kesal atau marah...")
+		if words.size() < 3 or not _has_relevant_keyword(lower, words, RELEVANT_ANGER):
+			_show_validation_error("Jawab yang berhubungan ya: hal apa yang biasanya membuat seseorang marah?")
 			return
 		_process_anger_reflection(cleaned)
 
@@ -245,9 +277,40 @@ func _process_anger_reflection(user_text: String) -> void:
 		hint_label.text = "✦ Ona sedang memahami sudut pandangmu... ✦"
 		hint_label.modulate = Color(0.4, 0.9, 1.0, 1.0)
 
-	var ai_reply := "Jadi hal seperti itu yang memicu luapan energi kemarahan di dalam pikiran ya... Menarik sekali. Bagi mesin, eror biasanya membuat sistem berhenti bekerja. Tapi pada makhluk hidup, rasa marah dan kesal ternyata adalah sinyal bahwa ada hal penting yang sedang terganggu."
+	var ai_reply := ""
+	var ai_mgr = get_node_or_null("/root/AIManager") if is_inside_tree() else null
+	if ai_mgr and ai_mgr.get("_api_key") != "" and ai_mgr.get("_api_key") != "ISI_API_KEY_KAMU_DISINI":
+		var ai_res = await _request_ai_anger(user_text, ai_mgr)
+		if not ai_res.is_empty():
+			ai_reply = String(ai_res.get("reply", "")).strip_edges()
+
+	# Fallback lokal: regulasi positif (validasi perasaan + ambil sisi positifnya)
+	if ai_reply.is_empty():
+		ai_reply = _build_positive_regulation(user_text)
 
 	_close_and_emit(func(): anger_reflection_submitted.emit(user_text, ai_reply))
+
+## Regulasi positif offline: validasi perasaan, lalu ubah kekurangan/kegagalan menjadi sisi positif.
+func _build_positive_regulation(text: String) -> String:
+	var lower := text.to_lower()
+	var parts: Array[String] = []
+	parts.append("Perasaan itu wajar banget dan kamu tidak salah merasakannya.")
+
+	if "gagal" in lower or "salah" in lower or "gak bisa" in lower or "tidak bisa" in lower or "nggak bisa" in lower:
+		parts.append("Coba lihat dari sisi lain: itu bukan tanda kamu gagal atau lemah, justru tanda kamu kuat karena masih mau terus mencoba.")
+	elif "dihina" in lower or "diejek" in lower or "direndahkan" in lower or "diprovokasi" in lower:
+		parts.append("Ucapan orang lain tidak menentukan nilai dirimu. Justru karena kamu tahu mana yang tidak pantas, kamu sedang menjaga harga dirimu.")
+	elif "dikhianati" in lower or "dibohongi" in lower or "kecewa" in lower:
+		parts.append("Kamu berani percaya — itu kekuatan, bukan kelemahan. Rasa kecewa justru menunjukkan kamu orang yang peduli.")
+	elif "sakit hati" in lower or "tersinggung" in lower or "dilanggar" in lower:
+		parts.append("Rasa sakit hati berarti ada hal berharga di dalam dirimu yang ingin dijaga. Itu tanda kamu punya nilai dan batas yang sehat.")
+	elif "lelah" in lower or "capek" in lower or "putus asa" in lower:
+		parts.append("Lelah itu tanda kamu sudah berusaha keras. Beristirahat bukan menyerah, tapi cara merawat dirimu supaya bisa lanjut.")
+	else:
+		parts.append("Di balik rasa itu ada sesuatu yang peduli dan berharga dalam dirimu.")
+
+	parts.append("Jadi bukan kelemahan ya — ini kesempatanmu memilih respons yang baik dan menjaga dirimu.")
+	return " ".join(parts)
 
 ## Evaluasi Jumlah Bunga yang Dipetik (Scene 5)
 func _process_flower_count_eval(user_text: String) -> void:
@@ -350,7 +413,7 @@ func _parse_number_from_text(text: String) -> int:
 
 	return -1
 
-func _request_ai_reflection(text: String, ai_mgr: Node) -> Dictionary:
+func _request_ai_reflection(text: String, ai_mgr: Node, prompt_override: String = "") -> Dictionary:
 	var http_request := HTTPRequest.new()
 	add_child(http_request)
 
@@ -359,7 +422,9 @@ func _request_ai_reflection(text: String, ai_mgr: Node) -> Dictionary:
 		"Content-Type: application/json"
 	]
 
-	var system_prompt = """
+	var system_prompt := prompt_override
+	if system_prompt.is_empty():
+		system_prompt = """
 Kamu adalah Ona, robot asisten AI yang bijak, hangat, ramah, dan empatik untuk anak-anak dalam game petualangan antariksa Memorion+.
 Rion (temanmu) baru saja berhasil melompati rintangan sungai batu di planet asing setelah memperhatikan pola kedipan lampu batu.
 Ona bertanya: "Bagaimana perasaanmu setelah berhasil melewati rintangan sungai tadi?"
@@ -425,14 +490,30 @@ WAJIB balas HANYA format JSON persis seperti ini:
 		if json and json.has("choices") and json["choices"].size() > 0:
 			var content_str = json["choices"][0]["message"]["content"]
 			var parsed = JSON.parse_string(content_str)
-			if parsed and parsed.has("sentiment") and parsed.has("reply"):
-				var sent = String(parsed["sentiment"]).to_lower().strip_edges()
+			if parsed and parsed.has("reply"):
+				var sent = String(parsed.get("sentiment", "positif")).to_lower().strip_edges()
 				var s = "positif"
 				if "negatif" in sent or "negative" in sent:
 					s = "negatif"
 				return {"sentiment": s, "reply": String(parsed["reply"]).strip_edges()}
 
 	return {}
+
+func _request_ai_anger(text: String, ai_mgr: Node) -> Dictionary:
+	var prompt := """
+Kamu adalah Ona, robot asisten AI yang hangat, empatik, dan bijak untuk anak-anak dalam game petualangan Memorion+.
+Rion menjawab pertanyaan: "Menurutmu, hal apa yang biasanya membuat seseorang merasa marah?"
+Jawaban Rion: "%s"
+
+Tugasmu (regulasi positif / psikoedukasi emosi):
+1. Validasi dulu perasaannya — tegaskan bahwa marah/kesal itu wajar dan tidak salah.
+2. Reframe hal negatif, kegagalan, atau kesalahan menjadi sisi positif. Contoh: jika Rion marah karena sering gagal, ubah menjadi "kamu bukan gagal, kamu kuat karena terus mau mencoba".
+3. Beri 1-2 kalimat hangat yang menumbuhkan self-esteem dan karakter baik.
+Gunakan bahasa Indonesia sederhana untuk anak.
+
+Balas HANYA JSON: { "reply": "<balasan Ona>" }
+""" % text
+	return await _request_ai_reflection(text, ai_mgr, prompt)
 
 func _local_keyword_sentiment(text: String) -> String:
 	var lower = text.to_lower()

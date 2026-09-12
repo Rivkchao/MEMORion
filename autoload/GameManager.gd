@@ -19,6 +19,8 @@ var terminal_puzzle_done: bool = false
 var unpacking_rak1_done: bool = false
 var unpacking_completed: bool = false
 var collected_fragments: Dictionary = {}
+var room_intro_seen: Dictionary = {}
+var ona_hold_position: bool = false
 var r1_morning_intro_done: bool = false
 
 # State Scene 5 (Kebun Bunga Kosmik & Malam Hari)
@@ -70,5 +72,6 @@ func _on_objective_complete() -> void:
 func update_flower_hud() -> void:
 	if hud:
 		hud.set_objective("Petik bunga mekar di kebun bersama Ona (Tekan E di dekat bunga)")
+		# Jumlah bunga disembunyikan (hanya dipakai untuk teka-teki jumlah saat dialog)
 		if hud.has_method("set_progress"):
-			hud.set_progress(collected_flower_count, max_collectible_flowers, "bunga")
+			hud.set_progress(0, 0, "")

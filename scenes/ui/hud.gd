@@ -128,6 +128,17 @@ func set_objective(text: String) -> void:
 		objective_text.text = text
 		_animate_objective_update()
 
+func show_mission_complete_checklist() -> void:
+	if objective_title:
+		objective_title.text = "✓ SEMUA MISI SELESAI"
+		objective_title.add_theme_color_override("font_color", Color(0.5, 1.0, 0.55, 1.0))
+	if objective_text:
+		objective_text.text = "✔ Rapikan Rak 1\n✔ Tarik Tuas Crusher\n✔ Tarik Tuas Ona Program\n✔ Nyalakan Terminal Energy Core\n✔ Rapikan Rak 2"
+	if progress_label:
+		progress_label.text = ""
+		progress_label.visible = false
+	_animate_objective_update()
+
 func set_progress(current: int, total: int, item_name: String = "bintang") -> void:
 	if progress_label:
 		if total <= 0:
@@ -195,3 +206,47 @@ func set_gameplay_ui_visible(is_vis: bool) -> void:
 				mobile.visible = SettingsManager.is_mobile_controls_active()
 			else:
 				mobile.visible = true
+
+const IDLE_REMINDER_TIME: float = 300.0
+var _idle_time: float = 0.0
+var _last_player_pos: Vector3 = Vector3.ZERO
+var _has_last_pos: bool = false
+var _reminder_pending: bool = false
+
+func _process(delta: float) -> void:
+	# Reminder Ona jika pemain diam terlalu lama saat puzzle
+	if not _gameplay_ui_visible:
+		return
+	var player = get_tree().get_first_node_in_group("player")
+	if player == null:
+		return
+	var pos: Vector3 = player.global_position
+	if not _has_last_pos:
+		_last_player_pos = pos
+		_has_last_pos = true
+	var moving: bool = pos.distance_to(_last_player_pos) > 0.06
+	_last_player_pos = pos
+
+	var dlg_open: bool = StoryManager != null and StoryManager.dialogue_box != null and StoryManager.dialogue_box.visible
+	if moving or dlg_open:
+		_idle_time = 0.0
+		_reminder_pending = false
+		return
+
+	if objective_text == null or objective_text.text.strip_edges().is_empty():
+		return
+
+	_idle_time += delta
+	if _idle_time >= IDLE_REMINDER_TIME and not _reminder_pending:
+		_reminder_pending = true
+		_on_idle_reminder()
+
+func _on_idle_reminder() -> void:
+	if StoryManager == null or StoryManager.dialogue_box == null:
+		return
+	var task := objective_text.text.strip_edges()
+	if task.is_empty():
+		return
+	StoryManager.start_dialogue([
+		"Ona: \"Rion, apakah kamu baik-baik saja? Tugas kita sekarang adalah %s\"" % task
+	], "Ona")

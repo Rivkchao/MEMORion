@@ -40,6 +40,9 @@ func _process(_delta: float) -> void:
 		label_3d.visible = near
 
 func _input(event: InputEvent) -> void:
+	# Jangan proses saat dialog sedang berjalan
+	if StoryManager != null and StoryManager.dialogue_box != null and StoryManager.dialogue_box.visible:
+		return
 	if _player_near and event.is_action_pressed("interact"):
 		_try_interact()
 
@@ -60,6 +63,12 @@ func _try_interact() -> void:
 		return
 	if global_position.distance_to(player.global_position) > interact_distance:
 		return
+
+	# Pintu keluar R1 terkunci sampai semua puzzle bengkel selesai
+	if not GameManager.unpacking_completed:
+		_show_locked_notice()
+		return
+
 	_transition_started = true
 	GameManager.has_visited_workshop = true
 	GameManager.workshop_door_locked = true
@@ -69,3 +78,11 @@ func _try_interact() -> void:
 		LoadingScreen.load_scene(target_scene)
 	else:
 		get_tree().change_scene_to_file(target_scene)
+
+func _show_locked_notice() -> void:
+	if StoryManager == null or StoryManager.dialogue_box == null:
+		return
+	StoryManager.start_dialogue([
+		"Rion: \"Pintu keluarnya masih terkunci. Sepertinya aku harus menyelesaikan semua tugas di bengkel dulu.\"",
+		"Ona: \"Betul. Selesaikan dulu semua puzzle bengkel sebelum kita keluar ya.\""
+	], "Rion")

@@ -102,12 +102,16 @@ func _setup_gameplay_state() -> void:
 		if r1_capsule:
 			r1_capsule.visible = true
 
-	# Hari berikutnya di bengkel (R1): arahkan Rion mengerjakan misi secara berurutan.
+	# Hari berikutnya di bengkel (R1): objective per game (tidak digabung)
 	if has_node("StoryPointing2") and has_node("Rallux") and not GameManager.unpacking_completed:
 		if not GameManager.unpacking_rak1_done:
 			GameManager.set_objective("Kumpulkan perkakas berserakan dan rapikan Rak 1", 0, "")
-		elif not _workshop_tasks_done():
-			GameManager.set_objective("Tarik Tuas Crusher & Tuas Ona Program, lalu nyalakan Terminal", 0, "")
+		elif not GameManager.solved_levers.get("CrusherRoom_Lever", false):
+			GameManager.set_objective("Tarik Tuas di Ruang Crusher", 0, "")
+		elif not GameManager.solved_levers.get("OnaProgramRoom_Lever", false):
+			GameManager.set_objective("Tarik Tuas di Ona Program Room", 0, "")
+		elif not GameManager.terminal_puzzle_done:
+			GameManager.set_objective("Nyalakan Terminal di Ruang Energy Core", 0, "")
 		else:
 			GameManager.set_objective("Rapikan Rak 2 (angkut semua barang ke slot yang benar)", 0, "")
 
@@ -115,6 +119,56 @@ func _workshop_tasks_done() -> bool:
 	return GameManager.terminal_puzzle_done \
 		and GameManager.solved_levers.get("CrusherRoom_Lever", false) \
 		and GameManager.solved_levers.get("OnaProgramRoom_Lever", false)
+
+var _ona_follow: bool = false
+var _ona_last_anim: String = ""
+var _last_player_pos: Vector3 = Vector3.ZERO
+
+func _process(delta: float) -> void:
+	if not has_node("StoryPointing2"):
+		return
+	var ona := find_child("Ona", true, false) as CharacterBody3D
+	if ona == null:
+		return
+	# Di dalam ruangan misi: Ona diam di depan pintu
+	if GameManager.ona_hold_position:
+		_set_ona_anim(ona, "idle")
+		return
+	if not _ona_follow:
+		# Ona baru mengikuti Rion setelah game unpacking Rak 1 selesai
+		if GameManager.unpacking_rak1_done:
+			_ona_follow = true
+		else:
+			return
+	var player := find_child("Player", true, false) as CharacterBody3D
+	if player == null:
+		return
+	if StoryManager and StoryManager.dialogue_box and StoryManager.dialogue_box.visible:
+		return
+
+	var player_pos := player.global_position
+	var player_moving: bool = player_pos.distance_to(_last_player_pos) > 0.03
+	_last_player_pos = player_pos
+
+	var to_player: Vector3 = player_pos - ona.global_position
+	to_player.y = 0.0
+	var dist := to_player.length()
+	# Rion diam -> Ona ikut diam, jangan terus berlari
+	if not player_moving or dist <= 2.6:
+		_set_ona_anim(ona, "idle")
+		return
+	if dist > 3.4:
+		var dir := to_player.normalized()
+		ona.global_position = ona.global_position.move_toward(player_pos, 4.6 * delta)
+		ona.rotation.y = atan2(-dir.x, -dir.z)
+		_set_ona_anim(ona, "run")
+
+func _set_ona_anim(ona: CharacterBody3D, anim_name: String) -> void:
+	if _ona_last_anim == anim_name:
+		return
+	_ona_last_anim = anim_name
+	if ona.has_method("play_animation"):
+		ona.play_animation(anim_name)
 
 var _fade_layer: CanvasLayer = null
 var _fade_color_rect: ColorRect = null
@@ -721,7 +775,7 @@ func _play_lev1_flashback() -> void:
 	]
 	StoryManager.start_dialogue(flashback, "Rallux")
 	await StoryManager.dialogue_finished
-	await _fade_screen_out(0.6)
+	await _fade_screen_out(0.25)
 	_set_flashback_particles(false)
 	_set_monochrome(false)
 	if is_instance_valid(rally):
@@ -816,7 +870,7 @@ func _play_r1_morning_intro() -> void:
 	var fade_rect = _get_or_create_fade_rect()
 	fade_rect.modulate.a = 1.0
 	fade_rect.mouse_filter = Control.MOUSE_FILTER_STOP
-	await _fade_screen_in(0.6)
+	await _fade_screen_in(0.35)
 	var present_1: Array[String] = [
 		"Ona: \"Jadi... rekaman log kapsulnya benar-benar tidak bisa dipulihkan sama sekali, Tuan Rallux?\"",
 		"Rallux: \"Semua catatan riwayat di sistem kapsul hangus terbakar saat menembus orbit. Rion kehilangan seluruh ingatannya, Ona. Dia tidak tahu dari mana asalnya, siapa keluarganya, atau ke mana arah tujuannya.\"",
@@ -841,7 +895,7 @@ func _play_r1_morning_intro() -> void:
 	if camera_rig:
 		camera_rig.global_position = rion_target + dir_to_capsule * 8.5 + Vector3(0.0, 2.7, 0.0)
 		camera_rig.look_at(rion_target + Vector3(0.0, 1.25, 0.0), Vector3.UP)
-	await _fade_screen_in(0.6)
+	await _fade_screen_in(0.4)
 
 	var rion_wake: Array[String] = [
 		"Rion: \"Hoaaam... Ona...? Tuan Rallux...? Kalian di mana?\""
@@ -898,6 +952,13 @@ func _play_r1_morning_intro() -> void:
 		if camera_rig:
 			camera_rig.global_position = cap_pos + Vector3(0.0, 2.6, 9.0)
 			camera_rig.look_at(cap_pos + Vector3(0.0, 1.2, 0.0), Vector3.UP)
+		# Rion & Ona saling berhadapan
+		var face_dir: Vector3 = ona.global_position - player.global_position
+		face_dir.y = 0.0
+		if face_dir.length_squared() > 0.01:
+			if rion_mesh:
+				rion_mesh.rotation.y = atan2(face_dir.x, face_dir.z)
+			ona.rotation.y = atan2(face_dir.x, face_dir.z)
 
 	# 7. INISIATIF RION
 	var initiative: Array[String] = [
@@ -928,6 +989,18 @@ func _play_r1_morning_intro() -> void:
 			camera_rig.snap_to_target()
 	if cam:
 		cam.make_current()
+
+	# Ona dipindah ke Point2 menghadap lurus (disamarkan dengan fade),
+	# hadap sama seperti saat dialog "TANG! KLATAK!" (+X).
+	await _fade_screen_out(0.3)
+	var p2 = storypoints.get_node_or_null("Point2") if storypoints else null
+	if ona and p2:
+		ona.global_position = p2.global_position
+		ona.rotation.y = atan2(-1.0, 0.0)
+		if ona.has_method("play_animation"):
+			ona.play_animation("idle")
+	_ona_follow = false
+	await _fade_screen_in(0.35)
 
 var _mono_we: WorldEnvironment = null
 var _mono_prev_enabled: bool = false

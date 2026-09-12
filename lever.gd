@@ -126,7 +126,8 @@ func _process(delta: float) -> void:
 	# Cek input tombol E / action / touch langsung
 	var e_pressed = Input.is_key_pressed(KEY_E)
 	var action_pressed = Input.is_action_pressed("interact") if InputMap.has_action("interact") else false
-	var key_active = (e_pressed or action_pressed or _touch_holding) and is_near
+	var dialogue_open: bool = StoryManager.dialogue_box != null and StoryManager.dialogue_box.visible
+	var key_active = (e_pressed or action_pressed or _touch_holding) and is_near and not dialogue_open
 
 	# Log debug saat tombol ditekan
 	if key_active:
@@ -215,3 +216,17 @@ func complete_lever() -> void:
 		await StoryManager.dialogue_finished
 		if not GameManager.collected_fragments.get(frag_key, false):
 			await FragmentBox.show_fragment(frag_key)
+
+	# Objective per game + dramatisasi lanjutan
+	if is_crusher:
+		GameManager.set_objective("Tarik Tuas di Ona Program Room", 0, "")
+	elif not GameManager.terminal_puzzle_done:
+		GameManager.set_objective("Nyalakan Terminal di Ruang Energy Core", 0, "")
+		if StoryManager and StoryManager.has_method("start_dialogue"):
+			var next_lines: Array[String] = [
+				"Rion: \"Tuas Ona Program sudah aktif... tapi kenapa lampu di lorong sana berkedip-kedip?\"",
+				"Ona: \"Energi cadangan mulai terkuras! Kita harus segera ke Ruang Energy Core dan menyalakan terminalnya sebelum seluruh bengkel mati!\"",
+				"Rion: \"Ayo, cepat!\""
+			]
+			StoryManager.start_dialogue(next_lines, "Rion")
+			await StoryManager.dialogue_finished

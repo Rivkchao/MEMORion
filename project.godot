@@ -32,6 +32,7 @@ RockDistractionOverlay="*uid://danyj7nt81p62"
 FragmentBox="*res://scenes/ui/FragmentBox.tscn"
 SaveManager="*uid://b2kcq24apw81h"
 SettingsManager="*res://autoload/SettingsManager.gd"
+CursorManager="*res://autoload/CursorManager.gd"
 _mcp_game_helper="*res://addons/godot_ai/runtime/game_helper.gd"
 
 [display]

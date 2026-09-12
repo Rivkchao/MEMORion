@@ -23,51 +23,58 @@ var _stone_base_pos: Vector2 = Vector2.ZERO
 
 const FRAGMENTS_DATA = {
 	"batu": {
-		"title": "Fragmen Kristal Aliran",
-		"congrats": "✦ FRAGMEN MEMORI DITEMUKAN ✦",
-		"desc": "Kristal murni yang terbentuk dari harmoni formasi batu sungai. Menjaga aliran air tetap tenang dan membuka jalur rahasia.",
+		"title": "Fragmen Fokus & Ketenangan",
+		"congrats": "✦ MATERI PSIKOEDUKASI DITEMUKAN ✦",
+		"desc": "Mengelola Gugup: Saat menghadapi rintangan, tarik napas pelan dan kerjakan satu langkah demi satu langkah. Memusatkan perhatian pada pola yang ada membantumu melewati rasa tegang.",
+		"praise": "Kamu anak yang berani mencoba lagi walaupun sempat gugup — itu tanda keberanian!",
 		"texture_path": "res://assets/StoneImage/Cristal.png",
 		"glow_color": Color(0.2, 0.8, 1.0)
 	},
 	"lever_crusher": {
-		"title": "Fragmen Besi Penempa",
-		"congrats": "✦ FRAGMEN MEMORI DITEMUKAN ✦",
-		"desc": "Logam kokoh penopang mesin penghancur bengkel. Simbol ketangguhan kerja keras yang menghidupkan kembali sektor barat.",
+		"title": "Fragmen Mengolah Emosi",
+		"congrats": "✦ MATERI PSIKOEDUKASI DITEMUKAN ✦",
+		"desc": "Mengelola Amarah: Marah adalah emosi yang wajar. Yang penting adalah cara mengolahnya — salurkan energinya ke hal yang membangun, bukan melukai diri sendiri atau orang lain.",
+		"praise": "Kamu hebat karena mampu mengubah rasa kesal menjadi tindakan yang membangun.",
 		"texture_path": "res://assets/StoneImage/Iron.png",
 		"glow_color": Color(0.95, 0.45, 0.2, 1.0)
 	},
 	"lever_onaprogram": {
-		"title": "Fragmen Inti Thorium",
-		"congrats": "✦ FRAGMEN MEMORI DITEMUKAN ✦",
-		"desc": "Zat energi stabil dari ruang pemrograman Ona. Mengaktifkan kembali baris kode dan kecerdasan artifisial bengkel.",
+		"title": "Fragmen Mengenali Diri",
+		"congrats": "✦ MATERI PSIKOEDUKASI DITEMUKAN ✦",
+		"desc": "Kesadaran Diri: Seperti program yang bisa dilatih, pikiran dan kebiasaan baik juga bisa kita bentuk. Kenali perasaanmu, lalu pilih respons yang kamu inginkan.",
+		"praise": "Kamu pribadi yang mau tumbuh dan belajar hal baru tentang dirimu sendiri.",
 		"texture_path": "res://assets/StoneImage/Thorium.png",
 		"glow_color": Color(0.337, 0.62, 1.0, 1.0)
 	},
 	"terminal": {
-		"title": "Fragmen Titanium Siber",
-		"congrats": "✦ FRAGMEN MEMORI DITEMUKAN ✦",
-		"desc": "Komponen sirkuit berdensitas tinggi dari terminal data. Menyambungkan kembali memori kabel yang sempat terputus.",
+		"title": "Fragmen Memori & Koneksi",
+		"congrats": "✦ MATERI PSIKOEDUKASI DITEMUKAN ✦",
+		"desc": "Berbagi Cerita: Ingatan dan cerita membentuk siapa kita. Berbagi cerita dengan orang yang dipercaya membuat kita merasa terhubung dan tidak sendirian.",
+		"praise": "Kamu pendengar yang baik dan mampu menyambung kembali cerita yang sempat hilang.",
 		"texture_path": "res://assets/StoneImage/Titanium.png",
 		"glow_color": Color(0.75, 0.45, 1.0)
 	},
 	"unpacking_rak1": {
-		"title": "Fragmen Emas Keteraturan",
-		"congrats": "✦ FRAGMEN MEMORI DITEMUKAN ✦",
-		"desc": "Kilau logam berharga atas ketelitianmu menata inventaris pertama. Setiap peralatan kini berada di tempat semestinya.",
+		"title": "Fragmen Keteraturan",
+		"congrats": "✦ MATERI PSIKOEDUKASI DITEMUKAN ✦",
+		"desc": "Rapi & Kendali Diri: Menata barang di tempatnya membantu pikiran terasa lebih tenang dan terkendali. Mulailah dari hal kecil, satu langkah setiap kali.",
+		"praise": "Kamu orang yang sangat teratur dan teliti!",
 		"texture_path": "res://assets/StoneImage/Gold.png",
 		"glow_color": Color(1.0, 0.85, 0.25)
 	},
 	"unpacking_rak2": {
-		"title": "Fragmen Quartz Bercahaya",
-		"congrats": "✦ FRAGMEN MEMORI DITEMUKAN ✦",
-		"desc": "Kristal memori yang mengkristal setelah seluruh bengkel ditata rapi. Ruangan kembali bersih dan serpihan masa lalu Rion kian utuh!",
+		"title": "Fragmen Ketekunan",
+		"congrats": "✦ MATERI PSIKOEDUKASI DITEMUKAN ✦",
+		"desc": "Menyelesaikan Tugas: Menuntaskan pekerjaan sampai selesai melatih ketekunan dan rasa percaya diri. Kamu sudah membuktikan bisa merampungkan semuanya!",
+		"praise": "Kamu pantang menyerah dan selalu menuntaskan apa yang sudah kamu mulai.",
 		"texture_path": "res://assets/StoneImage/Quartz.png",
 		"glow_color": Color(0.9, 0.75, 1.0)
 	},
 	"uranium": {
-		"title": "Fragmen Uranium Kuno",
-		"congrats": "✦ FRAGMEN MEMORI DITEMUKAN ✦",
-		"desc": "Batuan radioaktif murni yang menyimpan energi misterius peradaban masa lampau.",
+		"title": "Fragmen Ketangguhan",
+		"congrats": "✦ MATERI PSIKOEDUKASI DITEMUKAN ✦",
+		"desc": "Daya Bangkit: Setiap pengalaman, termasuk yang sulit, menambah kekuatan dalam dirimu. Boleh beristirahat sejenak, lalu bangkit dan lanjut lagi.",
+		"praise": "Kamu kuat, dan kamu layak bangga pada dirimu sendiri.",
 		"texture_path": "res://assets/StoneImage/Uranium.png",
 		"glow_color": Color(0.4, 0.9, 0.3)
 	}
@@ -76,6 +83,8 @@ const FRAGMENTS_DATA = {
 func _ready() -> void:
 	layer = 25
 	hide()
+	if desc_label:
+		desc_label.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
 	claim_button.pressed.connect(_on_claim_pressed)
 
 func _process(delta: float) -> void:
@@ -114,7 +123,11 @@ func show_fragment(fragment_key: String) -> void:
 	
 	header_label.text = data["congrats"]
 	name_label.text = data["title"]
-	desc_label.text = data["desc"]
+	var praise: String = data.get("praise", "")
+	if praise.is_empty():
+		desc_label.text = data["desc"]
+	else:
+		desc_label.text = data["desc"] + "\n\n💚 " + praise
 	
 	var glow_col: Color = data.get("glow_color", Color(0.4, 0.85, 1.0))
 	header_label.modulate = glow_col

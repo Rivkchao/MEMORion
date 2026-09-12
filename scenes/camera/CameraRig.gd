@@ -61,8 +61,8 @@ func _apply_scene_camera_settings() -> void:
 	if scene_name in ["BengkelRallux", "R1"] or file_path in ["BengkelRallux", "R1"]:
 		camera.near = 0.05
 		camera.far = 1000.0       # Jarak render jauh tanpa batas kabut/clipping di interior
-		zoom_distance = 6.5       # Lebih leluasa dan luas di dalam bengkel besar
-		max_zoom = 9.0
+		zoom_distance = 9.5       # Lebih jauh supaya misi di bengkel terlihat luas
+		max_zoom = 13.0
 	elif scene_name == "LEV1" or file_path == "LEV1":
 		camera.near = 0.05
 		camera.far = 160.0        # Optimal untuk outdoor / terrain (cull distant scatter)
@@ -141,6 +141,10 @@ func _physics_process(delta: float) -> void:
 	for child in target.get_children():
 		if child is CollisionObject3D:
 			excludes.append(child.get_rid())
+	# Jangan biarkan Ona (companion) mendorong kamera jadi mendekat
+	var ona_node = get_tree().get_first_node_in_group("ona")
+	if ona_node is CollisionObject3D:
+		excludes.append(ona_node.get_rid())
 	query.collision_mask = 1 # Hanya tabrak lingkungan/solid (layer 1)
 	query.collide_with_areas = false
 	query.collide_with_bodies = true
@@ -186,6 +190,13 @@ func snap_to_target() -> void:
 	var space := get_world_3d().direct_space_state
 	if space:
 		var query := PhysicsRayQueryParameters3D.create(focus_point, desired_pos)
+		var excludes: Array[RID] = []
+		if target is CollisionObject3D:
+			excludes.append(target.get_rid())
+		var ona_node = get_tree().get_first_node_in_group("ona")
+		if ona_node is CollisionObject3D:
+			excludes.append(ona_node.get_rid())
+		query.exclude = excludes
 		query.collision_mask = 1
 		query.collide_with_areas = false
 		query.collide_with_bodies = true

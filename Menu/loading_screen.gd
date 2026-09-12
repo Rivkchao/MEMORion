@@ -12,6 +12,8 @@ const INSTAGRAM_URL: String = "https://www.instagram.com/memorion.plus"
 
 var target_scene: String = ""
 var is_loading_finished: bool = false
+var min_display_time: float = 1.0
+var show_loading_panel: bool = true
 
 func _ready() -> void:
 	_start_logo_flip_animation()
@@ -23,8 +25,10 @@ func _ready() -> void:
 	if is_instance_valid(instagram_btn):
 		instagram_btn.pressed.connect(_on_instagram)
 
-func load_scene(scene_path: String) -> void:
+func load_scene(scene_path: String, min_display: float = 1.0, show_panel: bool = true) -> void:
 	target_scene = scene_path
+	min_display_time = maxf(0.0, min_display)
+	show_loading_panel = show_panel
 	is_loading_finished = false
 	layer = 100
 	fade_rect.mouse_filter = Control.MOUSE_FILTER_STOP
@@ -51,7 +55,8 @@ func _start_logo_flip_animation() -> void:
 	flip_tween.tween_property(logo_rect, "scale:x", 1.0, 0.4).set_trans(Tween.TRANS_SINE).set_ease(Tween.EASE_OUT)
 
 func _start_loading() -> void:
-	panel.show()
+	if show_loading_panel:
+		panel.show()
 	progress_bar.value = 0
 	loading_label.text = "Memuat..."
 	animated_sprite.play("default")
@@ -94,7 +99,7 @@ func _on_load_success() -> void:
 	loading_label.text = "Siap dimainkan!"
 	animated_sprite.stop()
 	
-	await get_tree().create_timer(1.0).timeout
+	await get_tree().create_timer(min_display_time).timeout
 	
 	var scene = ResourceLoader.load_threaded_get(target_scene)
 	get_tree().change_scene_to_packed(scene)

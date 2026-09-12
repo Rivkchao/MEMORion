@@ -1011,7 +1011,13 @@ func _start_scene_5_garden_sequence() -> void:
 		"Rion: (Menarik napas panjang lalu mengembuskannya) Sejuk banget. Badanku rasanya jauh lebih ringan sekarang."
 	]
 
-	StoryManager.start_dialogue(garden_dialog_part2, "Ona")
+	# Sisipkan balasan Ona (regulasi positif dari AI/NLP) di awal dialog
+	var final_garden_dialog: Array[String] = []
+	if not ona_anger_reply.strip_edges().is_empty():
+		final_garden_dialog.append("Ona: " + ona_anger_reply.strip_edges())
+	final_garden_dialog.append_array(garden_dialog_part2)
+
+	StoryManager.start_dialogue(final_garden_dialog, "Ona")
 	await StoryManager.dialogue_finished
 
 	# Langkah 5: Aktifkan Gameplay Bebas & Pergantian Skybox Malam
@@ -1288,6 +1294,6 @@ func _run_sleep_transition(player: Node3D) -> void:
 	# Pagi berikutnya: pindah ke bengkel R1 untuk adegan masa kini & misi beres-beres.
 	GameManager.set_spawn_override(Vector3(-68.10683, 0.114290714, -43.697), "R1")
 	if has_node("/root/LoadingScreen"):
-		LoadingScreen.load_scene("res://R1.tscn")
+		LoadingScreen.load_scene("res://R1.tscn", 0.0, false)
 	else:
 		get_tree().change_scene_to_file("res://R1.tscn")

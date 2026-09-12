@@ -179,7 +179,9 @@ func _process(delta: float) -> void:
 
 	if waiting_for_tasks:
 		if _are_prerequisite_tasks_done():
-			_begin_phase_2()
+			var dlg_open: bool = StoryManager.dialogue_box != null and StoryManager.dialogue_box.visible
+			if not dlg_open:
+				_begin_phase_2()
 		else:
 			var missing := _missing_prerequisites()
 			if missing != _last_missing_log:
@@ -552,6 +554,11 @@ func _check_phase_finish() -> void:
 			[rak2_complete_dialogue],
 			speaker_name
 		)
+		await StoryManager.dialogue_finished
+		GameManager.ona_hold_position = false
+		# Tampilkan checklist semua misi yang sudah selesai
+		if GameManager.hud and GameManager.hud.has_method("show_mission_complete_checklist"):
+			GameManager.hud.show_mission_complete_checklist()
 
 func continue_to_next_phase() -> void:
 	if current_phase == 1:
@@ -589,7 +596,7 @@ func _begin_waiting_for_tasks() -> void:
 	print("[Unpacking] Rak 1 selesai. Menunggu tuas Crusher, Tuas Ona Program, & terminal sebelum Rak 2.")
 	if GameManager:
 		GameManager.set_objective(
-			"Tarik Tuas Crusher & Tuas Ona Program, lalu nyalakan Terminal, lalu rapikan Rak 2",
+			"Tarik Tuas di Ruang Crusher",
 			0,
 			""
 		)
@@ -605,6 +612,40 @@ func _begin_phase_2() -> void:
 			0,
 			""
 		)
+
+	# Ona kembali ke Point2 dengan fade, lalu bantu proyeksikan panduan slot (seperti Rak 1)
+	await _move_ona_to_point2_with_fade()
+
+	if StoryManager and StoryManager.has_method("start_dialogue"):
+		StoryManager.start_dialogue([
+			"Ona: \"Ini rak terakhir. Aku bantu proyeksikan panduan slot wadahnya lagi ya, Rion!\"",
+			"Rion: \"Makasih, Ona! Ayo kita susun semuanya sampai rapi!\""
+		], "Rion")
+
+func _move_ona_to_point2_with_fade() -> void:
+	GameManager.ona_hold_position = true
+	var scene := get_tree().current_scene
+	if scene == null:
+		return
+	var can_fade: bool = scene.has_method("_fade_screen_out") and scene.has_method("_fade_screen_in")
+	if can_fade:
+		await scene._fade_screen_out(0.3)
+
+	var ona: Node3D = scene.find_child("Ona", true, false) as Node3D
+	if ona == null:
+		ona = get_tree().root.find_child("Ona", true, false) as Node3D
+	var p2: Node3D = scene.find_child("Point2", true, false) as Node3D
+	if p2 == null:
+		p2 = get_tree().root.find_child("Point2", true, false) as Node3D
+
+	if ona and p2:
+		ona.global_position = p2.global_position
+		ona.rotation.y = atan2(-1.0, 0.0)
+		if ona.has_method("play_animation"):
+			ona.play_animation("idle")
+
+	if can_fade:
+		await scene._fade_screen_in(0.35)
 
 func _restore_rak1_completed() -> void:
 	if rak1_container:

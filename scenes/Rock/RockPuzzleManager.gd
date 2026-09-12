@@ -273,10 +273,6 @@ func on_rock_placed(placed_slot: Node3D, rock: Node3D) -> void:
 		else:
 			if AudioManager:
 				AudioManager.play_puzzle_step_correct()
-
-		if current_step == 1 and not has_triggered_distraction:
-			has_triggered_distraction = true
-			_trigger_distraction()
 	else:
 		_on_wrong_step(placed_slot, rock)
 

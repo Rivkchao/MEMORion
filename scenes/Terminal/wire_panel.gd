@@ -192,7 +192,7 @@ func _draw_panel_background() -> void:
 	
 	var title = "HAFALKAN WARNA KANAN!" if is_preview_phase else "SAMBUNGKAN KABEL"
 	var font = ThemeDB.fallback_font
-	var fsize = 13
+	var fsize = 18
 	var tsize = font.get_string_size(title, HORIZONTAL_ALIGNMENT_LEFT, -1, fsize)
 	draw_string(font, hdr.position + Vector2((hdr.size.x - tsize.x) * 0.5, 18), title, HORIZONTAL_ALIGNMENT_LEFT, -1, fsize, Color.WHITE)
 
