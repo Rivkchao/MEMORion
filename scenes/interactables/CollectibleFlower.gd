@@ -9,6 +9,21 @@ extends Interactable
 
 var is_collected: bool = false
 var _player_ref: Node3D = null
+var _locked_notice_shown: bool = false
+
+func _can_collect() -> bool:
+	# Bunga baru boleh dipetik setelah alur cerita masuk ke kebun (Scene 5).
+	return GameManager != null and GameManager.garden_intro_done
+
+func _show_locked_notice() -> void:
+	if _locked_notice_shown:
+		return
+	_locked_notice_shown = true
+	if StoryManager and StoryManager.has_method("start_dialogue"):
+		StoryManager.start_dialogue(
+			["Rion: Bunga-bunga ini sepertinya belum saatnya kupetik. Aku ingin menikmatinya nanti bersama Ona."],
+			"Rion"
+		)
 
 func _ready() -> void:
 	add_to_group("collectible_flowers")
@@ -21,6 +36,8 @@ func _ready() -> void:
 
 func show_prompt() -> void:
 	if is_collected:
+		return
+	if not _can_collect():
 		return
 	if label_3d:
 		var is_mobile := SettingsManager != null and SettingsManager.is_mobile_controls_active()
@@ -37,6 +54,9 @@ func get_label() -> String:
 func interact() -> void:
 	if is_collected:
 		return
+	if not _can_collect():
+		_show_locked_notice()
+		return
 	collect()
 
 func _physics_process(_delta: float) -> void:
@@ -46,7 +66,7 @@ func _physics_process(_delta: float) -> void:
 		_player_ref = get_tree().get_first_node_in_group("player") as Node3D
 	if _player_ref:
 		var dist = global_position.distance_to(_player_ref.global_position)
-		if dist <= 2.8:
+		if dist <= 2.8 and _can_collect():
 			show_prompt()
 			if Input.is_action_just_pressed("interact") or Input.is_key_pressed(KEY_E):
 				collect()

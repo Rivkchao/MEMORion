@@ -23395,6 +23395,7 @@ environment = SubResource("Environment_c0jhv")
 
 [node name="Bengkel" type="StaticBody3D" parent="." unique_id=349182272]
 transform = Transform3D(-2.1855695e-07, 0, 5, 0, 5, 0, -5, 0, -2.1855695e-07, -155.00957, -0.26880407, -0.8643285)
+collision_layer = 5
 collision_mask = 15
 script = ExtResource("20_rh7bw")
 target_scene = "res://R1.tscn"

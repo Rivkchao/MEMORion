@@ -11,11 +11,12 @@
 [ext_resource type="Texture2D" uid="uid://d1rladtgy4jtv" path="res://Menu/MEMORion+Logo.png" id="5_bufdl"]
 [ext_resource type="Texture2D" uid="uid://d4nllch3oueui" path="res://assets/anim/frame0003.png" id="5_he51e"]
 [ext_resource type="Texture2D" uid="uid://bu7yjb6fybub6" path="res://assets/anim/frame0004.png" id="6_spc7j"]
-[ext_resource type="Texture2D" uid="uid://dw2cc4vgfyuto" path="res://Menu/MEMORion+Text.png" id="6_xsgea"]
+[ext_resource type="Texture2D" uid="uid://jepa13j86nw3" path="res://Menu/MEMORion+ Text.png" id="6_xsgea"]
 [ext_resource type="FontFile" uid="uid://bb80gooxacs7q" path="res://Fonts/Telegraf-Bold-fix15408087824949790956.30.2aa1f309-cb96-4ad6-a94f-e5147e9.ttf" id="7_f5yiw"]
 [ext_resource type="Texture2D" uid="uid://cd52fm54bvvr" path="res://assets/anim/frame0005.png" id="7_wpy5q"]
 [ext_resource type="Texture2D" uid="uid://bm8wlelef7nkh" path="res://assets/anim/frame0006.png" id="8_632gl"]
 [ext_resource type="Texture2D" uid="uid://dpjie7ugtb0wn" path="res://assets/anim/frame0007.png" id="9_bufdl"]
+[ext_resource type="Texture2D" uid="uid://djyyb4nupwsxa" path="res://Menu/SpriteBar.png" id="17_6i6p5"]
 
 [sub_resource type="StyleBoxEmpty" id="StyleBoxEmpty_xsgea"]
 
@@ -209,3 +210,8 @@ scale = Vector2(0.4, 0.4)
 sprite_frames = SubResource("SpriteFrames_c6lqs")
 frame_progress = 0.1933882
 flip_h = true
+
+[node name="SpriteBar" type="Sprite2D" parent="Panel" unique_id=1390681869]
+position = Vector2(1749, 957)
+scale = Vector2(0.47, 0.47)
+texture = ExtResource("17_6i6p5")

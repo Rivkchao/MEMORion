@@ -2,16 +2,16 @@
 
 importer="texture"
 type="CompressedTexture2D"
-uid="uid://dw2cc4vgfyuto"
-path="res://.godot/imported/MEMORion+Text.png-3bd04f0c88db88c12cc09dea9bbc5224.ctex"
+uid="uid://djyyb4nupwsxa"
+path="res://.godot/imported/SpriteBar.png-b68fe900629f64d73fd3c13753508a35.ctex"
 metadata={
 "vram_texture": false
 }
 
 [deps]
 
-source_file="res://Menu/MEMORion+Text.png"
-dest_files=["res://.godot/imported/MEMORion+Text.png-3bd04f0c88db88c12cc09dea9bbc5224.ctex"]
+source_file="res://Menu/SpriteBar.png"
+dest_files=["res://.godot/imported/SpriteBar.png-b68fe900629f64d73fd3c13753508a35.ctex"]
 
 [params]
 
