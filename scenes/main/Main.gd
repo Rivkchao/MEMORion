@@ -21,6 +21,8 @@ func _ready() -> void:
 		_play_rocket_intro()
 	elif has_node("StoryPointing2") and has_node("Rallux") and not GameManager.has_visited_workshop:
 		_play_workshop_intro()
+	elif has_node("StoryPointing2") and has_node("Rallux") and GameManager.sleep_transition_done and not GameManager.r1_morning_intro_done:
+		_play_r1_morning_intro()
 	else:
 		_setup_gameplay_state()
 
@@ -76,31 +78,36 @@ func _setup_gameplay_state() -> void:
 		else:
 			hud.visible = true
 
-	# Pastikan Kapsul Rion di LEV1 tetap ada di posisi mendarat di tanah dan tidak hilang
-	var capsule = find_child("RionCapsule", true, false)
-	if capsule:
-		capsule.visible = true
-		capsule.global_position = Vector3(106.118, -0.096, 25.87)
-		capsule.rotation = Vector3(0, 0, deg_to_rad(9.5))
-		var c_anim: AnimationPlayer = capsule.get_node_or_null("AnimationPlayer")
-		if c_anim:
-			c_anim.stop()
-		var smoke = capsule.find_child("Smoke", true, false)
-		if smoke:
-			smoke.visible = true
-	
-	# Pastikan efek partikel api di lokasi kapsul jatuh tetap menyala
-	for fire_name in ["Fire1", "Fire2", "Fire3"]:
-		var fire_node = find_child(fire_name, true, false)
-		if fire_node:
-			fire_node.visible = true
+	# Khusus LEV1: pastikan kapsul tetap di lokasi mendarat dan api tetap menyala
+	if has_node("RocketCamera"):
+		var capsule = find_child("RionCapsule", true, false)
+		if capsule:
+			capsule.visible = true
+			capsule.global_position = Vector3(106.118, -0.096, 25.87)
+			capsule.rotation = Vector3(0, 0, deg_to_rad(9.5))
+			var c_anim: AnimationPlayer = capsule.get_node_or_null("AnimationPlayer")
+			if c_anim:
+				c_anim.stop()
+			var smoke = capsule.find_child("Smoke", true, false)
+			if smoke:
+				smoke.visible = true
+		for fire_name in ["Fire1", "Fire2", "Fire3"]:
+			var fire_node = find_child(fire_name, true, false)
+			if fire_node:
+				fire_node.visible = true
+
+	# Khusus R1: kapsul yang sudah dibersihkan tetap tampil setelah cutscene pagi.
+	if has_node("StoryPointing2") and has_node("RionCapsule") and GameManager.r1_morning_intro_done:
+		var r1_capsule = find_child("RionCapsule", true, false)
+		if r1_capsule:
+			r1_capsule.visible = true
 
 	# Hari berikutnya di bengkel (R1): arahkan Rion mengerjakan misi secara berurutan.
 	if has_node("StoryPointing2") and has_node("Rallux") and not GameManager.unpacking_completed:
 		if not GameManager.unpacking_rak1_done:
-			GameManager.set_objective("Rapikan Rak 1 (angkut semua barang ke slot yang benar)", 0, "")
+			GameManager.set_objective("Kumpulkan perkakas berserakan dan rapikan Rak 1", 0, "")
 		elif not _workshop_tasks_done():
-			GameManager.set_objective("Nyalakan Terminal, tarik Tuas Crusher & Tuas Ona Program, lalu rapikan Rak 2", 0, "")
+			GameManager.set_objective("Tarik Tuas Crusher & Tuas Ona Program, lalu nyalakan Terminal", 0, "")
 		else:
 			GameManager.set_objective("Rapikan Rak 2 (angkut semua barang ke slot yang benar)", 0, "")
 
@@ -403,10 +410,7 @@ func _play_workshop_intro() -> void:
 	var rallux_start_rot := Vector3(0.0, deg_to_rad(-137.3), 0.0)
 	rallux.global_position = rallux_start_pos
 	rallux.rotation = rallux_start_rot
-	if rallux.has_method("play_animation"):
-		rallux.play_animation("searching")
-	elif rallux_anim:
-		rallux_anim.play("searching")
+	_play_rallux_anim(rallux, "searching")
 
 	# Setup Kamera di belakang-kiri Ona saat baru masuk - tetap di dalam ruangan (bukan menembus dinding selatan)
 	var entrance_cam_offset := Vector3(-6.0, 5.0, 2.5)
@@ -504,10 +508,7 @@ func _play_workshop_intro() -> void:
 		camera_rig.global_position = rallux_cam_pos
 		camera_rig.look_at(rallux.global_position + Vector3(0, 2.0, 0), Vector3.UP)
 
-	if rallux.has_method("play_animation"):
-		rallux.play_animation("searching")
-	elif rallux_anim:
-		rallux_anim.play("searching")
+	_play_rallux_anim(rallux, "searching")
 
 	# Rallux menggerutu sambil mencari baut di meja kerja (kamera menyorot Rallux)
 	var p2_dialog: Array[String] = [
@@ -657,6 +658,442 @@ func _play_workshop_intro() -> void:
 	else:
 		await _fade_screen_out(0.6)
 		get_tree().change_scene_to_file("res://LEV1.tscn")
+
+## Kilas balik monokrom di LEV1, tepat di depan kapsul Rion yang jatuh.
+## Dipanggil saat transisi tidur sebelum berpindah ke bengkel R1 (pagi berikutnya).
+func _play_lev1_flashback() -> void:
+	var camera_rig = find_child("CameraRig", true, false)
+	var player: CharacterBody3D = find_child("Player", true, false) as CharacterBody3D
+	var capsule: Node3D = find_child("RionCapsule", true, false) as Node3D
+	var hud = find_child("HUD", true, false)
+
+	if hud and hud.has_method("set_gameplay_ui_visible"):
+		hud.set_gameplay_ui_visible(false)
+	if player:
+		player.set_physics_process(false)
+		player.set_process_unhandled_input(false)
+		player.velocity = Vector3.ZERO
+	if camera_rig:
+		camera_rig.set_physics_process(false)
+		camera_rig.set_process(false)
+		camera_rig.set_process_unhandled_input(false)
+	if capsule:
+		capsule.visible = true
+
+	var cap_pos: Vector3 = capsule.global_position if capsule else Vector3(106.118, 0.0, 25.87)
+	cap_pos.y = 0.0
+
+	# Rallux sementara berdiri di depan kapsul untuk kilas balik.
+	# Kalau ada Marker3D bernama "FlashbackRalluxPoint" di LEV1, posisinya dipakai.
+	var rallux_point: Node3D = find_child("FlashbackRalluxPoint", true, false) as Node3D
+	var rallux_scene := load("res://assets/Rallux/rallux.tscn") as PackedScene
+	var rally: Node3D = null
+	if rallux_scene:
+		rally = rallux_scene.instantiate() as Node3D
+		add_child(rally)
+		rally.global_position = rallux_point.global_position if rallux_point else (cap_pos + Vector3(2.4, 0.0, 2.8))
+		var d_r: Vector3 = cap_pos - rally.global_position
+		d_r.y = 0.0
+		if d_r.length_squared() > 0.01:
+			rally.rotation.y = atan2(d_r.x, d_r.z)
+		if rally.has_method("play_animation"):
+			rally.play_animation("idle")
+
+	var cam: Camera3D = null
+	if camera_rig:
+		cam = camera_rig.find_child("*Camera*", true, false) as Camera3D
+		if cam:
+			cam.make_current()
+		camera_rig.global_position = cap_pos + Vector3(5.0, 3.2, 7.5)
+		camera_rig.look_at(cap_pos + Vector3(0.0, 1.4, 0.0), Vector3.UP)
+
+	var fade_rect = _get_or_create_fade_rect()
+	fade_rect.modulate.a = 1.0
+	fade_rect.mouse_filter = Control.MOUSE_FILTER_STOP
+
+	_set_monochrome(true)
+	_set_flashback_particles(true)
+	await _fade_screen_in(0.8)
+	var flashback: Array[String] = [
+		"Rallux: \"Kapsul penyelamat model gravitasi orbit... Sistem pelindungnya hampir habis terkikis gesekan atmosfer.\"",
+		"Rallux: \"Data navigasi terhapus... rekaman memori nol byte. Anak sekecil itu menahan guncangan sebesar ini sendirian di ruang hampa.\"",
+		"Rallux: \"Kamu sudah bertahan luar biasa, kapsul kecil. Ayo, kita bawa rumah besimu ini ke tempat yang aman.\""
+	]
+	StoryManager.start_dialogue(flashback, "Rallux")
+	await StoryManager.dialogue_finished
+	await _fade_screen_out(0.6)
+	_set_flashback_particles(false)
+	_set_monochrome(false)
+	if is_instance_valid(rally):
+		rally.queue_free()
+
+## Cutscene pagi di bengkel R1 (setelah fade "KEESOKAN HARINYA"):
+## masa kini di depan barier kapsul, Rion bangun & melangkah ke Point5,
+## Rallux pamit keluar, lalu gameplay misi beres-beres dimulai.
+func _play_r1_morning_intro() -> void:
+	var player: CharacterBody3D = find_child("Player", true, false) as CharacterBody3D
+	var camera_rig = find_child("CameraRig", true, false)
+	var hud = find_child("HUD", true, false)
+	var ona: CharacterBody3D = find_child("Ona", true, false) as CharacterBody3D
+	var rallux: Node3D = find_child("Rallux", true, false) as Node3D
+	var capsule: Node3D = find_child("RionCapsule", true, false) as Node3D
+	var rion_mesh = player.get_node_or_null("RionMesh") if player else null
+	var p_anim: AnimationTree = player.get_node_or_null("AnimationTree") if player else null
+
+	# 1. Kunci kontrol gameplay & UI
+	if player:
+		player.set_physics_process(false)
+		player.set_process_unhandled_input(false)
+		player.velocity = Vector3.ZERO
+	if camera_rig:
+		camera_rig.set_physics_process(false)
+		camera_rig.set_process(false)
+		camera_rig.set_process_unhandled_input(false)
+	if hud:
+		if hud.has_method("set_gameplay_ui_visible"):
+			hud.set_gameplay_ui_visible(false)
+		else:
+			hud.visible = false
+
+	if capsule:
+		capsule.visible = true
+
+	# Posisi barier kapsul Rion di R1 (adegan masa kini)
+	var barrier: Node3D = capsule.find_child("CapsuleBarier", true, false) as Node3D if capsule else null
+	var cap_pos: Vector3 = Vector3(-4.0, 0.0, -39.0)
+	if barrier:
+		cap_pos = barrier.global_position
+	elif capsule:
+		cap_pos = capsule.global_position
+	cap_pos.y = 0.0
+
+	# Rion menunggu (akan fade in) di Point5
+	var storypoints := get_node_or_null("StoryPointing2")
+	var p5: Marker3D = storypoints.get_node_or_null("Point5") as Marker3D if storypoints else null
+	var rion_target: Vector3 = p5.global_position if p5 else Vector3(38.508793, 0.0, 0.0)
+
+	# 2. Blocking: Ona & Rallux berdampingan di depan barier kapsul
+	var ona_pos: Vector3 = cap_pos + Vector3(-2.6, 0.0, 2.8)
+	var rallux_pos: Vector3 = cap_pos + Vector3(2.4, 0.0, 2.4)
+
+	if ona:
+		ona.global_position = ona_pos
+		ona.velocity = Vector3.ZERO
+		if ona.has_method("play_animation"):
+			ona.play_animation("idle")
+	if rallux:
+		rallux.global_position = rallux_pos
+		if rallux.has_method("play_animation"):
+			rallux.play_animation("idle")
+	if player:
+		player.global_position = rion_target
+		player.rotation = Vector3.ZERO
+	if rion_mesh:
+		rion_mesh.rotation = Vector3.ZERO
+
+	var cam: Camera3D = null
+	if camera_rig:
+		cam = camera_rig.find_child("*Camera*", true, false) as Camera3D
+		if cam:
+			cam.make_current()
+
+	# Hadapkan Ona & Rallux ke kapsul
+	if ona:
+		var d_ona: Vector3 = cap_pos - ona.global_position
+		d_ona.y = 0.0
+		if d_ona.length_squared() > 0.01:
+			ona.rotation.y = atan2(-d_ona.x, -d_ona.z)
+	if rallux:
+		var d_ral: Vector3 = cap_pos - rallux.global_position
+		d_ral.y = 0.0
+		if d_ral.length_squared() > 0.01:
+			rallux.rotation.y = atan2(d_ral.x, d_ral.z)
+
+	# 3. KEMBALI KE MASA KINI: Ona & Rallux di depan barier kapsul
+	if camera_rig:
+		camera_rig.global_position = cap_pos + Vector3(0.0, 2.6, 9.0)
+		camera_rig.look_at(cap_pos + Vector3(0.0, 1.2, 0.0), Vector3.UP)
+	var fade_rect = _get_or_create_fade_rect()
+	fade_rect.modulate.a = 1.0
+	fade_rect.mouse_filter = Control.MOUSE_FILTER_STOP
+	await _fade_screen_in(0.6)
+	var present_1: Array[String] = [
+		"Ona: \"Jadi... rekaman log kapsulnya benar-benar tidak bisa dipulihkan sama sekali, Tuan Rallux?\"",
+		"Rallux: \"Semua catatan riwayat di sistem kapsul hangus terbakar saat menembus orbit. Rion kehilangan seluruh ingatannya, Ona. Dia tidak tahu dari mana asalnya, siapa keluarganya, atau ke mana arah tujuannya.\"",
+		"Ona: \"Pasti sangat membingungkan baginya... terbangun di tempat asing tanpa tahu siapa dirinya sebenarnya.\"",
+		"Rallux: \"Benar. Tapi kemarin sore kamu sudah memberinya ruang yang aman. Saat rasa takutnya mereda, mesin pikirannya mulai bernapas lagi dengan tenang. Kita tidak perlu memaksanya mengingat semuanya sekaligus. Hari ini kita temani dia menata energinya lewat kegiatan-kegiatan sederhana di bengkel.\""
+	]
+	StoryManager.start_dialogue(present_1, "Ona")
+	await StoryManager.dialogue_finished
+
+	# 4. RION BANGUN DI POINT5: fade in + shoot dari depan badan
+	await _fade_screen_out(0.5)
+	var dir_to_capsule: Vector3 = cap_pos - rion_target
+	dir_to_capsule.y = 0.0
+	if dir_to_capsule.length_squared() > 0.0001:
+		dir_to_capsule = dir_to_capsule.normalized()
+	else:
+		dir_to_capsule = Vector3(0.0, 0.0, -1.0)
+	if player:
+		player.global_position = rion_target
+	if rion_mesh:
+		rion_mesh.rotation.y = atan2(dir_to_capsule.x, dir_to_capsule.z)
+	if camera_rig:
+		camera_rig.global_position = rion_target + dir_to_capsule * 8.5 + Vector3(0.0, 2.7, 0.0)
+		camera_rig.look_at(rion_target + Vector3(0.0, 1.25, 0.0), Vector3.UP)
+	await _fade_screen_in(0.6)
+
+	var rion_wake: Array[String] = [
+		"Rion: \"Hoaaam... Ona...? Tuan Rallux...? Kalian di mana?\""
+	]
+	StoryManager.start_dialogue(rion_wake, "Rion")
+	await StoryManager.dialogue_finished
+
+	# 5. KAMERA PINDAH KE BELAKANG RION, MENGARAH KE KAPSUL RION
+	if camera_rig:
+		var perp: Vector3 = Vector3(-dir_to_capsule.z, 0.0, dir_to_capsule.x)
+		camera_rig.global_position = rion_target - dir_to_capsule * 9.0 + perp * 1.0 + Vector3(0.0, 3.7, 0.0)
+		camera_rig.look_at(cap_pos + Vector3(0.0, 1.35, 0.0), Vector3.UP)
+
+	# Ona & Rallux serentak menghadap ke arah Rion
+	if ona and player:
+		var d1: Vector3 = player.global_position - ona.global_position
+		d1.y = 0.0
+		if d1.length_squared() > 0.01:
+			ona.rotation.y = atan2(-d1.x, -d1.z)
+	if rallux and player:
+		var d2: Vector3 = player.global_position - rallux.global_position
+		d2.y = 0.0
+		if d2.length_squared() > 0.01:
+			rallux.rotation.y = atan2(d2.x, d2.z)
+
+	var greeting: Array[String] = [
+		"Ona: \"Selamat pagi, Rion! Nyenyak tidurnya semalam?\"",
+		"Rion: \"Selamat pagi! Tidurku nyenyak banget... Kasurnya empuk dan gak dingin sama sekali!\"",
+		"Rion: \"Lho?! Itu kan... kapsul besi yang aku naiki kemarin! Kok bisa sudah ada di sini dan bersih banget?!\"",
+		"Rallux: \"Haha! Semalam selagi kalian tidur, aku meminjam derek gravitasi sebentar untuk menjemputnya dari hutan jamur. Kapsul hebat ini terlalu berharga kalau dibiarkan di luar.\"",
+		"Rion: \"Wah... terima kasih banyak ya, Tuan Rallux!\"",
+		"Rallux: \"Sama-sama, Rion! Nah, karena cacing di perut kita pasti sudah mulai bernyanyi, aku mau meracik sarapan roti panggang madu dan teh matcha hangat dulu di dapur. Kalian tunggu sebentar ya!\""
+	]
+	StoryManager.start_dialogue(greeting, "Rion")
+	await StoryManager.dialogue_finished
+
+	# 6. Rallux berjalan keluar sendiri (kamera TIDAK mengikuti)
+	if rallux:
+		var route: Array[Vector3] = [rallux.global_position]
+		if storypoints:
+			for pname in ["Point3", "Point2", "Point1"]:
+				var m: Node3D = storypoints.get_node_or_null(pname) as Node3D
+				if m:
+					route.append(m.global_position)
+		var door_node: Node3D = find_child("quitdoor", true, false) as Node3D
+		if door_node:
+			route.append(door_node.global_position)
+		_run_rallux_leave(rallux, route, 8.0)
+
+	# Rion menghampiri Ona dengan menempati posisi awal Rallux
+	if player and ona:
+		await _walk_with_follow_camera(player, rallux_pos, camera_rig, 6.0)
+		# Kamera kembali ke posisi yang sama seperti dialog Ona & Rallux
+		if camera_rig:
+			camera_rig.global_position = cap_pos + Vector3(0.0, 2.6, 9.0)
+			camera_rig.look_at(cap_pos + Vector3(0.0, 1.2, 0.0), Vector3.UP)
+
+	# 7. INISIATIF RION
+	var initiative: Array[String] = [
+		"Rion: \"Ona... mumpung Tuan Rallux lagi keluar sebentar, boleh gak kalau kita rapikan lantai bengkel ini?\"",
+		"Ona: \"Kamu mau merapikannya, Rion?\"",
+		"Rion: \"Iya! Tuan Rallux sudah baik banget merawat kapsulku dan ngasih tempat istirahat yang hangat. Aku mau kumpulkan baut-baut yang melayang ini dan susun alat-alatnya ke rak dinding. Jadi pas Tuan Rallux balik nanti, lantainya sudah bersih dan gak bikin tersandung lagi!\"",
+		"Ona: \"Wah, inisiatif yang sangat hebat dan penuh perhatian, Rion! Tuan Rallux pasti akan sangat senang melihat bengkelnya tertata rapi. Aku akan bantu memproyeksikan panduan slot wadahnya untukmu.\""
+	]
+	StoryManager.start_dialogue(initiative, "Rion")
+	await StoryManager.dialogue_finished
+
+	# 8. Aktifkan gameplay misi beres-beres
+	GameManager.r1_morning_intro_done = true
+	GameManager.set_objective("Kumpulkan perkakas yang berserakan di lantai dan selaraskan ke rak penyimpanan", 0, "")
+	if hud:
+		if hud.has_method("set_gameplay_ui_visible"):
+			hud.set_gameplay_ui_visible(true)
+		else:
+			hud.visible = true
+	if player:
+		player.set_physics_process(true)
+		player.set_process_unhandled_input(true)
+	if camera_rig:
+		camera_rig.set_physics_process(true)
+		camera_rig.set_process(true)
+		camera_rig.set_process_unhandled_input(true)
+		if camera_rig.has_method("snap_to_target"):
+			camera_rig.snap_to_target()
+	if cam:
+		cam.make_current()
+
+var _mono_we: WorldEnvironment = null
+var _mono_prev_enabled: bool = false
+var _mono_prev_sat: float = 1.0
+var _flashback_layer: CanvasLayer = null
+
+func _set_monochrome(on: bool) -> void:
+	var we := get_node_or_null("WorldEnvironment") as WorldEnvironment
+	if we == null or we.environment == null:
+		return
+	if on:
+		_mono_we = we
+		_mono_prev_enabled = we.environment.adjustment_enabled
+		_mono_prev_sat = we.environment.adjustment_saturation
+		we.environment.adjustment_enabled = true
+		we.environment.adjustment_saturation = 0.0
+	else:
+		if _mono_we and _mono_we.environment:
+			_mono_we.environment.adjustment_enabled = _mono_prev_enabled
+			_mono_we.environment.adjustment_saturation = _mono_prev_sat
+
+func _set_flashback_particles(on: bool) -> void:
+	if not on:
+		if _flashback_layer:
+			_flashback_layer.visible = false
+		return
+	if _flashback_layer == null:
+		_flashback_layer = CanvasLayer.new()
+		_flashback_layer.name = "FlashbackLayer"
+		_flashback_layer.layer = 0
+		add_child(_flashback_layer)
+		var p := GPUParticles2D.new()
+		p.name = "FlashbackParticles"
+		p.amount = 70
+		p.lifetime = 6.0
+		p.preprocess = 6.0
+		p.emitting = true
+		var grad := Gradient.new()
+		grad.set_color(0, Color(1.0, 1.0, 1.0, 0.45))
+		grad.set_color(1, Color(1.0, 1.0, 1.0, 0.0))
+		var tex := GradientTexture2D.new()
+		tex.gradient = grad
+		tex.width = 16
+		tex.height = 16
+		tex.fill = GradientTexture2D.FILL_RADIAL
+		tex.fill_from = Vector2(0.5, 0.5)
+		tex.fill_to = Vector2(0.5, 0.0)
+		p.texture = tex
+		var mat := ParticleProcessMaterial.new()
+		mat.emission_shape = ParticleProcessMaterial.EMISSION_SHAPE_BOX
+		mat.emission_box_extents = Vector3(1100.0, 650.0, 0.0)
+		mat.direction = Vector3(0.0, -1.0, 0.0)
+		mat.spread = 180.0
+		mat.initial_velocity_min = 3.0
+		mat.initial_velocity_max = 10.0
+		mat.gravity = Vector3.ZERO
+		mat.scale_min = 0.4
+		mat.scale_max = 1.3
+		p.process_material = mat
+		p.position = Vector2(960.0, 540.0)
+		_flashback_layer.add_child(p)
+	_flashback_layer.visible = true
+
+## Paksa animasi Rallux (searching/idle/run) lewat state machine + pastikan loop.
+func _play_rallux_anim(rallux: Node3D, anim_name: String) -> void:
+	var at := rallux.get_node_or_null("AnimationTree") as AnimationTree
+	if at == null:
+		at = rallux.find_child("AnimationTree", true, false) as AnimationTree
+	if at:
+		at.active = true
+		var pb = at.get("parameters/playback")
+		if pb:
+			pb.travel(anim_name)
+	var ap := rallux.get_node_or_null("AnimationPlayer") as AnimationPlayer
+	if ap == null:
+		ap = rallux.find_child("AnimationPlayer", true, false) as AnimationPlayer
+	if ap:
+		var a := ap.get_animation(anim_name)
+		if a:
+			a.loop_mode = Animation.LOOP_LINEAR
+		if at == null and ap.current_animation != anim_name:
+			ap.play(anim_name)
+
+## Rallux berjalan keluar bengkel TANPA diiringi kamera. Animasi "run" dipaksa aktif.
+func _run_rallux_leave(rallux: Node3D, route: Array, speed: float = 8.0) -> void:
+	# State machine kadang tidak pindah, jadi paksa lewat AnimationPlayer langsung.
+	var at := rallux.get_node_or_null("AnimationTree") as AnimationTree
+	if at:
+		at.active = false
+	var ap := rallux.get_node_or_null("AnimationPlayer") as AnimationPlayer
+	if ap:
+		var run_anim := ap.get_animation("run")
+		if run_anim:
+			run_anim.loop_mode = Animation.LOOP_LINEAR
+		ap.play("run")
+
+	var prev := Time.get_ticks_msec()
+	for i in range(1, route.size()):
+		var to: Vector3 = route[i]
+		var dist2d: float = Vector2(to.x - rallux.global_position.x, to.z - rallux.global_position.z).length()
+		var time_limit := Time.get_ticks_msec() + int((dist2d / speed) * 1000.0) + 2000
+		while rallux.global_position.distance_to(to) > 0.3:
+			if Time.get_ticks_msec() > time_limit:
+				break
+			var now := Time.get_ticks_msec()
+			var dt := clampf((now - prev) / 1000.0, 0.0, 0.1)
+			prev = now
+			var dir: Vector3 = to - rallux.global_position
+			dir.y = 0.0
+			if dir.length_squared() > 0.01:
+				rallux.rotation.y = lerp_angle(rallux.rotation.y, atan2(dir.x, dir.z), 12.0 * dt)
+			rallux.global_position = rallux.global_position.move_toward(to, speed * dt)
+			await get_tree().physics_frame
+		prev = Time.get_ticks_msec()
+	rallux.global_position = route[route.size() - 1]
+
+	# Kembalikan state machine ke idle sebelum disembunyikan
+	if ap:
+		ap.stop()
+	if at:
+		at.active = true
+		var playback = at.get("parameters/playback")
+		if playback:
+			playback.start("idle")
+	rallux.visible = false
+
+## Rion berjalan ke target dengan kamera mengikuti dari belakang badannya.
+func _walk_with_follow_camera(char: CharacterBody3D, target: Vector3, camera_rig: Node3D, speed: float = 6.0) -> void:
+	var mesh := char.get_node_or_null("RionMesh")
+	var anim := char.get_node_or_null("AnimationTree") as AnimationTree
+	if anim:
+		anim.set("parameters/StateMachine/Move/blend_position", 0.5)
+
+	var start: Vector3 = char.global_position
+	var walk_dir: Vector3 = target - start
+	walk_dir.y = 0.0
+	if walk_dir.length_squared() > 0.0001:
+		walk_dir = walk_dir.normalized()
+	else:
+		walk_dir = Vector3(0.0, 0.0, -1.0)
+	# Offset tetap (tidak berubah mengikuti rotasi) supaya kamera tidak getar
+	var cam_offset: Vector3 = -walk_dir * 9.0 + Vector3(0.0, 2.8, 0.0)
+	if camera_rig:
+		camera_rig.global_position = char.global_position + cam_offset
+		camera_rig.look_at(char.global_position + Vector3(0.0, 1.3, 0.0), Vector3.UP)
+
+	var prev := Time.get_ticks_msec()
+	while char.global_position.distance_to(target) > 0.3:
+		var now := Time.get_ticks_msec()
+		var dt := clampf((now - prev) / 1000.0, 0.0, 0.1)
+		prev = now
+		var dir: Vector3 = target - char.global_position
+		dir.y = 0.0
+		if dir.length_squared() > 0.0001:
+			dir = dir.normalized()
+			char.global_position = char.global_position.move_toward(target, speed * dt)
+			if mesh:
+				mesh.rotation.y = lerp_angle(mesh.rotation.y, atan2(dir.x, dir.z), 8.0 * dt)
+			if camera_rig:
+				var desired: Vector3 = char.global_position + cam_offset
+				var a: float = 1.0 - exp(-10.0 * dt)
+				camera_rig.global_position = camera_rig.global_position.lerp(desired, a)
+				camera_rig.look_at(char.global_position + Vector3(0.0, 1.3, 0.0), Vector3.UP)
+		await get_tree().physics_frame
+	if anim:
+		anim.set("parameters/StateMachine/Move/blend_position", 0.0)
 
 ## Rallux berlari menyusuri titik-titik rute dengan gerak tetap (move_toward per frame,
 ## bukan tween) sehingga dijamin sampai ke tujuan. Kamera mengikuti mulus setiap frame.

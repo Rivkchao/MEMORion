@@ -559,19 +559,19 @@ func continue_to_next_phase() -> void:
 		_setup_phase(2)
 
 func _are_prerequisite_tasks_done() -> bool:
-	# Urutan misi: Rak 1 -> Terminal -> Tuas Crusher -> Tuas Ona Program -> Rak 2
+	# Urutan misi: Rak 1 -> Tuas Crusher -> Tuas Ona Program -> Terminal -> Rak 2
 	return GameManager.terminal_puzzle_done \
 		and GameManager.solved_levers.get("CrusherRoom_Lever", false) \
 		and GameManager.solved_levers.get("OnaProgramRoom_Lever", false)
 
 func _missing_prerequisites() -> String:
 	var missing: Array[String] = []
-	if not GameManager.terminal_puzzle_done:
-		missing.append("Terminal")
 	if not GameManager.solved_levers.get("CrusherRoom_Lever", false):
 		missing.append("Tuas Crusher")
 	if not GameManager.solved_levers.get("OnaProgramRoom_Lever", false):
 		missing.append("Tuas Ona Program")
+	if not GameManager.terminal_puzzle_done:
+		missing.append("Terminal")
 	return ", ".join(missing)
 
 func _begin_waiting_for_tasks() -> void:
@@ -586,10 +586,10 @@ func _begin_waiting_for_tasks() -> void:
 		_hide_items(rak2_container)
 		_set_container_interaction(rak2_container, false)
 
-	print("[Unpacking] Rak 1 selesai. Menunggu terminal & tuas Crusher/Ona Program sebelum Rak 2.")
+	print("[Unpacking] Rak 1 selesai. Menunggu tuas Crusher, Tuas Ona Program, & terminal sebelum Rak 2.")
 	if GameManager:
 		GameManager.set_objective(
-			"Nyalakan Terminal, tarik Tuas Crusher & Tuas Ona Program, lalu rapikan Rak 2",
+			"Tarik Tuas Crusher & Tuas Ona Program, lalu nyalakan Terminal, lalu rapikan Rak 2",
 			0,
 			""
 		)

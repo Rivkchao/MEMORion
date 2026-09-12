@@ -19,6 +19,7 @@ var terminal_puzzle_done: bool = false
 var unpacking_rak1_done: bool = false
 var unpacking_completed: bool = false
 var collected_fragments: Dictionary = {}
+var r1_morning_intro_done: bool = false
 
 # State Scene 5 (Kebun Bunga Kosmik & Malam Hari)
 var garden_intro_done: bool = false

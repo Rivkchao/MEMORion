@@ -8,11 +8,20 @@ extends CanvasLayer
 @onready var settings_btn: Button = get_node_or_null("SettingsBtn")
 
 var _obj_base_pos_x: float = 32.0
+var _gameplay_ui_visible: bool = true
 
 func _ready() -> void:
 	GameManager.init(self)
 	_setup_quest_hud_style()
-	
+
+	# Sembunyikan kontrol sentuh saat dialog, tampilkan lagi setelah selesai
+	var db = find_child("DialogueBox", true, false)
+	if db:
+		if db.has_signal("dialogue_started"):
+			db.dialogue_started.connect(_on_dialogue_started)
+		if db.has_signal("dialogue_finished"):
+			db.dialogue_finished.connect(_on_dialogue_finished)
+
 	if settings_btn:
 		settings_btn.pivot_offset = settings_btn.size / 2.0
 		settings_btn.button_down.connect(func():
@@ -155,7 +164,23 @@ func _unhandled_input(event: InputEvent) -> void:
 func _on_settings_pressed() -> void:
 	SettingsManager.open_settings_dialog(self)
 
+func _on_dialogue_started() -> void:
+	var mobile = find_child("MobileControls", true, false)
+	if mobile:
+		mobile.visible = false
+
+func _on_dialogue_finished() -> void:
+	if not _gameplay_ui_visible:
+		return
+	var mobile = find_child("MobileControls", true, false)
+	if mobile:
+		if SettingsManager and SettingsManager.has_method("is_mobile_controls_active"):
+			mobile.visible = SettingsManager.is_mobile_controls_active()
+		else:
+			mobile.visible = true
+
 func set_gameplay_ui_visible(is_vis: bool) -> void:
+	_gameplay_ui_visible = is_vis
 	for node_name in ["Prompt", "ObjectivePanel", "SettingsBtn"]:
 		var n = find_child(node_name, true, false)
 		if n:

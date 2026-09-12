@@ -1206,6 +1206,13 @@ func _run_sleep_transition(player: Node3D) -> void:
 	StoryManager.start_dialogue(closing_dialogue, "Ona")
 	await StoryManager.dialogue_finished
 
+	# Dialog Rion mengantuk (tampil dulu, baru fade ke hitam)
+	var sleepy_dialog: Array[String] = [
+		"Rion: Tempat ini... aman banget... Hoaaam..."
+	]
+	StoryManager.start_dialogue(sleepy_dialog, "Rion")
+	await StoryManager.dialogue_finished
+
 	# Fade to Black pekat
 	if fade_rect == null:
 		fade_rect = get_parent().find_child("FadeRect", true, false)
@@ -1215,13 +1222,6 @@ func _run_sleep_transition(player: Node3D) -> void:
 		var fade_tw = create_tween()
 		fade_tw.tween_property(fade_rect, "modulate:a", 1.0, 1.8)
 		await fade_tw.finished
-
-	# Dialog Rion mengantuk
-	var sleepy_dialog: Array[String] = [
-		"Rion: Tempat ini... aman banget... Hoaaam..."
-	]
-	StoryManager.start_dialogue(sleepy_dialog, "Rion")
-	await StoryManager.dialogue_finished
 
 	# Buat UI Narasi Layar Hitam
 	var overlay = CanvasLayer.new()
@@ -1243,9 +1243,14 @@ func _run_sleep_transition(player: Node3D) -> void:
 	label.add_theme_font_size_override("font_size", 22)
 	label.add_theme_color_override("font_color", Color(0.9, 0.95, 1.0, 1.0))
 	label.text = "\"Dikelilingi kehangatan bengkel dan aroma kayu manis yang menenangkan, Rion tertidur pulas tanpa rasa takut lagi...\""
+	label.modulate.a = 0.0
 	center_box.add_child(label)
 
 	get_parent().add_child(overlay)
+
+	# Teks narasi muncul perlahan
+	var tw_label = create_tween()
+	tw_label.tween_property(label, "modulate:a", 1.0, 1.2)
 
 	# Tampilkan teks narasi tidur selama 3.5 detik
 	await get_tree().create_timer(3.5).timeout
@@ -1266,7 +1271,21 @@ func _run_sleep_transition(player: Node3D) -> void:
 	GameManager.sleep_transition_done = true
 	print("[Ona] Transisi tidur Scene 5 selesai.")
 
-	# Pagi berikutnya: Rion bangun di bengkel (R1) dan bebas mengerjakan misi bengkel.
+	# Langsung ke kilas balik Rallux di LEV1 (jangan tampilkan Rion di kebun lagi).
+	var level := get_parent()
+	if level and level.has_method("_get_or_create_fade_rect"):
+		var level_fade = level._get_or_create_fade_rect()
+		level_fade.modulate.a = 1.0
+		level_fade.mouse_filter = Control.MOUSE_FILTER_STOP
+	if fade_rect:
+		fade_rect.modulate.a = 0.0
+		fade_rect.mouse_filter = Control.MOUSE_FILTER_IGNORE
+	if is_instance_valid(overlay):
+		overlay.queue_free()
+	if level and level.has_method("_play_lev1_flashback"):
+		await level._play_lev1_flashback()
+
+	# Pagi berikutnya: pindah ke bengkel R1 untuk adegan masa kini & misi beres-beres.
 	GameManager.set_spawn_override(Vector3(-68.10683, 0.114290714, -43.697), "R1")
 	if has_node("/root/LoadingScreen"):
 		LoadingScreen.load_scene("res://R1.tscn")

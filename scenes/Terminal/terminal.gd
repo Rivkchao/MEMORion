@@ -42,7 +42,7 @@ func interact() -> void:
 	StoryManager.start_wire_puzzle()
 	
 func _on_wire_puzzle_completed(is_correct: bool) -> void:
-	if is_correct:
+	if is_correct and not _puzzle_solved:
 		_puzzle_solved = true
 		GameManager.terminal_puzzle_done = true
 		omni_light_1.light_color = solved_color
@@ -50,3 +50,11 @@ func _on_wire_puzzle_completed(is_correct: bool) -> void:
 		omni_light_2.light_color = solved_color
 		omni_light_2.light_energy = solved_energy
 		interact_label = ""
+
+		# Dramatisasi dialog setelah terminal berhasil dinyalakan
+		if StoryManager and StoryManager.has_method("start_dialogue"):
+			var lines: Array[String] = [
+				"Rion: \"Layar terminalnya menyala! Sistem ruang energi mulai membaca ulang data.\"",
+				"Ona: \"Sambungan kabelnya sudah tepat, Rion. Terminal ini aktif kembali!\""
+			]
+			StoryManager.start_dialogue(lines, "Rion")

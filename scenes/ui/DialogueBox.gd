@@ -21,6 +21,7 @@ var _type_tween: Tween
 
 var magic_time: float = 0.0
 signal dialogue_finished
+signal dialogue_started
 
 func _ready() -> void:
 	hide()
@@ -48,6 +49,7 @@ func start(dialogue_lines: Array[String], npc_name: String = "", avatar_texture:
 	continue_label.hide()
 	show()
 	_show_line()
+	dialogue_started.emit()
 
 func _unhandled_input(event: InputEvent) -> void:
 	if not visible:
