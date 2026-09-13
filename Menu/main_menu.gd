@@ -5,6 +5,7 @@ extends Control
 
 @export_group("Scenes")
 @export var game_scene: String = "res://LEV1.tscn"
+@export var auth_scene: String = "res://Menu/AuthScreen.tscn"
 
 @onready var mulai_game_btn: Button = $MenuContainer/MulaiGameBtn
 @onready var muat_game_btn: Button = $MenuContainer/MuatGameBtn
@@ -20,6 +21,8 @@ const INSTAGRAM_URL: String = "https://www.instagram.com/memorion.plus"
 const MENU_BGM = preload("res://assets/audio/bgm/meditation_main.mp3")
 
 func _ready() -> void:
+	# Pastikan game tidak dalam kondisi pause saat kembali ke menu.
+	get_tree().paused = false
 	_start_logo_flip_animation()
 	
 	if AudioManager:
@@ -94,17 +97,21 @@ func _start_logo_flip_animation() -> void:
 func _on_mulai_game() -> void:
 	if AudioManager:
 		AudioManager.play_ui_confirm()
-	LoadingScreen.load_scene(game_scene)
+	_open_auth()
 
 func _on_muat_game() -> void:
 	if AudioManager:
 		AudioManager.play_ui_confirm()
-	LoadingScreen.load_scene(game_scene)
+	_open_auth()
 
 func _on_lanjut_game() -> void:
 	if AudioManager:
 		AudioManager.play_ui_confirm()
-	LoadingScreen.load_scene(game_scene)
+	_open_auth()
+
+## Semua tombol mulai masuk lewat layar login/registrasi dulu (main menu -> auth -> LEV1).
+func _open_auth() -> void:
+	LoadingScreen.load_scene(auth_scene)
 
 func _on_pengaturan() -> void:
 	SettingsManager.open_settings_dialog(self)

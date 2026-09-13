@@ -10,6 +10,8 @@ signal finished
 @export var text_fade_time: float = 1.6
 @export var hold_time: float = 4.0
 @export var pause_game: bool = true
+## Scene tujuan setelah layar penutup. Kosongkan untuk berhenti di layar ini saja.
+@export_file("*.tscn") var next_scene: String = "res://Menu/main_menu.tscn"
 
 var _black: ColorRect
 var _label: Label
@@ -71,6 +73,31 @@ func play() -> void:
 		await get_tree().create_timer(hold_time, true).timeout
 
 	finished.emit()
+
+	# Setelah layar penutup selesai, lanjut ke scene berikutnya (default: main menu).
+	if not next_scene.is_empty():
+		await _go_to_next_scene()
+
+## Pindah ke next_scene memakai LoadingScreen bila tersedia.
+func _go_to_next_scene() -> void:
+	var tree := get_tree()
+	if tree == null:
+		queue_free()
+		return
+
+	# Wajib unpause dulu agar LoadingScreen (PAUSABLE) bisa menjalankan tween-nya.
+	if pause_game:
+		tree.paused = false
+
+	var loading := tree.root.get_node_or_null("LoadingScreen")
+	if loading != null and loading.has_method("load_scene"):
+		loading.load_scene(next_scene)
+		# Biarkan fade LoadingScreen menutupi layar sebelum overlay dilepas.
+		await tree.create_timer(0.6).timeout
+		queue_free()
+	else:
+		tree.change_scene_to_file(next_scene)
+		queue_free()
 
 ## Sembunyikan layar penutup dan lanjutkan game (dipakai bila perlu lanjut bermain).
 func dismiss() -> void:
