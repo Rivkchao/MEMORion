@@ -1,15 +1,13 @@
 extends Node
 
-## Menyembunyikan kursor setelah 2 detik tanpa pergerakan,
-## dan menampilkannya kembali begitu kursor digerakkan.
-
-const IDLE_LIMIT: float = 999.0
+const IDLE_LIMIT: float = 2.0
 
 var _idle_time: float = 0.0
 var _hidden: bool = false
 
 func _ready() -> void:
-	process_mode = Node.PROCESS_MODE_ALWAYS
+	Input.mouse_mode = Input.MOUSE_MODE_VISIBLE
+	set_process(false)
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion or event is InputEventMouseButton:

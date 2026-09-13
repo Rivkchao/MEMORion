@@ -1,6 +1,8 @@
 extends Node3D
 class_name UnpackingManager3D
 
+const TO_BE_CONTINUE_OVERLAY := preload("res://scenes/ui/ToBeContinueOverlay.gd")
+
 @export var player: Node3D
 @export var interact_distance: float = 3.5
 @export var hold_offset: Vector3 = Vector3(0.0, 0.8, -1.2)
@@ -18,6 +20,7 @@ var phase_completed: bool = false
 var waiting_for_dialog: bool = false
 var waiting_for_tasks: bool = false
 var _last_missing_log: String = ""
+var _ending_shown: bool = false
 
 signal rak1_completed
 signal all_completed
@@ -559,6 +562,18 @@ func _check_phase_finish() -> void:
 		# Tampilkan checklist semua misi yang sudah selesai
 		if GameManager.hud and GameManager.hud.has_method("show_mission_complete_checklist"):
 			GameManager.hud.show_mission_complete_checklist()
+
+		# Beri waktu pemain membaca checklist, lalu tampilkan layar penutup R1.
+		await get_tree().create_timer(3.0).timeout
+		_show_to_be_continue()
+
+func _show_to_be_continue() -> void:
+	if _ending_shown or not is_inside_tree():
+		return
+	_ending_shown = true
+	var overlay: CanvasLayer = TO_BE_CONTINUE_OVERLAY.new()
+	get_tree().root.add_child(overlay)
+	overlay.play()
 
 func continue_to_next_phase() -> void:
 	if current_phase == 1:

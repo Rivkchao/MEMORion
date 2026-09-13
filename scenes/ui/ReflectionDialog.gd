@@ -250,7 +250,7 @@ func _process_reflection(user_text: String) -> void:
 	var ai_reply := ""
 
 	var ai_mgr = get_node_or_null("/root/AIManager") if is_inside_tree() else null
-	if ai_mgr and ai_mgr.get("_api_key") != "" and ai_mgr.get("_api_key") != "ISI_API_KEY_KAMU_DISINI":
+	if ai_mgr and ai_mgr.has_method("is_ai_available") and ai_mgr.is_ai_available():
 		var ai_res = await _request_ai_reflection(user_text, ai_mgr)
 		if not ai_res.is_empty():
 			sentiment = ai_res.get("sentiment", "positif")
@@ -279,7 +279,7 @@ func _process_anger_reflection(user_text: String) -> void:
 
 	var ai_reply := ""
 	var ai_mgr = get_node_or_null("/root/AIManager") if is_inside_tree() else null
-	if ai_mgr and ai_mgr.get("_api_key") != "" and ai_mgr.get("_api_key") != "ISI_API_KEY_KAMU_DISINI":
+	if ai_mgr and ai_mgr.has_method("is_ai_available") and ai_mgr.is_ai_available():
 		var ai_res = await _request_ai_anger(user_text, ai_mgr)
 		if not ai_res.is_empty():
 			ai_reply = String(ai_res.get("reply", "")).strip_edges()
@@ -414,13 +414,8 @@ func _parse_number_from_text(text: String) -> int:
 	return -1
 
 func _request_ai_reflection(text: String, ai_mgr: Node, prompt_override: String = "") -> Dictionary:
-	var http_request := HTTPRequest.new()
-	add_child(http_request)
-
-	var request_headers = [
-		"Authorization: Bearer " + str(ai_mgr.get("_api_key")),
-		"Content-Type: application/json"
-	]
+	if ai_mgr == null or not ai_mgr.has_method("request_json"):
+		return {}
 
 	var system_prompt := prompt_override
 	if system_prompt.is_empty():
@@ -434,7 +429,7 @@ Tugasmu:
 1. Tentukan sentimen emosinya ("positif" jika merasa senang/lega/bangga/percaya diri, atau "negatif" jika merasa lelah/kesal/pusing/sulit/takut).
 2. Berikan 1 atau maksimal 2 kalimat balasan LANGSUNG dari Ona yang merespons secara spesifik apa yang dirasakan atau diceritakan Rion dengan penuh empati dan apresiasi.
 
-Gaya bahasa: hangat, sederhana untuk anak, dan JANGAN gunakan tanda pisah panjang (— atau –); gunakan koma atau titik.
+Gaya bahasa: hangat, sederhana untuk anak, dan JANGAN gunakan tanda pisah panjang; gunakan koma atau titik.
 
 Aturan Output:
 WAJIB balas HANYA format JSON persis seperti ini:
@@ -444,62 +439,19 @@ WAJIB balas HANYA format JSON persis seperti ini:
 }
 """ % text
 
-	var payload = {
-		"model": "openai/gpt-4o-mini",
-		"messages": [
-			{"role": "system", "content": system_prompt},
-			{"role": "user", "content": text}
-		],
-		"temperature": 0.4,
-		"response_format": { "type": "json_object" }
-	}
+	var parsed: Dictionary = await ai_mgr.request_json([
+		{"role": "system", "content": system_prompt},
+		{"role": "user", "content": text},
+	], "", 0.4)
 
-	var err = http_request.request(
-		str(ai_mgr.get("API_URL")),
-		request_headers,
-		HTTPClient.METHOD_POST,
-		JSON.stringify(payload)
-	)
-
-	if err != OK:
-		http_request.queue_free()
+	if parsed.is_empty() or not parsed.has("reply"):
 		return {}
 
-	# Timeout 5 detik agar gameplay tidak macet jika jaringan lambat
-	var timer = get_tree().create_timer(5.0)
-	var completed = false
-	var res_data: Array = []
-
-	http_request.request_completed.connect(func(res, code, hdrs, bdy):
-		res_data = [res, code, hdrs, bdy]
-		completed = true
-	)
-
-	while not completed and timer.time_left > 0:
-		await get_tree().process_frame
-
-	if not completed:
-		http_request.cancel_request()
-		http_request.queue_free()
-		print("[ReflectionDialog] AI Request timeout, menggunakan fallback lokal.")
-		return {}
-
-	http_request.queue_free()
-
-	if res_data.size() >= 4 and res_data[1] == 200:
-		var body: PackedByteArray = res_data[3]
-		var json = JSON.parse_string(body.get_string_from_utf8())
-		if json and json.has("choices") and json["choices"].size() > 0:
-			var content_str = json["choices"][0]["message"]["content"]
-			var parsed = JSON.parse_string(content_str)
-			if parsed and parsed.has("reply"):
-				var sent = String(parsed.get("sentiment", "positif")).to_lower().strip_edges()
-				var s = "positif"
-				if "negatif" in sent or "negative" in sent:
-					s = "negatif"
-				return {"sentiment": s, "reply": String(parsed["reply"]).strip_edges()}
-
-	return {}
+	var sent := String(parsed.get("sentiment", "positif")).to_lower().strip_edges()
+	var s := "positif"
+	if "negatif" in sent or "negative" in sent:
+		s = "negatif"
+	return {"sentiment": s, "reply": String(parsed["reply"]).strip_edges()}
 
 func _request_ai_anger(text: String, ai_mgr: Node) -> Dictionary:
 	var prompt := """

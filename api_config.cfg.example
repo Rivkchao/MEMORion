@@ -1,3 +1,10 @@
-; Template contoh — copy sebagai api_config.cfg dan isi dengan key kamu
+; Template contoh - copy sebagai api_config.cfg di root project.
+; Hanya berisi hal NON-RAHASIA. Kredensial pemain tidak disimpan di sini.
 [api]
-openrouter_key="ISI_API_KEY_KAMU_DISINI"
+base_url="http://memorion.auto"
+
+; Hanya dipakai saat menjalankan lewat Godot Editor (auto-login dev).
+; Di build export, bagian [dev] ini diabaikan.
+[dev]
+username="demoplayer"
+password="password"
