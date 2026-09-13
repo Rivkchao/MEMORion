@@ -187,7 +187,7 @@ grow_horizontal = 2
 grow_vertical = 2
 
 [node name="PanelContainer" type="PanelContainer" parent="CenterContainer" unique_id=376675963]
-custom_minimum_size = Vector2(490, 0)
+custom_minimum_size = Vector2(540, 0)
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
 
@@ -215,18 +215,18 @@ theme_override_colors/font_color = Color(0.4, 0.85, 1, 1)
 theme_override_colors/font_shadow_color = Color(0.5, 0.15, 0.9, 0.5)
 theme_override_constants/shadow_offset_y = 2
 theme_override_fonts/font = ExtResource("5_tbold")
-theme_override_font_sizes/font_size = 18
+theme_override_font_sizes/font_size = 22
 text = "✦ PORTAL PENJELAJAH ✦"
 horizontal_alignment = 1
 
 [node name="TabContainer" type="TabContainer" parent="CenterContainer/PanelContainer/MarginContainer/VBoxContainer" unique_id=316294774]
-custom_minimum_size = Vector2(0, 260)
+custom_minimum_size = Vector2(0, 290)
 layout_mode = 2
 theme_override_colors/font_selected_color = Color(1, 1, 1, 1)
 theme_override_colors/font_hovered_color = Color(0.85, 0.9, 1, 1)
 theme_override_colors/font_unselected_color = Color(0.65, 0.65, 0.8, 1)
 theme_override_fonts/font = ExtResource("5_tbold")
-theme_override_font_sizes/font_size = 17
+theme_override_font_sizes/font_size = 20
 theme_override_styles/panel = SubResource("StyleBoxFlat_tab_panel")
 theme_override_styles/tab_unselected = SubResource("StyleBoxFlat_tab_unselected")
 theme_override_styles/tab_hovered = SubResource("StyleBoxFlat_tab_hovered")
@@ -242,24 +242,24 @@ metadata/_tab_index = 0
 metadata/_tab_name = "  Masuk  "
 
 [node name="UsernameField" type="LineEdit" parent="CenterContainer/PanelContainer/MarginContainer/VBoxContainer/TabContainer/LoginTab" unique_id=539558955]
-custom_minimum_size = Vector2(0, 50)
+custom_minimum_size = Vector2(0, 56)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.95, 0.95, 1, 1)
 theme_override_colors/font_placeholder_color = Color(0.5, 0.5, 0.7, 0.75)
 theme_override_fonts/font = ExtResource("6_treg")
-theme_override_font_sizes/font_size = 16
+theme_override_font_sizes/font_size = 20
 theme_override_styles/normal = SubResource("StyleBoxFlat_input_normal")
 theme_override_styles/focus = SubResource("StyleBoxFlat_input_focus")
 placeholder_text = "Nama panggilanmu..."
 clear_button_enabled = true
 
 [node name="PasswordField" type="LineEdit" parent="CenterContainer/PanelContainer/MarginContainer/VBoxContainer/TabContainer/LoginTab" unique_id=330099567]
-custom_minimum_size = Vector2(0, 50)
+custom_minimum_size = Vector2(0, 56)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.95, 0.95, 1, 1)
 theme_override_colors/font_placeholder_color = Color(0.5, 0.5, 0.7, 0.75)
 theme_override_fonts/font = ExtResource("6_treg")
-theme_override_font_sizes/font_size = 16
+theme_override_font_sizes/font_size = 20
 theme_override_styles/normal = SubResource("StyleBoxFlat_input_normal")
 theme_override_styles/focus = SubResource("StyleBoxFlat_input_focus")
 placeholder_text = "Password..."
@@ -267,13 +267,13 @@ clear_button_enabled = true
 secret = true
 
 [node name="LoginBtn" type="Button" parent="CenterContainer/PanelContainer/MarginContainer/VBoxContainer/TabContainer/LoginTab" unique_id=131961818]
-custom_minimum_size = Vector2(0, 52)
+custom_minimum_size = Vector2(0, 58)
 layout_mode = 2
 mouse_default_cursor_shape = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_colors/font_hover_color = Color(0.85, 1, 1, 1)
 theme_override_fonts/font = ExtResource("5_tbold")
-theme_override_font_sizes/font_size = 18
+theme_override_font_sizes/font_size = 20
 theme_override_styles/normal = SubResource("StyleBoxFlat_btn_normal")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_btn_pressed")
 theme_override_styles/hover = SubResource("StyleBoxFlat_btn_hover")
@@ -281,10 +281,10 @@ theme_override_styles/disabled = SubResource("StyleBoxFlat_btn_disabled")
 text = "MASUK KE PETUALANGAN"
 
 [node name="FeedbackLabel" type="Label" parent="CenterContainer/PanelContainer/MarginContainer/VBoxContainer/TabContainer/LoginTab" unique_id=843164943]
-custom_minimum_size = Vector2(0, 24)
+custom_minimum_size = Vector2(0, 26)
 layout_mode = 2
 theme_override_fonts/font = ExtResource("6_treg")
-theme_override_font_sizes/font_size = 14
+theme_override_font_sizes/font_size = 17
 horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 2
@@ -297,24 +297,24 @@ metadata/_tab_index = 1
 metadata/_tab_name = "  Daftar  "
 
 [node name="UsernameField" type="LineEdit" parent="CenterContainer/PanelContainer/MarginContainer/VBoxContainer/TabContainer/RegisterTab" unique_id=1440858728]
-custom_minimum_size = Vector2(0, 50)
+custom_minimum_size = Vector2(0, 56)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.95, 0.95, 1, 1)
 theme_override_colors/font_placeholder_color = Color(0.5, 0.5, 0.7, 0.75)
 theme_override_fonts/font = ExtResource("6_treg")
-theme_override_font_sizes/font_size = 16
+theme_override_font_sizes/font_size = 20
 theme_override_styles/normal = SubResource("StyleBoxFlat_input_normal")
 theme_override_styles/focus = SubResource("StyleBoxFlat_input_focus")
 placeholder_text = "Pilih nama unikmu..."
 clear_button_enabled = true
 
 [node name="PasswordField" type="LineEdit" parent="CenterContainer/PanelContainer/MarginContainer/VBoxContainer/TabContainer/RegisterTab" unique_id=1714491176]
-custom_minimum_size = Vector2(0, 50)
+custom_minimum_size = Vector2(0, 56)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.95, 0.95, 1, 1)
 theme_override_colors/font_placeholder_color = Color(0.5, 0.5, 0.7, 0.75)
 theme_override_fonts/font = ExtResource("6_treg")
-theme_override_font_sizes/font_size = 16
+theme_override_font_sizes/font_size = 20
 theme_override_styles/normal = SubResource("StyleBoxFlat_input_normal")
 theme_override_styles/focus = SubResource("StyleBoxFlat_input_focus")
 placeholder_text = "Buat password (min. 6 karakter)..."
@@ -322,13 +322,13 @@ clear_button_enabled = true
 secret = true
 
 [node name="RegisterBtn" type="Button" parent="CenterContainer/PanelContainer/MarginContainer/VBoxContainer/TabContainer/RegisterTab" unique_id=313299581]
-custom_minimum_size = Vector2(0, 52)
+custom_minimum_size = Vector2(0, 58)
 layout_mode = 2
 mouse_default_cursor_shape = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_colors/font_hover_color = Color(0.85, 1, 1, 1)
 theme_override_fonts/font = ExtResource("5_tbold")
-theme_override_font_sizes/font_size = 18
+theme_override_font_sizes/font_size = 20
 theme_override_styles/normal = SubResource("StyleBoxFlat_btn_normal")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_btn_pressed")
 theme_override_styles/hover = SubResource("StyleBoxFlat_btn_hover")
@@ -336,10 +336,10 @@ theme_override_styles/disabled = SubResource("StyleBoxFlat_btn_disabled")
 text = "BUAT AKUN BARU"
 
 [node name="FeedbackLabel" type="Label" parent="CenterContainer/PanelContainer/MarginContainer/VBoxContainer/TabContainer/RegisterTab" unique_id=177525018]
-custom_minimum_size = Vector2(0, 24)
+custom_minimum_size = Vector2(0, 26)
 layout_mode = 2
 theme_override_fonts/font = ExtResource("6_treg")
-theme_override_font_sizes/font_size = 14
+theme_override_font_sizes/font_size = 17
 horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 2
@@ -349,6 +349,6 @@ visible = false
 layout_mode = 2
 theme_override_colors/font_color = Color(0.45, 0.9, 1, 1)
 theme_override_fonts/font = ExtResource("5_tbold")
-theme_override_font_sizes/font_size = 15
+theme_override_font_sizes/font_size = 18
 text = "Menghubungkan ke server..."
 horizontal_alignment = 1

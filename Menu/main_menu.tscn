@@ -49,15 +49,10 @@ scale = Vector2(0.2, 0.2)
 texture = ExtResource("3_vv7ca")
 
 [node name="FrameMenu" type="TextureRect" parent="." unique_id=872379969]
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
+layout_mode = 0
 offset_top = 1080.0
-offset_right = -840.0
-offset_bottom = 1920.0
-grow_horizontal = 2
-grow_vertical = 2
+offset_right = 1080.0
+offset_bottom = 3000.0
 rotation = -1.5707964
 texture = ExtResource("4_vv7ca")
 expand_mode = 1

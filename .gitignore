@@ -7,3 +7,7 @@ api_config.cfg
 
 # Agent CLI directory
 .agents/
+
+# Build artifacts and backups
+builds/
+*.bak

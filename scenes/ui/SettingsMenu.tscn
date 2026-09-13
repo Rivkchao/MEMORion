@@ -99,7 +99,7 @@ grow_vertical = 2
 
 [node name="PanelContainer" type="PanelContainer" parent="CenterContainer"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(620, 540)
+custom_minimum_size = Vector2(680, 560)
 layout_mode = 2
 theme_override_styles/panel = SubResource("StyleBoxFlat_panel")
 
@@ -129,16 +129,16 @@ text = "PENGATURAN"
 layout_mode = 2
 theme_override_colors/font_color = Color(0.7, 0.75, 0.9, 1)
 theme_override_fonts/font = ExtResource("4_telegraf_reg")
-theme_override_font_sizes/font_size = 14
+theme_override_font_sizes/font_size = 16
 text = "Sesuaikan tampilan layar, tata suara, dan kontrol"
 
 [node name="CloseBtn" type="Button" parent="CenterContainer/PanelContainer/VBoxContainer/Header"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(38, 38)
+custom_minimum_size = Vector2(44, 44)
 layout_mode = 2
 size_flags_vertical = 0
 theme_override_fonts/font = ExtResource("3_telegraf_bold")
-theme_override_font_sizes/font_size = 16
+theme_override_font_sizes/font_size = 20
 theme_override_styles/normal = SubResource("StyleBoxFlat_close_btn")
 text = "✕"
 
@@ -164,17 +164,17 @@ theme_override_constants/separation = 10
 layout_mode = 2
 theme_override_colors/font_color = Color(0.3, 0.8, 1, 1)
 theme_override_fonts/font = ExtResource("3_telegraf_bold")
-theme_override_font_sizes/font_size = 17
+theme_override_font_sizes/font_size = 20
 text = "✦ TAMPILAN (DISPLAY)"
 
 [node name="BrightnessRow" type="HBoxContainer" parent="CenterContainer/PanelContainer/VBoxContainer/ScrollContainer/ContentVBox/TampilanSection"]
 layout_mode = 2
 
 [node name="Label" type="Label" parent="CenterContainer/PanelContainer/VBoxContainer/ScrollContainer/ContentVBox/TampilanSection/BrightnessRow"]
-custom_minimum_size = Vector2(180, 0)
+custom_minimum_size = Vector2(210, 0)
 layout_mode = 2
 theme_override_fonts/font = ExtResource("4_telegraf_reg")
-theme_override_font_sizes/font_size = 15
+theme_override_font_sizes/font_size = 18
 text = "Kecerahan (Brightness):"
 
 [node name="BrightnessSlider" type="HSlider" parent="CenterContainer/PanelContainer/VBoxContainer/ScrollContainer/ContentVBox/TampilanSection/BrightnessRow"]
@@ -189,10 +189,10 @@ value = 1.0
 
 [node name="BrightnessValue" type="Label" parent="CenterContainer/PanelContainer/VBoxContainer/ScrollContainer/ContentVBox/TampilanSection/BrightnessRow"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(60, 0)
+custom_minimum_size = Vector2(65, 0)
 layout_mode = 2
 theme_override_fonts/font = ExtResource("3_telegraf_bold")
-theme_override_font_sizes/font_size = 15
+theme_override_font_sizes/font_size = 18
 text = "100%"
 horizontal_alignment = 2
 
@@ -200,35 +200,37 @@ horizontal_alignment = 2
 layout_mode = 2
 
 [node name="Label" type="Label" parent="CenterContainer/PanelContainer/VBoxContainer/ScrollContainer/ContentVBox/TampilanSection/WindowModeRow"]
-custom_minimum_size = Vector2(180, 0)
+custom_minimum_size = Vector2(210, 0)
 layout_mode = 2
 theme_override_fonts/font = ExtResource("4_telegraf_reg")
-theme_override_font_sizes/font_size = 15
+theme_override_font_sizes/font_size = 18
 text = "Mode Layar:"
 
 [node name="WindowModeOption" type="OptionButton" parent="CenterContainer/PanelContainer/VBoxContainer/ScrollContainer/ContentVBox/TampilanSection/WindowModeRow"]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 44)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_fonts/font = ExtResource("4_telegraf_reg")
-theme_override_font_sizes/font_size = 14
+theme_override_font_sizes/font_size = 17
 
 [node name="ResolutionRow" type="HBoxContainer" parent="CenterContainer/PanelContainer/VBoxContainer/ScrollContainer/ContentVBox/TampilanSection"]
 layout_mode = 2
 
 [node name="Label" type="Label" parent="CenterContainer/PanelContainer/VBoxContainer/ScrollContainer/ContentVBox/TampilanSection/ResolutionRow"]
-custom_minimum_size = Vector2(180, 0)
+custom_minimum_size = Vector2(210, 0)
 layout_mode = 2
 theme_override_fonts/font = ExtResource("4_telegraf_reg")
-theme_override_font_sizes/font_size = 15
+theme_override_font_sizes/font_size = 18
 text = "Resolusi Layar:"
 
 [node name="ResolutionOption" type="OptionButton" parent="CenterContainer/PanelContainer/VBoxContainer/ScrollContainer/ContentVBox/TampilanSection/ResolutionRow"]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 44)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_fonts/font = ExtResource("4_telegraf_reg")
-theme_override_font_sizes/font_size = 14
+theme_override_font_sizes/font_size = 17
 
 [node name="HSeparator2" type="HSeparator" parent="CenterContainer/PanelContainer/VBoxContainer/ScrollContainer/ContentVBox"]
 layout_mode = 2
@@ -242,17 +244,17 @@ theme_override_constants/separation = 10
 layout_mode = 2
 theme_override_colors/font_color = Color(0.85, 0.45, 1, 1)
 theme_override_fonts/font = ExtResource("3_telegraf_bold")
-theme_override_font_sizes/font_size = 17
+theme_override_font_sizes/font_size = 20
 text = "✦ TATA SUARA (AUDIO)"
 
 [node name="VolGeneralRow" type="HBoxContainer" parent="CenterContainer/PanelContainer/VBoxContainer/ScrollContainer/ContentVBox/AudioSection"]
 layout_mode = 2
 
 [node name="Label" type="Label" parent="CenterContainer/PanelContainer/VBoxContainer/ScrollContainer/ContentVBox/AudioSection/VolGeneralRow"]
-custom_minimum_size = Vector2(180, 0)
+custom_minimum_size = Vector2(210, 0)
 layout_mode = 2
 theme_override_fonts/font = ExtResource("4_telegraf_reg")
-theme_override_font_sizes/font_size = 15
+theme_override_font_sizes/font_size = 18
 text = "Volume Utama (General):"
 
 [node name="VolGeneralSlider" type="HSlider" parent="CenterContainer/PanelContainer/VBoxContainer/ScrollContainer/ContentVBox/AudioSection/VolGeneralRow"]
@@ -266,10 +268,10 @@ value = 0.8
 
 [node name="VolGeneralValue" type="Label" parent="CenterContainer/PanelContainer/VBoxContainer/ScrollContainer/ContentVBox/AudioSection/VolGeneralRow"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(60, 0)
+custom_minimum_size = Vector2(65, 0)
 layout_mode = 2
 theme_override_fonts/font = ExtResource("3_telegraf_bold")
-theme_override_font_sizes/font_size = 15
+theme_override_font_sizes/font_size = 18
 text = "80%"
 horizontal_alignment = 2
 
@@ -277,10 +279,10 @@ horizontal_alignment = 2
 layout_mode = 2
 
 [node name="Label" type="Label" parent="CenterContainer/PanelContainer/VBoxContainer/ScrollContainer/ContentVBox/AudioSection/VolBgmRow"]
-custom_minimum_size = Vector2(180, 0)
+custom_minimum_size = Vector2(210, 0)
 layout_mode = 2
 theme_override_fonts/font = ExtResource("4_telegraf_reg")
-theme_override_font_sizes/font_size = 15
+theme_override_font_sizes/font_size = 18
 text = "Musik Latar (BGM):"
 
 [node name="VolBgmSlider" type="HSlider" parent="CenterContainer/PanelContainer/VBoxContainer/ScrollContainer/ContentVBox/AudioSection/VolBgmRow"]
@@ -294,10 +296,10 @@ value = 0.8
 
 [node name="VolBgmValue" type="Label" parent="CenterContainer/PanelContainer/VBoxContainer/ScrollContainer/ContentVBox/AudioSection/VolBgmRow"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(60, 0)
+custom_minimum_size = Vector2(65, 0)
 layout_mode = 2
 theme_override_fonts/font = ExtResource("3_telegraf_bold")
-theme_override_font_sizes/font_size = 15
+theme_override_font_sizes/font_size = 18
 text = "80%"
 horizontal_alignment = 2
 
@@ -305,10 +307,10 @@ horizontal_alignment = 2
 layout_mode = 2
 
 [node name="Label" type="Label" parent="CenterContainer/PanelContainer/VBoxContainer/ScrollContainer/ContentVBox/AudioSection/VolSfxRow"]
-custom_minimum_size = Vector2(180, 0)
+custom_minimum_size = Vector2(210, 0)
 layout_mode = 2
 theme_override_fonts/font = ExtResource("4_telegraf_reg")
-theme_override_font_sizes/font_size = 15
+theme_override_font_sizes/font_size = 18
 text = "Efek Suara (SFX):"
 
 [node name="VolSfxSlider" type="HSlider" parent="CenterContainer/PanelContainer/VBoxContainer/ScrollContainer/ContentVBox/AudioSection/VolSfxRow"]
@@ -322,10 +324,10 @@ value = 0.8
 
 [node name="VolSfxValue" type="Label" parent="CenterContainer/PanelContainer/VBoxContainer/ScrollContainer/ContentVBox/AudioSection/VolSfxRow"]
 unique_name_in_owner = true
-custom_minimum_size = Vector2(60, 0)
+custom_minimum_size = Vector2(65, 0)
 layout_mode = 2
 theme_override_fonts/font = ExtResource("3_telegraf_bold")
-theme_override_font_sizes/font_size = 15
+theme_override_font_sizes/font_size = 18
 text = "80%"
 horizontal_alignment = 2
 
@@ -341,25 +343,26 @@ theme_override_constants/separation = 10
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 0.85, 0.3, 1)
 theme_override_fonts/font = ExtResource("3_telegraf_bold")
-theme_override_font_sizes/font_size = 17
+theme_override_font_sizes/font_size = 20
 text = "✦ KONTROL (CONTROLS)"
 
 [node name="MobileModeRow" type="HBoxContainer" parent="CenterContainer/PanelContainer/VBoxContainer/ScrollContainer/ContentVBox/ControlsSection"]
 layout_mode = 2
 
 [node name="Label" type="Label" parent="CenterContainer/PanelContainer/VBoxContainer/ScrollContainer/ContentVBox/ControlsSection/MobileModeRow"]
-custom_minimum_size = Vector2(180, 0)
+custom_minimum_size = Vector2(210, 0)
 layout_mode = 2
 theme_override_fonts/font = ExtResource("4_telegraf_reg")
-theme_override_font_sizes/font_size = 15
+theme_override_font_sizes/font_size = 18
 text = "Kontrol Layar Sentuh:"
 
 [node name="MobileModeOption" type="OptionButton" parent="CenterContainer/PanelContainer/VBoxContainer/ScrollContainer/ContentVBox/ControlsSection/MobileModeRow"]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 44)
 layout_mode = 2
 size_flags_horizontal = 3
 theme_override_fonts/font = ExtResource("4_telegraf_reg")
-theme_override_font_sizes/font_size = 14
+theme_override_font_sizes/font_size = 17
 
 [node name="HSeparatorFooter" type="HSeparator" parent="CenterContainer/PanelContainer/VBoxContainer"]
 layout_mode = 2
@@ -371,9 +374,10 @@ theme_override_constants/separation = 14
 
 [node name="ResetBtn" type="Button" parent="CenterContainer/PanelContainer/VBoxContainer/FooterButtons"]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(130, 44)
 layout_mode = 2
 theme_override_fonts/font = ExtResource("4_telegraf_reg")
-theme_override_font_sizes/font_size = 14
+theme_override_font_sizes/font_size = 17
 theme_override_styles/normal = SubResource("StyleBoxFlat_btn_normal")
 text = "Reset Bawaan"
 
@@ -382,17 +386,19 @@ layout_mode = 2
 size_flags_horizontal = 3
 
 [node name="CancelBtn" type="Button" parent="CenterContainer/PanelContainer/VBoxContainer/FooterButtons"]
+custom_minimum_size = Vector2(100, 44)
 layout_mode = 2
 theme_override_fonts/font = ExtResource("4_telegraf_reg")
-theme_override_font_sizes/font_size = 14
+theme_override_font_sizes/font_size = 17
 theme_override_styles/normal = SubResource("StyleBoxFlat_btn_normal")
 text = "Batal"
 
 [node name="SaveBtn" type="Button" parent="CenterContainer/PanelContainer/VBoxContainer/FooterButtons"]
 unique_name_in_owner = true
+custom_minimum_size = Vector2(160, 44)
 layout_mode = 2
 theme_override_fonts/font = ExtResource("3_telegraf_bold")
-theme_override_font_sizes/font_size = 15
+theme_override_font_sizes/font_size = 18
 theme_override_styles/normal = SubResource("StyleBoxFlat_btn_save")
 text = "Simpan & Tutup"
 

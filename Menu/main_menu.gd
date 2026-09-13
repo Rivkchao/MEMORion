@@ -15,6 +15,13 @@ extends Control
 @onready var instagram_btn: Button = $InstagramBtn
 
 @onready var logo_rect: TextureRect = $Logo
+@onready var frame_menu: TextureRect = $FrameMenu
+@onready var bg_btn: TextureRect = $BgBtn
+@onready var planet: Sprite2D = $Planet
+@onready var sprite_bar: Sprite2D = $SpriteBar
+@onready var logo2: TextureRect = $Logo2
+@onready var greeting_label: Label = $Label
+@onready var menu_container: Control = $MenuContainer
 
 const HOVER_COLOR: Color = Color(0.77, 0.26, 0.92)
 const INSTAGRAM_URL: String = "https://www.instagram.com/memorion.plus"
@@ -23,7 +30,10 @@ const MENU_BGM = preload("res://assets/audio/bgm/meditation_main.mp3")
 func _ready() -> void:
 	# Pastikan game tidak dalam kondisi pause saat kembali ke menu.
 	get_tree().paused = false
+	if get_viewport():
+		get_viewport().size_changed.connect(_apply_responsive_layout)
 	_start_logo_flip_animation()
+	_apply_responsive_layout()
 	
 	if AudioManager:
 		AudioManager.play_bgm(MENU_BGM, 1.5, -4.0)
@@ -46,6 +56,37 @@ func _ready() -> void:
 	modulate.a = 0.0
 	var tween = create_tween()
 	tween.tween_property(self, "modulate:a", 1.0, 0.8)
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_RESIZED:
+		_apply_responsive_layout()
+
+func _apply_responsive_layout() -> void:
+	var vp_size = get_viewport_rect().size
+	if vp_size.x <= 0 or vp_size.y <= 0:
+		return
+	
+	# 1. Responsif FrameMenu (Texture portrait diputar -90 deg agar menutup seluruh layar di segala rasio)
+	if frame_menu:
+		frame_menu.rotation = -PI / 2.0
+		frame_menu.position = Vector2(0, vp_size.y)
+		frame_menu.size = Vector2(vp_size.y, vp_size.x)
+	
+	# 2. Responsif Planet & Hiasan Kanan
+	if planet:
+		planet.position = Vector2(vp_size.x - 240.0, vp_size.y * 0.44)
+	if sprite_bar:
+		sprite_bar.position = Vector2(vp_size.x - 171.0, vp_size.y - 123.0)
+	
+	# 3. Responsif Menu Card (BgBtn) dan Tombol Menu
+	# Menghitung posisi proporsional di kiri layar agar cocok di rasio 16:9, 18:9, 19.5:9, 20:9, 21:9, maupun 4:3
+	if bg_btn:
+		var card_left = clampf(vp_size.x * 0.11, 80.0, 320.0)
+		bg_btn.position.x = card_left
+		bg_btn.position.y = clampf((vp_size.y - bg_btn.size.y) * 0.5 + 15.0, 100.0, 300.0)
+		if menu_container:
+			menu_container.position.x = card_left + 232.0
+			menu_container.position.y = bg_btn.position.y + 46.0
 
 func _setup_button_hover(btn: Button) -> void:
 	# Ambil warna teks bawaan (font_color) yang sudah diatur di Inspector/Theme

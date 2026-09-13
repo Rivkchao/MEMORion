@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://duoq5ej222vaf"
 path.s3tc="res://.godot/imported/Grass.png-b65cf98dc6dcb601f6226220feaf6c14.s3tc.ctex"
+path.etc2="res://.godot/imported/Grass.png-b65cf98dc6dcb601f6226220feaf6c14.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/World/Stylized Nature MegaKit/Textures/Grass.png"
-dest_files=["res://.godot/imported/Grass.png-b65cf98dc6dcb601f6226220feaf6c14.s3tc.ctex"]
+dest_files=["res://.godot/imported/Grass.png-b65cf98dc6dcb601f6226220feaf6c14.s3tc.ctex", "res://.godot/imported/Grass.png-b65cf98dc6dcb601f6226220feaf6c14.etc2.ctex"]
 
 [params]
 

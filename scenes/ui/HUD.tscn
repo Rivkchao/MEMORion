@@ -70,18 +70,18 @@ layout_mode = 2
 [node name="WirePuzzle" parent="." unique_id=746694349 instance=ExtResource("2_ig75s")]
 
 [node name="SettingsBtn" type="Button" parent="."]
-custom_minimum_size = Vector2(54, 54)
+custom_minimum_size = Vector2(64, 64)
 anchors_preset = 1
 anchor_left = 1.0
 anchor_right = 1.0
-offset_left = -78.0
+offset_left = -90.0
 offset_top = 24.0
-offset_right = -24.0
-offset_bottom = 78.0
+offset_right = -26.0
+offset_bottom = 88.0
 grow_horizontal = 0
-pivot_offset = Vector2(27, 27)
+pivot_offset = Vector2(32, 32)
 mouse_default_cursor_shape = 2
-theme_override_font_sizes/font_size = 22
+theme_override_font_sizes/font_size = 28
 theme_override_styles/hover = SubResource("StyleBoxFlat_hud_settings")
 theme_override_styles/pressed = SubResource("StyleBoxFlat_hud_settings_pressed")
 theme_override_styles/normal = SubResource("StyleBoxFlat_hud_settings")

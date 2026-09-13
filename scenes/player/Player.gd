@@ -233,7 +233,7 @@ func _handle_rotation(delta: float) -> void:
 		$RionMesh.rotation.y = lerp_angle(
 			$RionMesh.rotation.y,
 			target_angle,
-			10.0 * delta
+			16.0 * delta
 		)
 
 func _handle_animation(delta: float) -> void:
@@ -248,10 +248,10 @@ func _handle_animation(delta: float) -> void:
 	else:
 		target_move_blend = 0.0      # Idle
 
-	# Update posisi blend kaki & badan dasar
+	# Update posisi blend kaki & badan dasar secara responsif
 	var move_path = "parameters/StateMachine/Move/blend_position"
 	var current_move: float = anim_tree.get(move_path) if anim_tree.get(move_path) != null else 0.0
-	anim_tree.set(move_path, lerpf(current_move, target_move_blend, 8.0 * delta))
+	anim_tree.set(move_path, lerpf(current_move, target_move_blend, 14.0 * delta))
 
 func _check_interact_prompt() -> void:
 	var bodies = interact_area.get_overlapping_bodies()
