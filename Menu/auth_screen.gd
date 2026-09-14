@@ -30,6 +30,9 @@ func _ready() -> void:
 	reg_username.placeholder_text = "Pilih nama unikmu..."
 	reg_password.placeholder_text = "Buat password..."
 	
+	# Set tab awal (0: Masuk / Load, 1: Daftar / Game Baru)
+	tab_container.current_tab = SaveManager.initial_auth_tab
+	
 	# Connect tombol
 	login_btn.pressed.connect(_on_login)
 	reg_btn.pressed.connect(_on_register)
@@ -162,10 +165,19 @@ func _setup_virtual_keyboard(field: LineEdit) -> void:
 			DisplayServer.virtual_keyboard_show(field.text, field.get_global_rect())
 	)
 	field.gui_input.connect(func(event: InputEvent):
-		if event is InputEventMouseButton and event.pressed:
-			if DisplayServer.has_feature(DisplayServer.FEATURE_VIRTUAL_KEYBOARD):
-				DisplayServer.virtual_keyboard_show(field.text, field.get_global_rect())
-		elif event is InputEventScreenTouch and event.pressed:
-			if DisplayServer.has_feature(DisplayServer.FEATURE_VIRTUAL_KEYBOARD):
+		var is_press = (event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT) or (event is InputEventScreenTouch and event.pressed)
+		if is_press:
+			if OS.has_feature("web"):
+				var is_mobile = JavaScriptBridge.eval("/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)")
+				if is_mobile:
+					var title_str = "Password" if field.secret else "Username / Nama"
+					var prompt_str = "Masukkan " + title_str + ":"
+					var current_val = "" if field.secret else field.text
+					var js_code = "prompt('%s', '%s');" % [prompt_str.replace("'", "\\'"), current_val.replace("'", "\\'")]
+					var result = JavaScriptBridge.eval(js_code)
+					if result != null and str(result) != "null" and str(result) != "":
+						field.text = str(result)
+						field.text_changed.emit(field.text)
+			elif DisplayServer.has_feature(DisplayServer.FEATURE_VIRTUAL_KEYBOARD):
 				DisplayServer.virtual_keyboard_show(field.text, field.get_global_rect())
 	)

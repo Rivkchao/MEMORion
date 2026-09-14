@@ -138,16 +138,19 @@ func _start_logo_flip_animation() -> void:
 func _on_mulai_game() -> void:
 	if AudioManager:
 		AudioManager.play_ui_confirm()
+	SaveManager.initial_auth_tab = 1 # Tab Daftar untuk game baru
 	_open_auth()
 
 func _on_muat_game() -> void:
 	if AudioManager:
 		AudioManager.play_ui_confirm()
+	SaveManager.initial_auth_tab = 0 # Tab Masuk untuk load game
 	_open_auth()
 
 func _on_lanjut_game() -> void:
 	if AudioManager:
 		AudioManager.play_ui_confirm()
+	SaveManager.initial_auth_tab = 0 # Tab Masuk untuk lanjut game
 	_open_auth()
 
 ## Semua tombol mulai masuk lewat layar login/registrasi dulu (main menu -> auth -> LEV1).

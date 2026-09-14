@@ -5,6 +5,7 @@ const MAX_SLOTS = 3
 
 var current_uid: String = ""
 var current_username: String = ""
+var initial_auth_tab: int = 0
 
 signal login_success
 signal login_failed(reason: String)
