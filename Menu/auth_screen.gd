@@ -44,6 +44,10 @@ func _ready() -> void:
 	reg_username.text_submitted.connect(func(_t): reg_password.grab_focus())
 	reg_password.text_submitted.connect(func(_t): _on_register())
 	
+	# Mobile & Web Virtual Keyboard support
+	for field in [login_username, login_password, reg_username, reg_password]:
+		_setup_virtual_keyboard(field)
+	
 	# Connect SaveManager signals
 	SaveManager.login_success.connect(_on_login_success)
 	SaveManager.login_failed.connect(_on_login_failed)
@@ -151,3 +155,17 @@ func _set_loading(is_loading: bool) -> void:
 		loading_indicator.show()
 	else:
 		loading_indicator.hide()
+
+func _setup_virtual_keyboard(field: LineEdit) -> void:
+	field.focus_entered.connect(func():
+		if DisplayServer.has_feature(DisplayServer.FEATURE_VIRTUAL_KEYBOARD):
+			DisplayServer.virtual_keyboard_show(field.text, field.get_global_rect())
+	)
+	field.gui_input.connect(func(event: InputEvent):
+		if event is InputEventMouseButton and event.pressed:
+			if DisplayServer.has_feature(DisplayServer.FEATURE_VIRTUAL_KEYBOARD):
+				DisplayServer.virtual_keyboard_show(field.text, field.get_global_rect())
+		elif event is InputEventScreenTouch and event.pressed:
+			if DisplayServer.has_feature(DisplayServer.FEATURE_VIRTUAL_KEYBOARD):
+				DisplayServer.virtual_keyboard_show(field.text, field.get_global_rect())
+	)

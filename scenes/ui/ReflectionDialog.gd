@@ -84,6 +84,16 @@ func _ready() -> void:
 	submit_btn.pressed.connect(_on_submit_pressed)
 	badge_close_btn.pressed.connect(_on_badge_close_pressed)
 
+	reflection_input.focus_entered.connect(func():
+		if DisplayServer.has_feature(DisplayServer.FEATURE_VIRTUAL_KEYBOARD):
+			DisplayServer.virtual_keyboard_show(reflection_input.text, reflection_input.get_global_rect())
+	)
+	reflection_input.gui_input.connect(func(event: InputEvent):
+		if (event is InputEventMouseButton or event is InputEventScreenTouch) and event.pressed:
+			if DisplayServer.has_feature(DisplayServer.FEATURE_VIRTUAL_KEYBOARD):
+				DisplayServer.virtual_keyboard_show(reflection_input.text, reflection_input.get_global_rect())
+	)
+
 func show_reflection_prompt() -> void:
 	current_dialog_mode = "general_reflection"
 	if header_label:
