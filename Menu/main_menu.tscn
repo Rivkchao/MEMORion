@@ -45,7 +45,6 @@ stretch_mode = 6
 
 [node name="Planet" type="Sprite2D" parent="." unique_id=717844577]
 position = Vector2(1680, 475)
-scale = Vector2(0.2, 0.2)
 texture = ExtResource("3_vv7ca")
 
 [node name="FrameMenu" type="TextureRect" parent="." unique_id=872379969]
