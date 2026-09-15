@@ -26,12 +26,22 @@ func levenshtein(a: String, b: String) -> int:
 	return dp[m][n]
 
 # Validasi jawaban dengan sinonim
-func validate(player_input: String, correct_answers: Array[String], tolerance: int = 2) -> bool:
+func validate(player_input: String, correct_answers: Array[String]) -> bool:
 	var input = player_input.strip_edges().to_lower()
 	
 	for answer in correct_answers:
-		var dist = levenshtein(input, answer.to_lower())
-		if dist <= tolerance:
+		var target = answer.to_lower()
+		var length = target.length()
+		
+		# Tentukan toleransi dinamis berdasarkan panjang kata
+		var dynamic_tolerance = 1
+		if length > 5:
+			dynamic_tolerance = 2
+		elif length <= 3:
+			dynamic_tolerance = 0 # Kata 3 huruf harus persis sama, atau setidaknya 1 jika sangat darurat
+			
+		var dist = levenshtein(input, target)
+		if dist <= dynamic_tolerance:
 			return true
-	
+			
 	return false
