@@ -33,7 +33,6 @@ FragmentBox="*res://scenes/ui/FragmentBox.tscn"
 SaveManager="*uid://b2kcq24apw81h"
 SettingsManager="*res://autoload/SettingsManager.gd"
 CursorManager="*res://autoload/CursorManager.gd"
-_mcp_game_helper="*res://addons/godot_ai/runtime/game_helper.gd"
 
 [display]
 
@@ -50,7 +49,7 @@ version_control/autoload_on_startup=true
 
 [editor_plugins]
 
-enabled=PackedStringArray("res://addons/GDQuest_GDScript_formatter/plugin.cfg", "res://addons/godot_ai/plugin.cfg", "res://addons/proton_scatter/plugin.cfg", "res://addons/terrain_3d/plugin.cfg")
+enabled=PackedStringArray("res://addons/GDQuest_GDScript_formatter/plugin.cfg", "res://addons/proton_scatter/plugin.cfg", "res://addons/terrain_3d/plugin.cfg")
 
 [input]
 
