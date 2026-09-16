@@ -241,12 +241,13 @@ theme_override_constants/separation = 10
 metadata/_tab_index = 0
 metadata/_tab_name = "  Masuk  "
 
-[node name="UserLabel" type="Label" parent="CenterContainer/PanelContainer/MarginContainer/VBoxContainer/TabContainer/LoginTab"]
+[node name="UserLabel" type="Label" parent="CenterContainer/PanelContainer/MarginContainer/VBoxContainer/TabContainer/LoginTab" unique_id=856191999]
+texture_filter = 4
 layout_mode = 2
 theme_override_colors/font_color = Color(0.8, 0.85, 1, 1)
 theme_override_fonts/font = ExtResource("5_tbold")
 theme_override_font_sizes/font_size = 15
-text = "👤 Nama Akun (Username)"
+text = "Nama Pengguna"
 
 [node name="UsernameField" type="LineEdit" parent="CenterContainer/PanelContainer/MarginContainer/VBoxContainer/TabContainer/LoginTab" unique_id=539558955]
 custom_minimum_size = Vector2(0, 52)
@@ -260,12 +261,13 @@ theme_override_styles/focus = SubResource("StyleBoxFlat_input_focus")
 placeholder_text = "Masukkan nama akunmu..."
 clear_button_enabled = true
 
-[node name="PassLabel" type="Label" parent="CenterContainer/PanelContainer/MarginContainer/VBoxContainer/TabContainer/LoginTab"]
+[node name="PassLabel" type="Label" parent="CenterContainer/PanelContainer/MarginContainer/VBoxContainer/TabContainer/LoginTab" unique_id=1399985122]
+texture_filter = 4
 layout_mode = 2
 theme_override_colors/font_color = Color(0.8, 0.85, 1, 1)
 theme_override_fonts/font = ExtResource("5_tbold")
 theme_override_font_sizes/font_size = 15
-text = "🔒 Kata Sandi (Password)"
+text = "Kata Sandi"
 
 [node name="PasswordField" type="LineEdit" parent="CenterContainer/PanelContainer/MarginContainer/VBoxContainer/TabContainer/LoginTab" unique_id=330099567]
 custom_minimum_size = Vector2(0, 52)
@@ -281,6 +283,7 @@ clear_button_enabled = true
 secret = true
 
 [node name="LoginBtn" type="Button" parent="CenterContainer/PanelContainer/MarginContainer/VBoxContainer/TabContainer/LoginTab" unique_id=131961818]
+texture_filter = 4
 custom_minimum_size = Vector2(0, 54)
 layout_mode = 2
 mouse_default_cursor_shape = 2
@@ -310,12 +313,13 @@ theme_override_constants/separation = 10
 metadata/_tab_index = 1
 metadata/_tab_name = "  Daftar  "
 
-[node name="RegUserLabel" type="Label" parent="CenterContainer/PanelContainer/MarginContainer/VBoxContainer/TabContainer/RegisterTab"]
+[node name="RegUserLabel" type="Label" parent="CenterContainer/PanelContainer/MarginContainer/VBoxContainer/TabContainer/RegisterTab" unique_id=1271167550]
+texture_filter = 4
 layout_mode = 2
 theme_override_colors/font_color = Color(0.8, 0.85, 1, 1)
 theme_override_fonts/font = ExtResource("5_tbold")
 theme_override_font_sizes/font_size = 15
-text = "👤 Nama Akun Baru (Username)"
+text = "Nama Pengguna Baru"
 
 [node name="UsernameField" type="LineEdit" parent="CenterContainer/PanelContainer/MarginContainer/VBoxContainer/TabContainer/RegisterTab" unique_id=1440858728]
 custom_minimum_size = Vector2(0, 52)
@@ -329,12 +333,13 @@ theme_override_styles/focus = SubResource("StyleBoxFlat_input_focus")
 placeholder_text = "Pilih nama unikmu (min. 3 karakter)..."
 clear_button_enabled = true
 
-[node name="RegPassLabel" type="Label" parent="CenterContainer/PanelContainer/MarginContainer/VBoxContainer/TabContainer/RegisterTab"]
+[node name="RegPassLabel" type="Label" parent="CenterContainer/PanelContainer/MarginContainer/VBoxContainer/TabContainer/RegisterTab" unique_id=727169120]
+texture_filter = 4
 layout_mode = 2
 theme_override_colors/font_color = Color(0.8, 0.85, 1, 1)
 theme_override_fonts/font = ExtResource("5_tbold")
 theme_override_font_sizes/font_size = 15
-text = "🔒 Kata Sandi Baru (Password)"
+text = "Kata Sandi Baru"
 
 [node name="PasswordField" type="LineEdit" parent="CenterContainer/PanelContainer/MarginContainer/VBoxContainer/TabContainer/RegisterTab" unique_id=1714491176]
 custom_minimum_size = Vector2(0, 52)
@@ -350,6 +355,7 @@ clear_button_enabled = true
 secret = true
 
 [node name="RegisterBtn" type="Button" parent="CenterContainer/PanelContainer/MarginContainer/VBoxContainer/TabContainer/RegisterTab" unique_id=313299581]
+texture_filter = 4
 custom_minimum_size = Vector2(0, 54)
 layout_mode = 2
 mouse_default_cursor_shape = 2

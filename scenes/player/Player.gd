@@ -101,7 +101,7 @@ func drop_item() -> void:
 
 func _physics_process(delta: float) -> void:
 	_apply_gravity(delta)
-	_handle_movement()
+	_handle_movement(delta)
 	_handle_jump()
 	move_and_slide()
 	_handle_rotation(delta)
@@ -129,7 +129,7 @@ func _apply_gravity(delta: float) -> void:
 	elif velocity.y < 0:
 		velocity.y = -0.5
 
-func _handle_movement() -> void:
+func _handle_movement(delta: float) -> void:
 	if _is_any_ui_active():
 		velocity.x = 0
 		velocity.z = 0
@@ -185,8 +185,26 @@ func _handle_movement() -> void:
 
 	var move_dir = (forward * -input_dir.y + right * input_dir.x).normalized()
 
-	velocity.x = move_dir.x * current_speed
-	velocity.z = move_dir.z * current_speed
+	# --- BAGIAN YANG DIUBAH / DITAMBAHKAN ---
+	var target_velocity = move_dir * current_speed
+	
+	# Hitung perkiraan posisi tujuan berdasarkan input frame ini
+	var current_pos = global_position
+	var intended_pos = current_pos + Vector3(target_velocity.x, 0, target_velocity.z) * delta
+	
+	# Ambil navigation map dari World3D untuk validasi nav mesh Terrain3D
+	var nav_map: RID = get_world_3d().navigation_map
+	var constrained_pos = NavigationServer3D.map_get_closest_point(nav_map, intended_pos)
+	
+	# Sesuaikan arah & kecepatan agar mentok jika menabrak batas nav mesh
+	var safe_dir = (constrained_pos - current_pos) / delta
+	if current_pos.distance_to(constrained_pos) > 0.0001:
+		velocity.x = safe_dir.x
+		velocity.z = safe_dir.z
+	else:
+		velocity.x = 0.0
+		velocity.z = 0.0
+	# ----------------------------------------
 
 func _handle_jump() -> void:
 	if _is_any_ui_active():

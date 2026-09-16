@@ -16,7 +16,6 @@ var is_following_player := false
 var reflection_dialog: CanvasLayer = null
 var _playback: AnimationNodeStateMachinePlayback = null
 var _teleport_cooldown: float = 0.0
-## Saat true, Ona digerakkan oleh tween cutscene: jangan override animasi/posisi dari _physics_process
 var _cutscene_walking: bool = false
 
 func _ready():
