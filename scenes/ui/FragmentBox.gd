@@ -24,7 +24,7 @@ var _stone_base_pos: Vector2 = Vector2.ZERO
 const FRAGMENTS_DATA = {
 	"batu": {
 		"title": "Fragmen Fokus & Ketenangan",
-		"congrats": "✦ MATERI PSIKOEDUKASI DITEMUKAN ✦",
+		"congrats": "✦ FRAGMEN BARU DITEMUKAN ✦",
 		"desc": "Mengelola Gugup: Saat menghadapi rintangan, tarik napas pelan dan kerjakan satu langkah demi satu langkah. Memusatkan perhatian pada pola yang ada membantumu melewati rasa tegang.",
 		"praise": "Kamu anak yang berani mencoba lagi walaupun sempat gugup — itu tanda keberanian!",
 		"texture_path": "res://assets/StoneImage/Cristal.png",
@@ -32,7 +32,7 @@ const FRAGMENTS_DATA = {
 	},
 	"lever_crusher": {
 		"title": "Fragmen Mengolah Emosi",
-		"congrats": "✦ MATERI PSIKOEDUKASI DITEMUKAN ✦",
+		"congrats": "✦ FRAGMEN BARU DITEMUKAN ✦",
 		"desc": "Mengelola Amarah: Marah adalah emosi yang wajar. Yang penting adalah cara mengolahnya — salurkan energinya ke hal yang membangun, bukan melukai diri sendiri atau orang lain.",
 		"praise": "Kamu hebat karena mampu mengubah rasa kesal menjadi tindakan yang membangun.",
 		"texture_path": "res://assets/StoneImage/Iron.png",
@@ -40,7 +40,7 @@ const FRAGMENTS_DATA = {
 	},
 	"lever_onaprogram": {
 		"title": "Fragmen Mengenali Diri",
-		"congrats": "✦ MATERI PSIKOEDUKASI DITEMUKAN ✦",
+		"congrats": "✦ FRAGMEN BARU DITEMUKAN ✦",
 		"desc": "Kesadaran Diri: Seperti program yang bisa dilatih, pikiran dan kebiasaan baik juga bisa kita bentuk. Kenali perasaanmu, lalu pilih respons yang kamu inginkan.",
 		"praise": "Kamu pribadi yang mau tumbuh dan belajar hal baru tentang dirimu sendiri.",
 		"texture_path": "res://assets/StoneImage/Thorium.png",
@@ -48,7 +48,7 @@ const FRAGMENTS_DATA = {
 	},
 	"terminal": {
 		"title": "Fragmen Memori & Koneksi",
-		"congrats": "✦ MATERI PSIKOEDUKASI DITEMUKAN ✦",
+		"congrats": "✦ FRAGMEN BARU DITEMUKAN ✦",
 		"desc": "Berbagi Cerita: Ingatan dan cerita membentuk siapa kita. Berbagi cerita dengan orang yang dipercaya membuat kita merasa terhubung dan tidak sendirian.",
 		"praise": "Kamu pendengar yang baik dan mampu menyambung kembali cerita yang sempat hilang.",
 		"texture_path": "res://assets/StoneImage/Titanium.png",
@@ -56,7 +56,7 @@ const FRAGMENTS_DATA = {
 	},
 	"unpacking_rak1": {
 		"title": "Fragmen Keteraturan",
-		"congrats": "✦ MATERI PSIKOEDUKASI DITEMUKAN ✦",
+		"congrats": "✦ FRAGMEN BARU DITEMUKAN ✦",
 		"desc": "Rapi & Kendali Diri: Menata barang di tempatnya membantu pikiran terasa lebih tenang dan terkendali. Mulailah dari hal kecil, satu langkah setiap kali.",
 		"praise": "Kamu orang yang sangat teratur dan teliti!",
 		"texture_path": "res://assets/StoneImage/Gold.png",
@@ -64,7 +64,7 @@ const FRAGMENTS_DATA = {
 	},
 	"unpacking_rak2": {
 		"title": "Fragmen Ketekunan",
-		"congrats": "✦ MATERI PSIKOEDUKASI DITEMUKAN ✦",
+		"congrats": "✦ FRAGMEN BARU DITEMUKAN ✦",
 		"desc": "Menyelesaikan Tugas: Menuntaskan pekerjaan sampai selesai melatih ketekunan dan rasa percaya diri. Kamu sudah membuktikan bisa merampungkan semuanya!",
 		"praise": "Kamu pantang menyerah dan selalu menuntaskan apa yang sudah kamu mulai.",
 		"texture_path": "res://assets/StoneImage/Quartz.png",
@@ -72,7 +72,7 @@ const FRAGMENTS_DATA = {
 	},
 	"uranium": {
 		"title": "Fragmen Ketangguhan",
-		"congrats": "✦ MATERI PSIKOEDUKASI DITEMUKAN ✦",
+		"congrats": "✦ FRAGMEN BARU DITEMUKAN ✦",
 		"desc": "Daya Bangkit: Setiap pengalaman, termasuk yang sulit, menambah kekuatan dalam dirimu. Boleh beristirahat sejenak, lalu bangkit dan lanjut lagi.",
 		"praise": "Kamu kuat, dan kamu layak bangga pada dirimu sendiri.",
 		"texture_path": "res://assets/StoneImage/Uranium.png",
