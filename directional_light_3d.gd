@@ -43,6 +43,8 @@ func _ready() -> void:
 			if mat:
 				_rock_materials.append(mat)
 
+var _update_timer: float = 0.0
+
 func _process(delta: float) -> void:
 	elapsed += delta
 	var t: float = fmod(elapsed, cycle_duration) / cycle_duration
@@ -86,11 +88,15 @@ func _process(delta: float) -> void:
 
 	light_energy = energy
 	
-	_update_ambient_light(t)
-	_update_water_glow(t)
-	_update_terrain_glow(t)
-	_update_rock_glow(t)
-	_update_player_light(t)
+	# Throttle update material / shader / ambient (10 kali per detik sudah sangat halus dan hemat baterai)
+	_update_timer += delta
+	if _update_timer >= 0.1:
+		_update_timer = 0.0
+		_update_ambient_light(t)
+		_update_water_glow(t)
+		_update_terrain_glow(t)
+		_update_rock_glow(t)
+		_update_player_light(t)
 
 func _update_ambient_light(t: float) -> void:
 	if world_environment == null or world_environment.environment == null:

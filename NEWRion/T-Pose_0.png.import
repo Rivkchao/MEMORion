@@ -4,8 +4,9 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://crcln3l4eyday"
 path.s3tc="res://.godot/imported/T-Pose_0.png-a22da536af7c0cdbcb007f8880ed976e.s3tc.ctex"
+path.etc2="res://.godot/imported/T-Pose_0.png-a22da536af7c0cdbcb007f8880ed976e.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 generator_parameters={
@@ -15,7 +16,7 @@ generator_parameters={
 [deps]
 
 source_file="res://NEWRion/T-Pose_0.png"
-dest_files=["res://.godot/imported/T-Pose_0.png-a22da536af7c0cdbcb007f8880ed976e.s3tc.ctex"]
+dest_files=["res://.godot/imported/T-Pose_0.png-a22da536af7c0cdbcb007f8880ed976e.s3tc.ctex", "res://.godot/imported/T-Pose_0.png-a22da536af7c0cdbcb007f8880ed976e.etc2.ctex"]
 
 [params]
 

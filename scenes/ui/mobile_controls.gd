@@ -89,12 +89,18 @@ func _apply_responsive_layout() -> void:
 	var screen_size = DisplayServer.screen_get_size()
 	
 	if screen_size.x > 0 and screen_size.y > 0 and safe_area.size != Vector2i.ZERO:
-		var left_margin = max(0.0, float(safe_area.position.x))
-		var right_margin = max(0.0, float(screen_size.x - safe_area.end.x))
-		if left_margin > 10.0 and joystick_area:
+		var left_margin = maxf(0.0, float(safe_area.position.x))
+		var right_margin = maxf(0.0, float(screen_size.x - safe_area.end.x))
+		var bottom_margin = maxf(0.0, float(screen_size.y - safe_area.end.y))
+		
+		if joystick_area:
 			joystick_area.offset_left = 40.0 + left_margin
-		if right_margin > 10.0 and action_buttons_container:
+			joystick_area.offset_bottom = -(20.0 + bottom_margin)
+		if action_buttons_container:
 			action_buttons_container.offset_right = -right_margin
+			action_buttons_container.offset_bottom = -bottom_margin
+
+var _ui_check_timer: float = 0.0
 
 func _on_mobile_controls_toggled(active: bool) -> void:
 	visible = active
@@ -104,9 +110,12 @@ func _process(delta: float) -> void:
 		return
 	
 	_find_player_and_camera()
-	_update_ui_state(delta)
 	
-	# Terapkan input sprint terus-menerus jika sedang aktif
+	_ui_check_timer += delta
+	if _ui_check_timer >= 0.08:
+		_ui_check_timer = 0.0
+		_update_ui_state(delta)
+	
 	if is_sprint_toggled:
 		Input.action_press("sprint")
 
@@ -377,27 +386,6 @@ func _release_joystick() -> void:
 func _feed_input_to_player(vec: Vector2) -> void:
 	if _player and "joystick_input" in _player:
 		_player.joystick_input = vec
-	
-	# Simulasikan juga aksi tombol keyboard bawaan jika diperlukan
-	if vec.x < -0.3:
-		Input.action_press("move_left", -vec.x)
-	else:
-		Input.action_release("move_left")
-		
-	if vec.x > 0.3:
-		Input.action_press("move_right", vec.x)
-	else:
-		Input.action_release("move_right")
-		
-	if vec.y < -0.3:
-		Input.action_press("move_forward", -vec.y)
-	else:
-		Input.action_release("move_forward")
-		
-	if vec.y > 0.3:
-		Input.action_press("move_back", vec.y)
-	else:
-		Input.action_release("move_back")
 
 # ----------------------------------------------------
 # Aksi Tombol

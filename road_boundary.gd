@@ -52,19 +52,33 @@ func generate_boundaries() -> void:
 		return
 
 	var curve := _find_curve(target_scatter_shape)
-
 	if not curve:
 		return
 
-	var points := curve.get_baked_points()
-	if points.size() < 2:
+	var raw_points := curve.get_baked_points()
+	if raw_points.size() < 2:
 		return
 
 	# Bersihkan child lama
 	for child in get_children():
-		child.free()
+		child.queue_free()
 
-	# Generate segmen dinding
+	# Subsample titik agar jumlah dinding efisien (interval ~3.0 meter)
+	var points: Array[Vector3] = []
+	points.append(raw_points[0])
+	var accumulated_dist: float = 0.0
+	var min_step: float = 3.0
+
+	for i in range(1, raw_points.size()):
+		accumulated_dist += raw_points[i].distance_to(raw_points[i - 1])
+		if accumulated_dist >= min_step or i == raw_points.size() - 1:
+			points.append(raw_points[i])
+			accumulated_dist = 0.0
+
+	if points.size() < 2:
+		return
+
+	# Generate segmen dinding yang efisien
 	for i in range(points.size() - 1):
 		var a: Vector3 = target_scatter_shape.to_global(points[i])
 		var b: Vector3 = target_scatter_shape.to_global(points[i + 1])
@@ -74,14 +88,14 @@ func generate_boundaries() -> void:
 	var first_point: Vector3 = target_scatter_shape.to_global(points[0])
 	var last_point: Vector3 = target_scatter_shape.to_global(points[points.size() - 1])
 
-	if first_point.distance_to(last_point) > 0.05:
+	if first_point.distance_to(last_point) > 1.0:
 		_create_wall(last_point, first_point, points.size())
 
 func _create_wall(a: Vector3, b: Vector3, index: int) -> void:
 	var direction := b - a
 	var length := direction.length()
 
-	if length < 0.05:
+	if length < 0.2:
 		return
 
 	var center := (a + b) / 2.0
@@ -89,11 +103,6 @@ func _create_wall(a: Vector3, b: Vector3, index: int) -> void:
 	var body := StaticBody3D.new()
 	body.name = "Wall_%d" % index
 	add_child(body)
-
-	if Engine.is_editor_hint():
-		var scene_root = get_tree().edited_scene_root
-		if scene_root:
-			body.owner = scene_root
 
 	body.global_position = center
 
@@ -111,8 +120,3 @@ func _create_wall(a: Vector3, b: Vector3, index: int) -> void:
 	collision.shape = shape
 
 	body.add_child(collision)
-
-	if Engine.is_editor_hint():
-		var scene_root = get_tree().edited_scene_root
-		if scene_root:
-			collision.owner = scene_root

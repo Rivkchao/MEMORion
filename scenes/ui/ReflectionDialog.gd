@@ -84,6 +84,27 @@ func _ready() -> void:
 	submit_btn.pressed.connect(_on_submit_pressed)
 	badge_close_btn.pressed.connect(_on_badge_close_pressed)
 
+	reflection_input.focus_entered.connect(func():
+		if DisplayServer.has_feature(DisplayServer.FEATURE_VIRTUAL_KEYBOARD):
+			DisplayServer.virtual_keyboard_show(reflection_input.text, reflection_input.get_global_rect())
+	)
+	reflection_input.gui_input.connect(func(event: InputEvent):
+		var is_press = (event is InputEventMouseButton and event.pressed and event.button_index == MOUSE_BUTTON_LEFT) or (event is InputEventScreenTouch and event.pressed)
+		if is_press:
+			if OS.has_feature("web"):
+				var is_mobile = JavaScriptBridge.eval("/Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)")
+				if is_mobile:
+					var prompt_str = "Ketik jawaban refleksimu:"
+					var current_val = reflection_input.text
+					var js_code = "prompt('%s', '%s');" % [prompt_str.replace("'", "\\'"), current_val.replace("'", "\\'")]
+					var result = JavaScriptBridge.eval(js_code)
+					if result != null and str(result) != "null" and str(result) != "":
+						reflection_input.text = str(result)
+						reflection_input.text_changed.emit(reflection_input.text)
+			elif DisplayServer.has_feature(DisplayServer.FEATURE_VIRTUAL_KEYBOARD):
+				DisplayServer.virtual_keyboard_show(reflection_input.text, reflection_input.get_global_rect())
+	)
+
 func show_reflection_prompt() -> void:
 	current_dialog_mode = "general_reflection"
 	if header_label:

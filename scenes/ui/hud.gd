@@ -34,6 +34,29 @@ func _ready() -> void:
 		)
 		settings_btn.pressed.connect(_on_settings_pressed)
 
+	get_viewport().size_changed.connect(_apply_responsive_layout)
+	_apply_responsive_layout()
+
+func _apply_responsive_layout() -> void:
+	if not is_inside_tree():
+		return
+	var safe_area = DisplayServer.get_display_safe_area()
+	var screen_size = DisplayServer.screen_get_size()
+	if screen_size.x > 0 and safe_area.size != Vector2i.ZERO:
+		var left_safe = maxf(0.0, float(safe_area.position.x))
+		var right_safe = maxf(0.0, float(screen_size.x - safe_area.end.x))
+		var top_safe = maxf(0.0, float(safe_area.position.y))
+		
+		if objective_panel:
+			_obj_base_pos_x = 32.0 + left_safe
+			objective_panel.offset_left = _obj_base_pos_x
+			objective_panel.offset_top = 28.0 + top_safe
+		if settings_btn:
+			settings_btn.offset_right = -(26.0 + right_safe)
+			settings_btn.offset_left = -(90.0 + right_safe)
+			settings_btn.offset_top = 24.0 + top_safe
+			settings_btn.offset_bottom = 88.0 + top_safe
+
 func _setup_quest_hud_style() -> void:
 	if not is_instance_valid(objective_panel):
 		return
@@ -46,26 +69,26 @@ func _setup_quest_hud_style() -> void:
 	objective_panel.mouse_filter = Control.MOUSE_FILTER_IGNORE
 	objective_panel.offset_left = 32.0
 	objective_panel.offset_top = 28.0
-	objective_panel.offset_right = 380.0
-	objective_panel.offset_bottom = 120.0
-	objective_panel.custom_minimum_size = Vector2(320, 0)
+	objective_panel.offset_right = 440.0
+	objective_panel.offset_bottom = 150.0
+	objective_panel.custom_minimum_size = Vector2(400, 0)
 	_obj_base_pos_x = objective_panel.offset_left
 
 	var panel_style = StyleBoxFlat.new()
-	panel_style.bg_color = Color(0.06, 0.08, 0.14, 0.78) # Dark frosted glass
-	panel_style.border_width_left = 4
+	panel_style.bg_color = Color(0.06, 0.08, 0.14, 0.82) # Dark frosted glass
+	panel_style.border_width_left = 5
 	panel_style.border_color = Color(1.0, 0.82, 0.35, 0.95) # Radiant amber gold quest strip
-	panel_style.corner_radius_top_left = 4
-	panel_style.corner_radius_bottom_left = 4
-	panel_style.corner_radius_top_right = 14
-	panel_style.corner_radius_bottom_right = 14
+	panel_style.corner_radius_top_left = 6
+	panel_style.corner_radius_bottom_left = 6
+	panel_style.corner_radius_top_right = 16
+	panel_style.corner_radius_bottom_right = 16
 	panel_style.shadow_color = Color(0.0, 0.0, 0.0, 0.45)
-	panel_style.shadow_size = 10
+	panel_style.shadow_size = 12
 	panel_style.shadow_offset = Vector2(2, 4)
-	panel_style.content_margin_left = 18
-	panel_style.content_margin_top = 12
-	panel_style.content_margin_right = 18
-	panel_style.content_margin_bottom = 12
+	panel_style.content_margin_left = 22
+	panel_style.content_margin_top = 16
+	panel_style.content_margin_right = 22
+	panel_style.content_margin_bottom = 16
 	objective_panel.add_theme_stylebox_override("panel", panel_style)
 
 	var margin = objective_panel.get_node_or_null("MarginContainer") as MarginContainer
@@ -79,7 +102,7 @@ func _setup_quest_hud_style() -> void:
 	var vbox = objective_panel.find_child("VBoxContainer", true, false) as VBoxContainer
 	if vbox:
 		vbox.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		vbox.add_theme_constant_override("separation", 6)
+		vbox.add_theme_constant_override("separation", 8)
 
 	# 1. Header / Kategori Misi
 	if objective_title:
@@ -87,7 +110,7 @@ func _setup_quest_hud_style() -> void:
 		objective_title.text = "✦  MISI UTAMA"
 		if bold_font:
 			objective_title.add_theme_font_override("font", bold_font)
-		objective_title.add_theme_font_size_override("font_size", 12)
+		objective_title.add_theme_font_size_override("font_size", 18)
 		objective_title.add_theme_color_override("font_color", Color(1.0, 0.84, 0.38, 1.0))
 		objective_title.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.7))
 		objective_title.add_theme_constant_override("shadow_offset_x", 1)
@@ -98,14 +121,14 @@ func _setup_quest_hud_style() -> void:
 		objective_text.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		if reg_font:
 			objective_text.add_theme_font_override("font", reg_font)
-		objective_text.add_theme_font_size_override("font_size", 15)
+		objective_text.add_theme_font_size_override("font_size", 22)
 		objective_text.add_theme_color_override("font_color", Color(0.96, 0.97, 1.0, 1.0))
 		objective_text.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.8))
 		objective_text.add_theme_constant_override("shadow_offset_x", 1)
 		objective_text.add_theme_constant_override("shadow_offset_y", 1)
-		objective_text.add_theme_constant_override("line_spacing", 3)
+		objective_text.add_theme_constant_override("line_spacing", 4)
 		objective_text.autowrap_mode = TextServer.AUTOWRAP_WORD_SMART
-		objective_text.custom_minimum_size = Vector2(290, 0)
+		objective_text.custom_minimum_size = Vector2(360, 0)
 		if objective_text.text.is_empty():
 			objective_text.text = "Jelajahi sekitar dan ikuti petunjuk Ona."
 
@@ -114,12 +137,11 @@ func _setup_quest_hud_style() -> void:
 		progress_label.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		if bold_font:
 			progress_label.add_theme_font_override("font", bold_font)
-		progress_label.add_theme_font_size_override("font_size", 13)
+		progress_label.add_theme_font_size_override("font_size", 20)
 		progress_label.add_theme_color_override("font_color", Color(0.42, 0.92, 1.0, 1.0)) # Starlight Cyan
 		progress_label.add_theme_color_override("font_shadow_color", Color(0, 0, 0, 0.8))
 		progress_label.add_theme_constant_override("shadow_offset_x", 1)
 		progress_label.add_theme_constant_override("shadow_offset_y", 1)
-		# Sembunyikan jika belum ada misi pencarian aktif
 		if progress_label.text.is_empty():
 			progress_label.visible = false
 

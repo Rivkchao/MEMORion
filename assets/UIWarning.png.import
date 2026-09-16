@@ -4,15 +4,16 @@ importer="texture"
 type="CompressedTexture2D"
 uid="uid://c0386mj8lc12k"
 path.s3tc="res://.godot/imported/UIWarning.png-e429e50d6497ef4f0417ef6dba481799.s3tc.ctex"
+path.etc2="res://.godot/imported/UIWarning.png-e429e50d6497ef4f0417ef6dba481799.etc2.ctex"
 metadata={
-"imported_formats": ["s3tc_bptc"],
+"imported_formats": ["s3tc_bptc", "etc2_astc"],
 "vram_texture": true
 }
 
 [deps]
 
 source_file="res://assets/UIWarning.png"
-dest_files=["res://.godot/imported/UIWarning.png-e429e50d6497ef4f0417ef6dba481799.s3tc.ctex"]
+dest_files=["res://.godot/imported/UIWarning.png-e429e50d6497ef4f0417ef6dba481799.s3tc.ctex", "res://.godot/imported/UIWarning.png-e429e50d6497ef4f0417ef6dba481799.etc2.ctex"]
 
 [params]
 

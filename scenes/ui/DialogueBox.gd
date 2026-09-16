@@ -32,6 +32,25 @@ func _ready() -> void:
 	hide()
 	dialogue_label.max_lines_visible = MAX_LINES
 	dialogue_label.lines_skipped = 0
+	get_viewport().size_changed.connect(_apply_responsive_layout)
+	_apply_responsive_layout()
+
+func _apply_responsive_layout() -> void:
+	if not is_inside_tree():
+		return
+	var safe_area = DisplayServer.get_display_safe_area()
+	var screen_size = DisplayServer.screen_get_size()
+	var margin_container = $PanelContainer/MarginContainer
+	if margin_container and screen_size.x > 0 and safe_area.size != Vector2i.ZERO:
+		var left_safe = maxf(0.0, float(safe_area.position.x))
+		var right_safe = maxf(0.0, float(screen_size.x - safe_area.end.x))
+		margin_container.add_theme_constant_override("margin_left", int(250 + left_safe))
+		margin_container.add_theme_constant_override("margin_right", int(40 + right_safe))
+		if avatar:
+			avatar.position.x = 24.0 + left_safe
+		if continue_label:
+			continue_label.offset_right = -(40.0 + right_safe)
+			continue_label.offset_left = -(160.0 + right_safe)
 
 func _process(delta: float) -> void:
 	if visible:

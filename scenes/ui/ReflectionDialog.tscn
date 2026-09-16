@@ -95,20 +95,20 @@ grow_vertical = 2
 mouse_filter = 2
 
 [node name="ReflectionCard" type="PanelContainer" parent="CardContainer"]
-custom_minimum_size = Vector2(620, 330)
+custom_minimum_size = Vector2(640, 360)
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -310.0
-offset_top = -165.0
-offset_right = 310.0
-offset_bottom = 165.0
+offset_left = -320.0
+offset_top = -180.0
+offset_right = 320.0
+offset_bottom = 180.0
 grow_horizontal = 2
 grow_vertical = 2
-pivot_offset = Vector2(310, 165)
+pivot_offset = Vector2(320, 180)
 theme_override_styles/panel = SubResource("StyleBoxFlat_card")
 
 [node name="Margin" type="MarginContainer" parent="CardContainer/ReflectionCard"]
@@ -126,7 +126,7 @@ theme_override_constants/separation = 16
 layout_mode = 2
 theme_override_colors/font_color = Color(0.4, 0.85, 1.0, 1.0)
 theme_override_fonts/font = ExtResource("2_tbold")
-theme_override_font_sizes/font_size = 18
+theme_override_font_sizes/font_size = 20
 text = "✦ REFLEKSI DIRI BERSAMA ONA ✦"
 horizontal_alignment = 1
 
@@ -134,7 +134,7 @@ horizontal_alignment = 1
 layout_mode = 2
 theme_override_colors/font_color = Color(0.92, 0.94, 1.0, 1.0)
 theme_override_fonts/font = ExtResource("3_treg")
-theme_override_font_sizes/font_size = 18
+theme_override_font_sizes/font_size = 20
 text = "Bagaimana perasaanmu setelah berhasil melewati rintangan sungai tadi?"
 horizontal_alignment = 1
 autowrap_mode = 3
@@ -144,11 +144,11 @@ layout_mode = 2
 theme_override_constants/separation = 6
 
 [node name="ReflectionInput" type="LineEdit" parent="CardContainer/ReflectionCard/Margin/VBox/InputContainer"]
-custom_minimum_size = Vector2(0, 52)
+custom_minimum_size = Vector2(0, 56)
 layout_mode = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_fonts/font = ExtResource("3_treg")
-theme_override_font_sizes/font_size = 16
+theme_override_font_sizes/font_size = 18
 theme_override_styles/normal = SubResource("StyleBoxFlat_input")
 placeholder_text = "Ketik apa yang sedang kamu rasakan di sini..."
 alignment = 1
@@ -158,7 +158,7 @@ max_length = 150
 layout_mode = 2
 theme_override_colors/font_color = Color(0.65, 0.7, 0.85, 0.8)
 theme_override_fonts/font = ExtResource("3_treg")
-theme_override_font_sizes/font_size = 13
+theme_override_font_sizes/font_size = 15
 text = "(Tekan Enter untuk melanjutkan)"
 horizontal_alignment = 1
 
@@ -167,38 +167,38 @@ visible = false
 layout_mode = 2
 theme_override_colors/font_color = Color(1.0, 0.4, 0.45, 1.0)
 theme_override_fonts/font = ExtResource("3_treg")
-theme_override_font_sizes/font_size = 13
+theme_override_font_sizes/font_size = 15
 text = "Yuk ceritakan perasaanmu dengan bahasa yang baik."
 horizontal_alignment = 1
 autowrap_mode = 3
 
 [node name="SubmitButton" type="Button" parent="CardContainer/ReflectionCard/Margin/VBox"]
-custom_minimum_size = Vector2(0, 46)
+custom_minimum_size = Vector2(0, 52)
 layout_mode = 2
 mouse_default_cursor_shape = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_fonts/font = ExtResource("2_tbold")
-theme_override_font_sizes/font_size = 16
+theme_override_font_sizes/font_size = 18
 theme_override_styles/normal = SubResource("StyleBoxFlat_btn_normal")
 theme_override_styles/hover = SubResource("StyleBoxFlat_btn_hover")
 text = "Kirim Tanggapan"
 
 [node name="BadgeCard" type="PanelContainer" parent="CardContainer"]
 visible = false
-custom_minimum_size = Vector2(640, 360)
+custom_minimum_size = Vector2(660, 380)
 layout_mode = 1
 anchors_preset = 8
 anchor_left = 0.5
 anchor_top = 0.5
 anchor_right = 0.5
 anchor_bottom = 0.5
-offset_left = -320.0
-offset_top = -180.0
-offset_right = 320.0
-offset_bottom = 180.0
+offset_left = -330.0
+offset_top = -190.0
+offset_right = 330.0
+offset_bottom = 190.0
 grow_horizontal = 2
 grow_vertical = 2
-pivot_offset = Vector2(320, 180)
+pivot_offset = Vector2(330, 190)
 theme_override_styles/panel = SubResource("StyleBoxFlat_badge_card")
 
 [node name="Margin" type="MarginContainer" parent="CardContainer/BadgeCard"]
@@ -216,7 +216,7 @@ theme_override_constants/separation = 16
 layout_mode = 2
 theme_override_colors/font_color = Color(1.0, 0.85, 0.2, 1.0)
 theme_override_fonts/font = ExtResource("2_tbold")
-theme_override_font_sizes/font_size = 20
+theme_override_font_sizes/font_size = 22
 text = "🌟 KETERAMPILAN TERCATAT 🌟"
 horizontal_alignment = 1
 
@@ -224,7 +224,7 @@ horizontal_alignment = 1
 layout_mode = 2
 theme_override_colors/font_color = Color(0.4, 0.95, 1.0, 1.0)
 theme_override_fonts/font = ExtResource("2_tbold")
-theme_override_font_sizes/font_size = 26
+theme_override_font_sizes/font_size = 28
 text = "\"Rem & Intip Pola\""
 horizontal_alignment = 1
 
@@ -233,19 +233,19 @@ custom_minimum_size = Vector2(0, 90)
 layout_mode = 2
 theme_override_colors/font_color = Color(0.9, 0.92, 0.98, 1.0)
 theme_override_fonts/font = ExtResource("3_treg")
-theme_override_font_sizes/font_size = 17
+theme_override_font_sizes/font_size = 19
 text = "Saat menghadapi hal rumit, berhenti sejenak untuk melihat petunjuk. Mengulang satu langkah kecil bukanlah sebuah kegagalan."
 horizontal_alignment = 1
 vertical_alignment = 1
 autowrap_mode = 3
 
 [node name="CloseButton" type="Button" parent="CardContainer/BadgeCard/Margin/VBox"]
-custom_minimum_size = Vector2(0, 48)
+custom_minimum_size = Vector2(0, 52)
 layout_mode = 2
 mouse_default_cursor_shape = 2
 theme_override_colors/font_color = Color(1, 1, 1, 1)
 theme_override_fonts/font = ExtResource("2_tbold")
-theme_override_font_sizes/font_size = 17
+theme_override_font_sizes/font_size = 19
 theme_override_styles/normal = SubResource("StyleBoxFlat_btn_normal")
 theme_override_styles/hover = SubResource("StyleBoxFlat_btn_hover")
 text = "Lanjutkan Perjalanan"
