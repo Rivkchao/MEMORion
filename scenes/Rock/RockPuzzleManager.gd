@@ -384,16 +384,60 @@ func _process(_delta: float) -> void:
 		on_player_fell_in_river()
 		return
 
-	# 2. Deteksi Sisa Satu Batu (Rion sudah mendarat di 1 batu sebelum batu terakhir: RockSlot4, X ~ -30.91)
+	# 2. Perbarui posisi respawn ke batu terakhir yang diinjak player
+	if player.is_on_floor() and py > -1.0:
+		_update_last_stepped_rock(player)
+
+	# 3. Deteksi Sisa Satu Batu (Rion sudah mendarat di 1 batu sebelum batu terakhir: RockSlot4, X ~ -30.91)
 	if not has_said_near_end and px <= -30.2 and px > -32.2 and player.is_on_floor() and py > -1.0:
 		has_said_near_end = true
 		StoryManager.start_dialogue(["Ona: Lompatan yang bagus Rion. Tinggal sedikit lagi kamu berhasil."], "Ona")
 
-	# 3. Deteksi Selesai Menyeberang (Rion mendarat di seberang sungai X <= -36.5)
+	# 4. Deteksi Selesai Menyeberang (Rion mendarat di seberang sungai X <= -36.5)
 	if not has_crossed_river and px <= -36.5 and py > -1.0:
 		has_crossed_river = true
 		is_crossing_active = false
 		_on_river_crossed_successfully()
+
+func _update_last_stepped_rock(player: Node3D) -> void:
+	var px = player.global_position.x
+
+	# Jika player masih atau kembali ke pinggir sungai awal
+	if px >= -20.5:
+		safe_crossing_pos = Vector3(player.global_position.x, player.global_position.y + 0.1, player.global_position.z)
+		return
+
+	var standing_on_rock: Node3D = null
+
+	# 1. Deteksi tabrakan fisik CharacterBody3D langsung dengan objek batu
+	if player is CharacterBody3D:
+		for i in player.get_slide_collision_count():
+			var col = player.get_slide_collision(i)
+			var collider = col.get_collider()
+			if collider != null and collider in rocks:
+				standing_on_rock = collider as Node3D
+				break
+
+	# 2. Fallback jarak horizontal XZ (radius toleransi ~1.6m dari pusat batu)
+	if standing_on_rock == null:
+		var p_xz = Vector2(player.global_position.x, player.global_position.z)
+		var closest_dist: float = 1.6
+		for r in rocks:
+			if not is_instance_valid(r):
+				continue
+			var r_xz = Vector2(r.global_position.x, r.global_position.z)
+			var dist = p_xz.distance_to(r_xz)
+			if dist < closest_dist:
+				closest_dist = dist
+				standing_on_rock = r
+
+	if standing_on_rock != null:
+		var spawn_y = maxf(player.global_position.y + 0.15, standing_on_rock.global_position.y + 0.5)
+		safe_crossing_pos = Vector3(
+			standing_on_rock.global_position.x,
+			spawn_y,
+			standing_on_rock.global_position.z
+		)
 
 func on_player_fell_in_river() -> void:
 	var player = get_tree().get_first_node_in_group("player")
