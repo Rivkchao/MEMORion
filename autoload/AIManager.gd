@@ -7,8 +7,8 @@ signal emotion_analyzed(detected_emotion: String, npc_reply: String)
 signal answer_checked(npc_reply: String, emotion: String)
 
 # Kredensial Hardcode
-const API_URL: String = "https://openrouter.ai/api/v1/chat/completions"
-const API_KEY: String = "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"
+const API_URL: String = "http"
+const API_KEY: String = "-"
 const DEFAULT_MODEL: String = "openai/gpt-4o-mini"
 
 var _api_key: String = API_KEY
